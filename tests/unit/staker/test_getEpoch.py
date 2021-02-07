@@ -1,0 +1,16 @@
+from consts import *
+from utils import *
+from brownie import web3, chain
+
+
+def test_getEpoch(asc):
+    chain.mine(BLOCKS_IN_EPOCH - (web3.eth.blockNumber % BLOCKS_IN_EPOCH))
+    assert web3.eth.blockNumber % BLOCKS_IN_EPOCH == 0
+    startBlockNum = web3.eth.blockNumber
+
+    for i in range(10):
+        print(i)
+        for j in range(BLOCKS_IN_EPOCH):
+            print('j', j)
+            assert asc.sm.getCurEpoch() == startBlockNum + (i * BLOCKS_IN_EPOCH)
+            chain.mine(1)
