@@ -74,19 +74,18 @@ contract StakeManager is IStakeManager, Shared {
         }
         return false;
     }
+
+    function getRemainder(uint a, uint b) public pure returns (uint) {
+        return a % b;
+    }
     
     
     // ----------- Staking -----------
     
+    // Calls updateExec()
     function updateExecutor() public updateExec noFish returns(uint, uint, address) {}
     
     function stake(uint numStakes) external nzUint(numStakes) updateExec noFish override returns(uint, uint, address) {
-        // Need to update executor at the start of stake/unstake as opposed to the
-        // end of the fcns because otherwise, for the 1st stake/unstake tx in an 
-        // epoch, someone could influence the outcome of the executor by precalculating
-        // the outcome based on how much they stake and unfairly making themselves the executor
-        _updateExecutor();
-
         uint amount = numStakes * STAN_STAKE;
         // Deposit the coins
         uint balBefore = _ASCoin.balanceOf(address(this));
@@ -102,8 +101,7 @@ contract StakeManager is IStakeManager, Shared {
         emit Staked(msg.sender, amount);
     }
 
-
-    function unstake(uint[] idxs) external nzUintArr(idxs) updateExec noFish override {
+    function unstake(uint[] calldata idxs) external nzUintArr(idxs) updateExec noFish override {
         uint amount = idxs.length * STAN_STAKE;
         require(amount <= _stakerToStakedAmount[msg.sender], "StakeMan: not enough staked");
         
@@ -131,7 +129,8 @@ contract StakeManager is IStakeManager, Shared {
         // and allow someone to stake without needing there to already be existing stakes
         if (_executor.forEpoch != epoch && _totalStaked > 0) {
             randNum = _oracle.getRandNum(epoch);
-            idxOfExecutor = randNum * _stakes.length / _E_18;
+            // idxOfExecutor = randNum % _stakes.length;
+            idxOfExecutor = getRemainder(randNum, _stakes.length);
             exec = _stakes[idxOfExecutor];
             _executor = Executor(exec, epoch);
         }

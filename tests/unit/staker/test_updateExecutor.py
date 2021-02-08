@@ -5,7 +5,7 @@ from brownie.test import given, strategy
 
 
 # updateExecutor should do nothing if there's nothing staked
-def test_updateExecutor_no_stake_do_nothing(a, asc, web3):
+def test_updateExecutor_no_stake_do_nothing(a, asc):
     assert asc.sm.getTotalStaked() == 0
     assert asc.sm.getExecutor() == NULL_EXEC
     for addr in a:
@@ -18,16 +18,16 @@ def test_updateExecutor_no_stake_do_nothing(a, asc, web3):
         assert asc.sm.isCurExec(addr) == False
 
 
-def test_updateExecutor_stakedMin(asc, stakedMin, web3):
+def test_updateExecutor_stakedMin(asc, stakedMin):
     numStanStakes, staker, tx = stakedMin
     assert asc.sm.getTotalStaked() == numStanStakes * STAN_STAKE
-    assert asc.sm.getExecutor() == getExecutor(web3.eth.blockNumber, [staker])
+    assert asc.sm.getExecutor() == getExecutor(asc, web3.eth.blockNumber, [staker])
     for addr in a:
         assert asc.sm.isCurExec(addr) == (addr == staker)
 
 
 # updateExecutor should do nothing if the epoch hasn't changed
-def test_updateExecutor_same_epoch(a, asc, stakedMin, web3):
+def test_updateExecutor_same_epoch(a, asc, stakedMin):
     numStanStakes, staker, tx = stakedMin
     # Make sure we're on block number xxx99 so that updateExecutor will be called
     # at the start of the next epoch and we can test every single block in the epoch
@@ -40,11 +40,10 @@ def test_updateExecutor_same_epoch(a, asc, stakedMin, web3):
     assert asc.sm.getExecutor() == (staker, getEpoch(web3.eth.blockNumber))
     for addr in a:
         assert asc.sm.isCurExec(addr) == (addr == staker)
-    print(asc.sm.getStakes())
     
     # Make Bob the only one with stake in the contract to ensure that if updateExecutor
     # called such that it changed executor, it would change to Bob
-    asc.sm.unstake(numStanStakes, asc.FR_ALICE)
+    asc.sm.unstake([i for i in range(numStanStakes)], asc.FR_ALICE)
     
     assert asc.sm.getExecutor() == (staker, getEpoch(web3.eth.blockNumber))
     for addr in a:
@@ -76,12 +75,12 @@ def test_updateExecutor_same_epoch(a, asc, stakedMin, web3):
 
 
 
-def test_updateExecutor_stakedMulti(asc, stakedMulti, web3):
+def test_updateExecutor_stakedMulti(asc, stakedMulti):
     stakers = asc.sm.getStakes()
     for i in range(10):
         asc.sm.updateExecutor(asc.FR_ALICE)
 
-        exec, epoch = getExecutor(web3.eth.blockNumber, stakers)
+        exec, epoch = getExecutor(asc, web3.eth.blockNumber, stakers)
         assert asc.sm.getExecutor() == (exec, epoch)
         for addr in a:
             assert asc.sm.isCurExec(addr) == (addr == exec)

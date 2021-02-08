@@ -32,7 +32,7 @@ abstract contract Shared {
     }
 
     /// @dev    Checks that a bytes32 isn't nonzero/empty
-    modifier nzUintArr(uint[] arr) {
+    modifier nzUintArr(uint[] calldata arr) {
         require(arr.length > 0, "Shared: uint arr input is empty");
         _;
     }

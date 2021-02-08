@@ -1,6 +1,7 @@
 import pytest
 from brownie import web3, chain
 from consts import *
+from utils import *
 
 
 
@@ -58,6 +59,7 @@ def asc(ASCoin, Oracle, StakeManager, Registry):
 def stakedMin(asc):
     staker = asc.ALICE
     numStakes = 1
+    assert asc.sm.getTotalStaked() == 0
 
     tx = asc.sm.stake(numStakes, {'from': staker})
     # The executor won't change in future tests without changing epoch
@@ -81,6 +83,44 @@ def stakedHigh(asc):
 
 
 @pytest.fixture(scope="module")
+def stakedMultiSmall(asc, stakedMin):
+    _, staker0, tx0 = stakedMin
+    num0 = 1
+
+    num1 = 2
+    tx1 = asc.sm.stake(num1, {'from': asc.BOB})
+    assert asc.sm.getStake(asc.BOB) == num1 * STAN_STAKE
+
+    num2 = 2
+    tx2 = asc.sm.stake(num2, {'from': asc.CHARLIE})
+    assert asc.sm.getStake(asc.CHARLIE) == num2 * STAN_STAKE
+
+    num3 = 2
+    tx3 = asc.sm.stake(num3, {'from': asc.BOB})
+    assert asc.sm.getStake(asc.BOB) == (num1 + num3) * STAN_STAKE
+    print(f'stakedMultiSmall last stake block num = {tx3.block_number}')
+
+    # The executor won't change in future tests without changing epoch
+    chain.mine(BLOCKS_IN_EPOCH)
+    print(asc.sm.updateExecutor().return_value)
+
+    totalNumStakes = 7
+    stakes = [asc.ALICE, asc.BOB, asc.BOB, asc.CHARLIE, asc.CHARLIE, asc.BOB, asc.BOB]
+
+    assert asc.sm.getTotalStaked() == totalNumStakes * STAN_STAKE
+    assert asc.sm.getStakes() == stakes
+    assert asc.sm.getCurEpoch() == getEpoch(web3.eth.blockNumber)
+    newExec, epoch = getExecutor(asc, web3.eth.blockNumber, stakes)
+    assert asc.sm.getExecutor() == (newExec, epoch)
+    for addr in a:
+        assert asc.sm.isCurExec(addr) == (addr == newExec)
+
+    print(f'stakedMultiSmall last block num = {web3.eth.blockNumber}')
+
+    return (num0, num1, num2, num3), (asc.ALICE, asc.BOB, asc.CHARLIE, asc.BOB), stakes
+
+
+@pytest.fixture(scope="module")
 def stakedMulti(asc, stakedMin):
     _, staker0, tx0 = stakedMin
     num0 = 1
@@ -95,44 +135,6 @@ def stakedMulti(asc, stakedMin):
     asc.sm.updateExecutor()
 
     return (num0, num1, num2, num3), (asc.ALICE, asc.BOB, asc.CHARLIE, asc.BOB), (tx0, tx1, tx2, tx3)
-
-
-@pytest.fixture(scope="module")
-def stakedMultiSmall(asc, stakedMin):
-    _, staker0, tx0 = stakedMin
-    num0 = 1
-
-    num1 = 2
-    tx1 = asc.sm.stake(num1, {'from': asc.BOB})
-    assert asc.sm.getStake(asc.BOB) == num1 * STAN_STAKE
-    assert asc.sm.getStakeIdxs(asc.BOB) == [1, 2]
-
-    num2 = 2
-    tx2 = asc.sm.stake(num2, {'from': asc.CHARLIE})
-    assert asc.sm.getStake(asc.CHARLIE) == num2 * STAN_STAKE
-    assert asc.sm.getStakeIdxs(asc.CHARLIE) == [3, 4]
-
-    num3 = 2
-    tx3 = asc.sm.stake(num3, {'from': asc.BOB})
-    assert asc.sm.getStake(asc.BOB) == num3 * STAN_STAKE
-    assert asc.sm.getStakeIdxs(asc.BOB) == [5, 6]
-
-    # The executor won't change in future tests without changing epoch
-    chain.mine(BLOCKS_IN_EPOCH)
-    asc.sm.updateExecutor()
-
-    totalNumStakes = 7
-    stakes = [asc.ALICE, asc.BOB, asc.BOB, asc.CHARLIE, asc.CHARLIE, asc.BOB, asc.BOB]
-
-    assert asc.sm.getTotalStaked() == totalNumStakes * STAN_STAKE
-    assert asc.sm.getStakes() == stakes
-    assert asc.sm.getCurEpoch() == getEpoch(web3.eth.blockNumber)
-    newExec, epoch = getExecutor(web3.eth.blockNumber, startStakes)
-    assert asc.sm.getExecutor() == (newExec, epoch)
-    for addr in a:
-        assert asc.sm.isCurExec(addr) == (addr == newExec)
-
-    return (num0, num1, num2, num3), (asc.ALICE, asc.BOB, asc.CHARLIE, asc.BOB), stakes
 
 
 # Need to set up a vulnerable StakeManager to test `noFish` since there's

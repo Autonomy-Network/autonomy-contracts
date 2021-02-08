@@ -7,34 +7,55 @@ def getEpoch(blockNum):
 
 
 def getRandNum(seed):
-    num = int(web3.toInt(web3.eth.getBlock(seed).hash) / NORM_FACTOR)
-    assert num <= E_18
-    return num
+    return web3.toInt(web3.eth.getBlock(seed).hash)
 
 
-def getExecutor(blockNum, stakers):
+def getExecutor(asc, blockNum, stakers):
     epoch = getEpoch(blockNum)
     randNum = getRandNum(epoch)
-    i = int(randNum * len(stakers) / E_18)
-    print('Internal getxecutor', randNum/E_18, i, stakers[i])
+    # i = randNum % len(stakers)
+    i = asc.sm.getRemainder(randNum, len(stakers))
+    print(epoch, randNum, i)
     return stakers[i], epoch
+
+
+def getFirstIndexes(stakes, val, n):
+    cntr = 0
+    idxs = []
+
+    for i in range(n):
+        idx = stakes.index(val)
+        idxs.append(idx)
+        stakes[idx] = stakes[-1]
+        stakes = stakes[:-1]
+
+
+    # for i, el in enumerate(stakes):
+    #     if el == val:
+    #         idxs.append(i)
+    #         cntr += 1
+    #         if cntr == n:
+    #             break
+    
+    
+    # Shouldn't be a situation where fewer occurances are
+    # found than expected
+    assert len(idxs) == n
+
+    return idxs
 
 
 def getModStakes(stakes, staker, numStakes, isStaking):
     if isStaking:
         return stakes + ([staker] * numStakes)
     else:
-        print(isStaking)
-        cntr = 0
-        # Iterate through backwards
-        for i in range(len(stakes)-1, -1 , -1):
-        # while cntr < numStakes:
-            print(i)
-            if stakes[-i] == staker:
-                stakes[-i] = stakes[len(stakes)-1]
-                stakes = stakes[:-1]
-                cntr += 1
-            if cntr == numStakes:
-                break
-        
-        return stakes
+        idxs = []
+        for i in range(numStakes):
+            idx = stakes.index(staker)
+            idxs.append(idx)
+            stakes[idx] = stakes[-1]
+            stakes = stakes[:-1]
+
+        assert len(idxs) == numStakes
+        return idxs, stakes
+        abbccb

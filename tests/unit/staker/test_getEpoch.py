@@ -9,8 +9,6 @@ def test_getEpoch(asc):
     startBlockNum = web3.eth.blockNumber
 
     for i in range(10):
-        print(i)
         for j in range(BLOCKS_IN_EPOCH):
-            print('j', j)
             assert asc.sm.getCurEpoch() == startBlockNum + (i * BLOCKS_IN_EPOCH)
             chain.mine(1)

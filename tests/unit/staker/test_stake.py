@@ -19,9 +19,9 @@ def stakeTest(asc, num, staker, tx):
     asc.sm.updateExecutor()
     assert asc.sm.getStakes() == [staker] * num
     assert asc.sm.getStake(staker) == amount
-    assert asc.sm.getStakeIdxs(staker) == [i for i in range(num)]
     assert asc.sm.getTotalStaked() == amount
     assert asc.sm.isCurExec(staker) == True
+    assert asc.sm.getExecutor() == (staker, getEpoch(web3.eth.blockNumber))
     assert tx.events["Staked"][0].values() == [staker, amount]
 
 
@@ -40,8 +40,37 @@ def test_stake_min(asc, stakedMin):
     stakeTest(asc, *stakedMin)
 
 
+# The 1st stake/unstake of an epoch shouldn't change the executor, otherwise
+# a staker could precalculate the effect of how much they stake in order to
+# game the staker selection algo
+def test_stake_1st_stake_of_epoch_no_exec_change(asc, stakedMin):
+    numStakes, staker, oldTx = stakedMin
+    blockNum = web3.eth.blockNumber
+    
+    # Can't know what the current numerical value of the block number is so
+    # mine until xx99 such that the next tx is in the new epoch
+    chain.mine(BLOCKS_IN_EPOCH - (blockNum % BLOCKS_IN_EPOCH) - 1)
+    assert web3.eth.blockNumber % BLOCKS_IN_EPOCH == BLOCKS_IN_EPOCH - 1
+
+    # Stake a different staker with a large amount such that it's very likely
+    # they would be the new executor if it was a new epoch after their stake
+    # had taken effect
+    newStaker = asc.CHARLIE
+    newNumStakes = INIT_NUM_STAKES
+    tx = asc.sm.stake(newNumStakes, {'from': newStaker})
+
+    assert asc.sm.getStakes() == [staker] + ([newStaker] * newNumStakes)
+    assert asc.sm.getStake(newStaker) == newNumStakes * STAN_STAKE
+    assert asc.sm.getTotalStaked() == (numStakes + newNumStakes) * STAN_STAKE
+    # Old staker but new epoch
+    assert asc.sm.getExecutor() == (staker, getEpoch(web3.eth.blockNumber))
+    assert asc.sm.isCurExec(staker) == True
+    assert tx.events["Staked"][0].values() == [newStaker, newNumStakes * STAN_STAKE]
+
+
+
 # Should probably be an integration test instead
-def test_stake_multi(asc, stakedMulti, web3):
+def test_stake_multi(asc, stakedMulti):
     nums, stakers, txs = stakedMulti
     stakes = []
     cumNumStanStakes = 0
@@ -67,8 +96,7 @@ def test_stake_multi(asc, stakedMulti, web3):
     
     for s in stakerToNum:
         assert asc.sm.getStake(s) == stakerToNum[s] * STAN_STAKE
-        assert asc.sm.getStakeIdxs(s) == stakerToIdxs[s]
-        exec, epoch = getExecutor(web3.eth.blockNumber, stakes)
+        exec, epoch = getExecutor(asc, web3.eth.blockNumber, stakes)
         isExec = exec == s
         assert asc.sm.isCurExec(s) == isExec
 
