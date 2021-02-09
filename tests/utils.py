@@ -15,7 +15,7 @@ def getExecutor(asc, blockNum, stakers):
     randNum = getRandNum(epoch)
     # i = randNum % len(stakers)
     i = asc.sm.getRemainder(randNum, len(stakers))
-    print(epoch, randNum, i)
+    print(randNum, epoch, i, stakers[i], stakers)
     return stakers[i], epoch
 
 
@@ -50,12 +50,12 @@ def getModStakes(stakes, staker, numStakes, isStaking):
         return stakes + ([staker] * numStakes)
     else:
         idxs = []
+        newStakes = list(stakes)
         for i in range(numStakes):
-            idx = stakes.index(staker)
+            idx = newStakes.index(staker)
             idxs.append(idx)
-            stakes[idx] = stakes[-1]
-            stakes = stakes[:-1]
+            newStakes[idx] = newStakes[-1]
+            newStakes = newStakes[:-1]
 
         assert len(idxs) == numStakes
-        return idxs, stakes
-        abbccb
+        return idxs, newStakes

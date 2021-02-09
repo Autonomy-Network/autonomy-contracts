@@ -83,14 +83,17 @@ contract StakeManager is IStakeManager, Shared {
     // ----------- Staking -----------
     
     // Calls updateExec()
-    function updateExecutor() public updateExec noFish returns(uint, uint, address) {}
+    // function updateExecutor() public updateExec noFish returns(uint, uint, address) {}
+    function updateExecutor() public noFish returns(uint, uint, address) {
+        return _updateExecutor();
+    }
     
     function stake(uint numStakes) external nzUint(numStakes) updateExec noFish override returns(uint, uint, address) {
         uint amount = numStakes * STAN_STAKE;
         // Deposit the coins
         uint balBefore = _ASCoin.balanceOf(address(this));
         _ASCoin.transferFrom(msg.sender, address(this), amount);
-        require(_ASCoin.balanceOf(address(this)) - balBefore == amount, "StakeMan: transfer failed");
+        require(_ASCoin.balanceOf(address(this)) - balBefore == amount, "SM: transfer failed");
         
         for (uint i; i < numStakes; i++) {
             _stakes.push(msg.sender);
@@ -103,10 +106,10 @@ contract StakeManager is IStakeManager, Shared {
 
     function unstake(uint[] calldata idxs) external nzUintArr(idxs) updateExec noFish override {
         uint amount = idxs.length * STAN_STAKE;
-        require(amount <= _stakerToStakedAmount[msg.sender], "StakeMan: not enough staked");
+        require(amount <= _stakerToStakedAmount[msg.sender], "SM: not enough stake, peasant");
         
         for (uint i = 0; i < idxs.length; i++) {
-            require(_stakes[idxs[i]] == msg.sender, "StakeMan: idx is not you");
+            require(_stakes[idxs[i]] == msg.sender, "SM: idx is not you");
             // Update stakes by moving the last element to the
             // element we're wanting to delete (so it doesn't leave gaps)
             _stakes[idxs[i]] = _stakes[_stakes.length-1];
@@ -158,6 +161,6 @@ contract StakeManager is IStakeManager, Shared {
     modifier noFish() {
         _;
         // >= because someone could send some tokens to this contract and disable it if it was ==
-        require(_ASCoin.balanceOf(address(this)) >= _totalStaked, "StakeMan: something fishy here");
+        require(_ASCoin.balanceOf(address(this)) >= _totalStaked, "SM: something fishy here");
     }
 }

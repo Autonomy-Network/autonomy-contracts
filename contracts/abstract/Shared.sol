@@ -8,7 +8,7 @@ pragma solidity ^0.7.0;
 * @author   Quantaf1re (James Key)
 */
 abstract contract Shared {
-    address constant internal _ZERO_ADDR = address(0);
+    address constant internal _ADDR_0 = address(0);
     bytes32 constant internal _NULL = "";
     uint constant internal _E_18 = 10**18;
 
@@ -21,7 +21,7 @@ abstract contract Shared {
 
     /// @dev    Checks that an address isn't nonzero/empty
     modifier nzAddr(address a) {
-        require(a != _ZERO_ADDR, "Shared: address input is empty");
+        require(a != _ADDR_0, "Shared: address input is empty");
         _;
     }
 

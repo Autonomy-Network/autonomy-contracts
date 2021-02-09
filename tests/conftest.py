@@ -38,7 +38,7 @@ def deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Registry):
     asc.ASCoin = asc.DEPLOYER.deploy(ASCoin, "Active Smart Contract Protocol", "ASC")
     asc.oracle = asc.DEPLOYER.deploy(Oracle)
     asc.sm = asc.DEPLOYER.deploy(StakeManager, asc.oracle.address, asc.ASCoin.address)
-    asc.registry = asc.DEPLOYER.deploy(Registry, asc.sm.address)
+    asc.r = asc.DEPLOYER.deploy(Registry, asc.sm.address, MAX_REW_PER_ASC)
 
     asc.ASCoin.transfer(asc.ALICE, MAX_TEST_STAKE, {'from': asc.DEPLOYER})
     asc.ASCoin.approve(asc.sm, MAX_TEST_STAKE, {'from': asc.ALICE})
@@ -102,7 +102,10 @@ def stakedMultiSmall(asc, stakedMin):
 
     # The executor won't change in future tests without changing epoch
     chain.mine(BLOCKS_IN_EPOCH)
-    print(asc.sm.updateExecutor().return_value)
+    prevExec = asc.sm.getExecutor()
+    prevStakes = asc.sm.getStakes()
+    updateExecReturn = asc.sm.updateExecutor().return_value
+    updateExecReturn = (prevExec, prevStakes, updateExecReturn, web3.eth.blockNumber, asc.sm.getTotalStaked(), asc.sm.getExecutor(), asc.sm.getStakes())
 
     totalNumStakes = 7
     stakes = [asc.ALICE, asc.BOB, asc.BOB, asc.CHARLIE, asc.CHARLIE, asc.BOB, asc.BOB]
@@ -117,7 +120,7 @@ def stakedMultiSmall(asc, stakedMin):
 
     print(f'stakedMultiSmall last block num = {web3.eth.blockNumber}')
 
-    return (num0, num1, num2, num3), (asc.ALICE, asc.BOB, asc.CHARLIE, asc.BOB), stakes
+    return (num0, num1, num2, num3), (asc.ALICE, asc.BOB, asc.CHARLIE, asc.BOB), stakes, updateExecReturn
 
 
 @pytest.fixture(scope="module")
@@ -153,3 +156,9 @@ def vulnerableStaked(asc, vulnerableStaker):
     # *2 so that `unstake` doesn't fail because of an ERC20 transfer for STAN_STAKE
     vulnerableStaker.stake(2, {'from': staker})
     return vulnerableStaker, staker
+
+
+# Need to have already staked properly in order to test `noFish`
+@pytest.fixture(scope="module")
+def mockTarget(asc, MockTarget):
+    return asc.DEPLOYER.deploy(MockTarget)

@@ -17,7 +17,7 @@ contract ASCProxy is IASCProxy {
         _owner = owner;
     }
     
-    // Roll execute and cancel into 1 because it should save on gas?
+    // Roll execute and cancel into 1 because it should save on gas for deploying this contract?
     function finish(bool shouldExecute, address target, uint callGas, bytes calldata callData) external override returns (bool success) {
         // A message would be nice for when this fails, but 
         // it would increase the cost of creating an ASC

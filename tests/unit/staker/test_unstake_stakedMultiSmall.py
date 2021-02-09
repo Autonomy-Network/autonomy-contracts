@@ -12,7 +12,7 @@ from brownie.test import given, strategy
 # Unstake 3 from the 4th staker in stakedMultiSmall
 # For some reason, having this test elow the others in this file causes some to fail
 def test_unstake_3_of_4th_staker_from_stakedMultiSmall(asc, stakedMultiSmall):
-    nums, stakers, startStakes = stakedMultiSmall
+    nums, stakers, startStakes, _ = stakedMultiSmall
     assert len(startStakes) == 7
     assert asc.sm.getStakes() == [asc.ALICE, asc.BOB, asc.BOB, asc.CHARLIE, asc.CHARLIE, asc.BOB, asc.BOB]
     assert asc.sm.getStakes() == startStakes
@@ -39,7 +39,7 @@ def test_unstake_3_of_4th_staker_from_stakedMultiSmall(asc, stakedMultiSmall):
 
 # Unstake 1 from the 2nd staker in stakedMultiSmall
 def test_unstake_1_of_2nd_staker_from_stakedMultiSmall(asc, stakedMultiSmall):
-    nums, stakers, startStakes = stakedMultiSmall
+    nums, stakers, startStakes, _ = stakedMultiSmall
     assert len(startStakes) == 7
     assert asc.sm.getStakes() == startStakes
     assert asc.sm.getStakes() == [asc.ALICE, asc.BOB, asc.BOB, asc.CHARLIE, asc.CHARLIE, asc.BOB, asc.BOB]
@@ -65,15 +65,19 @@ def test_unstake_1_of_2nd_staker_from_stakedMultiSmall(asc, stakedMultiSmall):
 
 # Unstake 2 from the 3rd staker in stakedMultiSmall
 def test_unstake_2_of_3rd_staker_from_stakedMultiSmall(asc, stakedMultiSmall):
-    nums, stakers, startStakes = stakedMultiSmall
+    nums, stakers, startStakes, updateExecReturn = stakedMultiSmall
     assert len(startStakes) == 7
+    print(startStakes)
     assert asc.sm.getStakes() == [asc.ALICE, asc.BOB, asc.BOB, asc.CHARLIE, asc.CHARLIE, asc.BOB, asc.BOB]
     assert asc.sm.getStakes() == startStakes
     staker = stakers[2]
     idxs = [3, 4]
     calcIdxs, newStakes = getModStakes(startStakes, staker, 2, False)
+    print(startStakes)
+    assert asc.sm.getStakes() == startStakes
     assert idxs == calcIdxs
 
+    print(updateExecReturn)
     print(asc.sm.updateExecutor().return_value)
     print(web3.eth.blockNumber)
     tx = asc.sm.unstake(idxs, {'from': staker})
@@ -89,3 +93,25 @@ def test_unstake_2_of_3rd_staker_from_stakedMultiSmall(asc, stakedMultiSmall):
     for addr in a:
         assert asc.sm.isCurExec(addr) == (addr == newExec)
     assert tx.events["Unstaked"][0].values() == [staker, len(idxs) * STAN_STAKE]
+
+
+# Using an index that isn't the caller
+def test_unstake_rev_wrong_idx(asc, stakedMultiSmall):
+    with reverts(REV_MSG_NOT_STAKER):
+        asc.sm.unstake([0], asc.FR_BOB)
+
+
+# Using indexes that are correct initially but don't account for how
+# staker changes as the end of the array is moved to a just-deleted element
+def test_unstake_rev_wrong_idxs_from_shift(asc, stakedMultiSmall):
+    with reverts():
+        asc.sm.unstake([1, 2, 5, 6], asc.FR_BOB)
+
+
+@given(amount=strategy('uint256', max_value=STAN_STAKE-1, exclude=0))
+def test_unstake_rev_noFish(asc, vulnerableStaked, amount):
+    vStaker, staker = vulnerableStaked
+    vStaker.vulnerableTransfer(asc.DENICE, amount)
+
+    with reverts(REV_MSG_NOFISH):
+        vStaker.unstake([0], {'from': staker})

@@ -80,3 +80,13 @@ def test_unstake_7(asc, stakedHigh):
     for addr in a:
         assert asc.sm.isCurExec(addr) == (addr == newExec)
     assert tx.events["Unstaked"][0].values() == [staker, len(idxs) * STAN_STAKE]
+
+
+def test_unstake_rev_idxs(asc, stakedHigh):
+    with reverts(REV_MSG_NZ_UINT_ARR):
+        asc.sm.unstake([], asc.FR_ALICE)
+
+
+def test_unstake_rev_too_much_stake(asc, stakedHigh):
+    with reverts(REV_MSG_NOT_ENOUGH_STAKE):
+        asc.sm.unstake([0], asc.FR_BOB)

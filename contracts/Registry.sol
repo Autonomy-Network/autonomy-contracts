@@ -10,21 +10,22 @@ import "./abstract/Shared.sol";
 
 contract Registry is Shared {
     
+    // Constant public
     IERC20 public constant ASCoin = IERC20(0x31E31e3703D367014BA5802B7C5E41d96E331723);
     uint public constant EXEC_GAS_OVERHEAD_NO_REF = 40000;
     uint public constant EXEC_GAS_OVERHEAD_REF = 60000;
-    address private constant _ADDR_0 = address(0);
-    bytes private constant _EMPTY_BYTES = "";
     uint public constant ETH_BOUNTY = 10**15;
+
+    // Constant private
+    bytes private constant _EMPTY_BYTES = "";
     uint private constant _ETH_REF_BOUNTY = ETH_BOUNTY * 7 / 10;
     uint private constant _ETH_REF_REWARD = ETH_BOUNTY - _ETH_REF_BOUNTY;
     
     address private _owner;
     uint private _numRequests;
     mapping(uint => Request) private _idToRequest;
-    uint private _maxRewardPerASC = 10**19;
-    IStakeManager public _stakerLite;
-    
+    uint private _maxRewardPerASC;
+    IStakeManager private _stakeMan;
     
     
     struct Request {
@@ -34,14 +35,16 @@ contract Registry is Shared {
         address payable referer;
         bytes callData;
     }
+
     
     event RequestAdded(uint indexed id);
     event RequestRemoved(uint indexed id, bool wasExecuted);
 
 
-    constructor(IStakeManager staker) {
+    constructor(IStakeManager staker, uint maxRewardPerASC) {
         _owner = msg.sender;
-        _stakerLite = staker;
+        _stakeMan = staker;
+        _maxRewardPerASC = maxRewardPerASC;
     }
     
     
@@ -63,8 +66,8 @@ contract Registry is Shared {
         return _maxRewardPerASC;
     }
     
-    function getStakerLite() external view returns (address) {
-        return address(_stakerLite);
+    function getStakeManager() external view returns (address) {
+        return address(_stakeMan);
     }
     
     
@@ -84,7 +87,7 @@ contract Registry is Shared {
     function execute(uint id, uint callGas) external {
         uint startGas = gasleft();
         Request memory r = _idToRequest[id];
-        require(_stakerLite.isCurExec(msg.sender), "Registry:not executor or expired");
+        require(_stakeMan.isCurExec(msg.sender), "Registry:not executor or expired");
         require(r.requester != _ADDR_0, "Registry: request doesn't exists");
         
         // Technically we shouldn't need to do this accounting, we should
