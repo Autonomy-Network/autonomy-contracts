@@ -13,7 +13,7 @@ def isolation(fn_isolation):
 
 # Deploy the contracts for repeated tests without having to redeploy each time
 
-def deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Registry):
+def deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Vault, Registry):
     class Context:
         pass
 
@@ -37,22 +37,36 @@ def deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Registry):
 
     asc.ASCoin = asc.DEPLOYER.deploy(ASCoin, "Active Smart Contract Protocol", "ASC")
     asc.oracle = asc.DEPLOYER.deploy(Oracle)
-    asc.sm = asc.DEPLOYER.deploy(StakeManager, asc.oracle.address, asc.ASCoin.address)
-    asc.r = asc.DEPLOYER.deploy(Registry, asc.sm.address, MAX_REW_PER_ASC)
+    asc.sm = asc.DEPLOYER.deploy(StakeManager, asc.oracle, asc.ASCoin)
+    asc.v = asc.DEPLOYER.deploy(Vault, asc.ASCoin)
+    asc.r = asc.DEPLOYER.deploy(
+        Registry,
+        asc.ASCoin,
+        asc.sm,
+        asc.v,
+        INIT_BASE_BOUNTY,
+        INIT_REQUESTER_REWARD,
+        INIT_EXECUTOR_REWARD,
+        INIT_ETH_TO_ASCOIN_RATE
+    )
+    asc.v.setAuthorisation(asc.r, True)
 
-    asc.ASCoin.transfer(asc.ALICE, MAX_TEST_STAKE, {'from': asc.DEPLOYER})
-    asc.ASCoin.approve(asc.sm, MAX_TEST_STAKE, {'from': asc.ALICE})
-    asc.ASCoin.transfer(asc.BOB, MAX_TEST_STAKE, {'from': asc.DEPLOYER})
-    asc.ASCoin.approve(asc.sm, MAX_TEST_STAKE, {'from': asc.BOB})
-    asc.ASCoin.transfer(asc.CHARLIE, MAX_TEST_STAKE, {'from': asc.DEPLOYER})
-    asc.ASCoin.approve(asc.sm, MAX_TEST_STAKE, {'from': asc.CHARLIE})
+    # For enabling rewards
+    asc.ASCoin.transfer(asc.r, INIT_ASC_REW_POOL, asc.FR_DEPLOYER)
+    # For being able to test staking with
+    asc.ASCoin.transfer(asc.ALICE, MAX_TEST_STAKE, asc.FR_DEPLOYER)
+    asc.ASCoin.approve(asc.sm, MAX_TEST_STAKE, asc.FR_ALICE)
+    asc.ASCoin.transfer(asc.BOB, MAX_TEST_STAKE, asc.FR_DEPLOYER)
+    asc.ASCoin.approve(asc.sm, MAX_TEST_STAKE, asc.FR_BOB)
+    asc.ASCoin.transfer(asc.CHARLIE, MAX_TEST_STAKE, asc.FR_DEPLOYER)
+    asc.ASCoin.approve(asc.sm, MAX_TEST_STAKE, asc.FR_CHARLIE)
 
     return asc
 
 
 @pytest.fixture(scope="module")
-def asc(ASCoin, Oracle, StakeManager, Registry):
-    return deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Registry)
+def asc(ASCoin, Oracle, StakeManager, Vault, Registry):
+    return deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Vault, Registry)
 
 
 @pytest.fixture(scope="module")
@@ -162,3 +176,28 @@ def vulnerableStaked(asc, vulnerableStaker):
 @pytest.fixture(scope="module")
 def mockTarget(asc, MockTarget):
     return asc.DEPLOYER.deploy(MockTarget)
+
+
+# Need to have some requests to test execute. Need a request that has ethForCall
+# set to 0 and 1 that doesn't
+@pytest.fixture(scope="module")
+def requestsEth(asc, mockTarget):
+    ethForCall = E_18
+    msgValue = 2 * ethForCall
+
+    callData = mockTarget.setX.encode_input(5)
+    asc.r.newRequest(mockTarget, callData, False, 0, asc.DENICE, {'from': asc.BOB, 'value': msgValue})
+    requestNoEthForCall = (asc.BOB.address, mockTarget.address, callData, False, msgValue, 0, asc.DENICE.address)
+
+    callData = mockTarget.setXPay.encode_input(5)
+    asc.r.newRequest(mockTarget, callData, False, ethForCall, asc.DENICE, {'from': asc.BOB, 'value': msgValue})
+    requestEthForCall = (asc.BOB.address, mockTarget.address, callData, False, msgValue, ethForCall, asc.DENICE.address)
+
+    asc.ASCoin.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
+    callData = mockTarget.setX.encode_input(5)
+    asc.r.newRequest(mockTarget, callData, True, 0, asc.DENICE, {'from': asc.BOB})
+    requestPayASC = (asc.BOB.address, mockTarget.address, callData, True, 0, 0, asc.DENICE.address)
+
+    assert asc.r.balance() == msgValue * 2
+
+    return requestNoEthForCall, requestEthForCall, requestPayASC, msgValue, ethForCall
