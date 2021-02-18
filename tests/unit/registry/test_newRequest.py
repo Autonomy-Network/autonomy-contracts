@@ -72,6 +72,12 @@ def test_newRequest_rev_target_is_registry(asc, mockTarget):
         asc.r.newRequest(asc.r, callData, False, 0, asc.DENICE, asc.FR_BOB)
 
 
+def test_newRequest_rev_target_is_ASCoin(asc, mockTarget):
+    callData = mockTarget.setX.encode_input(5)
+    with reverts(REV_MSG_TARGET_REG):
+        asc.r.newRequest(asc.ASCoin, callData, False, 0, asc.DENICE, asc.FR_BOB)
+
+
 def test_newRequest_rev_callData(asc, mockTarget):
     with reverts(REV_MSG_NZ_BYTES):
         asc.r.newRequest(mockTarget, "", False, 0, asc.DENICE, asc.FR_BOB)

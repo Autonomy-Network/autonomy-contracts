@@ -178,6 +178,12 @@ def mockTarget(asc, MockTarget):
     return asc.DEPLOYER.deploy(MockTarget)
 
 
+# Need to test nonReentrant modifier
+@pytest.fixture(scope="module")
+def mockReentrancyAttack(asc, MockReentrancyAttack):
+    return asc.DEPLOYER.deploy(MockReentrancyAttack, asc.r)
+
+
 # Need to have some requests to test execute. Need a request that has ethForCall
 # set to 0 and 1 that doesn't
 @pytest.fixture(scope="module")
@@ -198,6 +204,10 @@ def requestsEth(asc, mockTarget):
     asc.r.newRequest(mockTarget, callData, True, 0, asc.DENICE, {'from': asc.BOB})
     requestPayASC = (asc.BOB.address, mockTarget.address, callData, True, 0, 0, asc.DENICE.address)
 
-    assert asc.r.balance() == msgValue * 2
+    callData = mockTarget.setXPay.encode_input(5)
+    asc.r.newRequest(mockTarget, callData, True, ethForCall, asc.DENICE, {'from': asc.BOB, 'value': ethForCall})
+    requestPayASCEthForCall = (asc.BOB.address, mockTarget.address, callData, True, ethForCall, ethForCall, asc.DENICE.address)
 
-    return requestNoEthForCall, requestEthForCall, requestPayASC, msgValue, ethForCall
+    assert asc.r.balance() == (msgValue * 2) + ethForCall
+
+    return requestNoEthForCall, requestEthForCall, requestPayASC, requestPayASCEthForCall, msgValue, ethForCall

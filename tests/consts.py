@@ -45,8 +45,11 @@ INIT_EXECUTOR_REWARD = 10**20
 INIT_ETH_TO_ASCOIN_RATE = 18000 * E_18
 NULL_REQ = (ADDR_0, ADDR_0, NULL_BYTES, False, 0, 0, ADDR_0)
 INIT_ASC_REW_POOL = 10**25
+TEST_GAS_PRICE = 10**9
 
 REV_MSG_TARGET_REG = "Registry: nice try ;)"
+REV_MSG_ALREADY_EXECUTED = "Registry: already executed"
+REV_MSG_NOT_EXEC = "Registry:not executor or expired"
 
 
 # ASCoin

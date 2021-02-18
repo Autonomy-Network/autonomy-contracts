@@ -88,8 +88,9 @@ contract Registry is Shared, Ownable, ReentrancyGuard {
         bool payWithASCoin,
         uint ethForCall,
         address payable referer
-    ) external payable nonReentrant nzAddr(target) targetNotThis(target) nzBytes(callData) {
+    ) external payable nzAddr(target) targetNotThis(target) nzBytes(callData) returns (uint) {
         _newRequest(target, callData, payWithASCoin, msg.value, ethForCall, referer);
+        return _requests.length - 1;
     }
 
     // function newHashedRequestNoEth
@@ -117,13 +118,13 @@ contract Registry is Shared, Ownable, ReentrancyGuard {
     function execute(uint id) external nonReentrant returns (uint) {
         uint startGas = gasleft();
         Request memory r = _requests[id];
-        require(r.requester != _ADDR_0, "Registry: request doesn't exists");
+        require(r.requester != _ADDR_0, "Registry: already executed");
         require(_stakeMan.isCurExec(msg.sender), "Registry:not executor or expired");
         
         // Make the call that the user requested
         // require(r.proxy.finish(true, r.target, callGas, r.callData), "Registry: call failed");
-        (bool success, ) = r.target.call{value: r.ethForCall}(r.callData); 
-        require(success, "Registry: call failed");
+        (bool success, bytes memory returnData) = r.target.call{value: r.ethForCall}(r.callData); 
+        require(success, string(returnData));
         
         // Store ASCoin rewards
         // It's cheaper to store the cumulative rewards than it is to send
