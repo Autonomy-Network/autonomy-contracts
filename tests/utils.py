@@ -1,5 +1,6 @@
 from consts import *
-from brownie import web3
+from brownie import web3, convert
+import base58 as b58
 
 
 def getEpoch(blockNum):
@@ -59,3 +60,23 @@ def getModStakes(stakes, staker, numStakes, isStaking):
 
         assert len(idxs) == numStakes
         return idxs, newStakes
+
+
+# Assumes a sha256 hash of (prefix + data + suffix) is the input
+def getCID(hash):
+    if type(hash) is not bytes:
+        hash = convert.to_bytes(hash, 'bytes')
+    cidBytes = CID_PREFIX_BYTES + hash
+    return str(b58.b58encode(cidBytes), 'ascii')
+
+
+def bytesToHex(b):
+    return '0x' + b.hex()
+
+
+def getHashBytesFromCID(CID):
+    return b58.b58decode(CID)[2:]
+
+
+def getHashFromCID(CID):
+    return bytesToHex(b58.b58decode(CID)[2:])

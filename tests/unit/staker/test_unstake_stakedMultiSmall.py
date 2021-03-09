@@ -67,19 +67,14 @@ def test_unstake_1_of_2nd_staker_from_stakedMultiSmall(asc, stakedMultiSmall):
 def test_unstake_2_of_3rd_staker_from_stakedMultiSmall(asc, stakedMultiSmall):
     nums, stakers, startStakes, updateExecReturn = stakedMultiSmall
     assert len(startStakes) == 7
-    print(startStakes)
     assert asc.sm.getStakes() == [asc.ALICE, asc.BOB, asc.BOB, asc.CHARLIE, asc.CHARLIE, asc.BOB, asc.BOB]
     assert asc.sm.getStakes() == startStakes
     staker = stakers[2]
     idxs = [3, 4]
     calcIdxs, newStakes = getModStakes(startStakes, staker, 2, False)
-    print(startStakes)
     assert asc.sm.getStakes() == startStakes
     assert idxs == calcIdxs
 
-    print(updateExecReturn)
-    print(asc.sm.updateExecutor().return_value)
-    print(web3.eth.blockNumber)
     tx = asc.sm.unstake(idxs, {'from': staker})
 
     curNumStakes = 0

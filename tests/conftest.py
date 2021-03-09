@@ -112,7 +112,6 @@ def stakedMultiSmall(asc, stakedMin):
     num3 = 2
     tx3 = asc.sm.stake(num3, {'from': asc.BOB})
     assert asc.sm.getStake(asc.BOB) == (num1 + num3) * STAN_STAKE
-    print(f'stakedMultiSmall last stake block num = {tx3.block_number}')
 
     # The executor won't change in future tests without changing epoch
     chain.mine(BLOCKS_IN_EPOCH)
@@ -131,8 +130,6 @@ def stakedMultiSmall(asc, stakedMin):
     assert asc.sm.getExecutor() == (newExec, epoch)
     for addr in a:
         assert asc.sm.isCurExec(addr) == (addr == newExec)
-
-    print(f'stakedMultiSmall last block num = {web3.eth.blockNumber}')
 
     return (num0, num1, num2, num3), (asc.ALICE, asc.BOB, asc.CHARLIE, asc.BOB), stakes, updateExecReturn
 
@@ -172,7 +169,8 @@ def vulnerableStaked(asc, vulnerableStaker):
     return vulnerableStaker, staker
 
 
-# Need to have already staked properly in order to test `noFish`
+# Need to have some 'external' contract whose state needs changing in order
+# to use ASC
 @pytest.fixture(scope="module")
 def mockTarget(asc, MockTarget):
     return asc.DEPLOYER.deploy(MockTarget)
@@ -185,27 +183,27 @@ def mockReentrancyAttack(asc, MockReentrancyAttack):
 
 
 # Need to have some requests to test execute. Need a request that has ethForCall
-# set to 0 and 1 that doesn't
+# set to 0 and 1 that doesn't, and 1 that pays with ASC with ethForCall and 1 without
 @pytest.fixture(scope="module")
-def requestsEth(asc, mockTarget):
+def requests(asc, mockTarget):
     ethForCall = E_18
     msgValue = 2 * ethForCall
 
     callData = mockTarget.setX.encode_input(5)
-    asc.r.newRequest(mockTarget, callData, False, 0, asc.DENICE, {'from': asc.BOB, 'value': msgValue})
+    asc.r.newRawRequest(mockTarget, callData, False, 0, asc.DENICE, {'from': asc.BOB, 'value': msgValue})
     requestNoEthForCall = (asc.BOB.address, mockTarget.address, callData, False, msgValue, 0, asc.DENICE.address)
 
     callData = mockTarget.setXPay.encode_input(5)
-    asc.r.newRequest(mockTarget, callData, False, ethForCall, asc.DENICE, {'from': asc.BOB, 'value': msgValue})
+    asc.r.newRawRequest(mockTarget, callData, False, ethForCall, asc.DENICE, {'from': asc.BOB, 'value': msgValue})
     requestEthForCall = (asc.BOB.address, mockTarget.address, callData, False, msgValue, ethForCall, asc.DENICE.address)
 
     asc.ASCoin.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
     callData = mockTarget.setX.encode_input(5)
-    asc.r.newRequest(mockTarget, callData, True, 0, asc.DENICE, {'from': asc.BOB})
+    asc.r.newRawRequest(mockTarget, callData, True, 0, asc.DENICE, {'from': asc.BOB})
     requestPayASC = (asc.BOB.address, mockTarget.address, callData, True, 0, 0, asc.DENICE.address)
 
     callData = mockTarget.setXPay.encode_input(5)
-    asc.r.newRequest(mockTarget, callData, True, ethForCall, asc.DENICE, {'from': asc.BOB, 'value': ethForCall})
+    asc.r.newRawRequest(mockTarget, callData, True, ethForCall, asc.DENICE, {'from': asc.BOB, 'value': ethForCall})
     requestPayASCEthForCall = (asc.BOB.address, mockTarget.address, callData, True, ethForCall, ethForCall, asc.DENICE.address)
 
     assert asc.r.balance() == (msgValue * 2) + ethForCall

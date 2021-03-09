@@ -3,9 +3,10 @@ from brownie import chain, reverts, web3
 from brownie.test import given, strategy
 
 
-def test_execute_no_ethForCall(asc, stakedMin, mockTarget, requestsEth):
+def test_execute_no_ethForCall(asc, stakedMin, mockTarget, requests):
     _, staker, __ = stakedMin
-    requestNoEthForCall, requestEthForCall, requestPayASC, requestPayASCEthForCall, valueSent, ethForCall = requestsEth
+    requestNoEthForCall, requestEthForCall, requestPayASC, requestPayASCEthForCall, valueSent, ethForCall = requests
+    id = 0
     assert mockTarget.x() == 0
     assert asc.ALICE.balance() == INIT_ETH_BAL
     assert asc.BOB.balance() == INIT_ETH_BAL - (2 * valueSent) - ethForCall
@@ -14,7 +15,7 @@ def test_execute_no_ethForCall(asc, stakedMin, mockTarget, requestsEth):
     assert asc.ASCoin.balanceOf(asc.DENICE) == 0
     assert asc.ASCoin.balanceOf(asc.r) == INIT_ASC_REW_POOL
 
-    tx = asc.r.execute(0, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    tx = asc.r.execute(id, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
 
     # Should've changed
     # Eth bals
@@ -31,13 +32,13 @@ def test_execute_no_ethForCall(asc, stakedMin, mockTarget, requestsEth):
     # Target storage
     assert mockTarget.x() == 5
     # Registry storage
-    assert asc.r.getRequests() == [NULL_REQ, requestEthForCall, requestPayASC, requestPayASCEthForCall]
-    assert asc.r.getRequestsLength() == 4
-    assert asc.r.getRequest(0) == NULL_REQ
+    assert asc.r.getRawRequests() == [NULL_REQ, requestEthForCall, requestPayASC, requestPayASCEthForCall]
+    assert asc.r.getRawRequestsLen() == 4
+    assert asc.r.getRawRequest(id) == NULL_REQ
     assert asc.r.getCumulRewardsOf(asc.BOB) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.DENICE) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.ALICE) == INIT_EXECUTOR_REWARD
-    assert tx.events["RequestRemoved"][0].values() == [0, True]
+    assert tx.events["RequestRemoved"][0].values() == [id, True]
 
     # Shouldn't've changed
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
@@ -46,9 +47,10 @@ def test_execute_no_ethForCall(asc, stakedMin, mockTarget, requestsEth):
     assert asc.r.getEthToASCoinRate() == INIT_ETH_TO_ASCOIN_RATE
 
 
-def test_execute_with_ethForCall(asc, stakedMin, mockTarget, requestsEth):
+def test_execute_with_ethForCall(asc, stakedMin, mockTarget, requests):
     _, staker, __ = stakedMin
-    requestNoEthForCall, requestEthForCall, requestPayASC, requestPayASCEthForCall, valueSent, ethForCall = requestsEth
+    requestNoEthForCall, requestEthForCall, requestPayASC, requestPayASCEthForCall, valueSent, ethForCall = requests
+    id = 1
     assert mockTarget.x() == 0
     assert asc.ALICE.balance() == INIT_ETH_BAL
     assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * valueSent) + ethForCall)
@@ -57,7 +59,7 @@ def test_execute_with_ethForCall(asc, stakedMin, mockTarget, requestsEth):
     assert asc.ASCoin.balanceOf(asc.DENICE) == 0
     assert asc.ASCoin.balanceOf(asc.r) == INIT_ASC_REW_POOL
 
-    tx = asc.r.execute(1, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    tx = asc.r.execute(id, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
 
     # Should've changed
     # Eth bals
@@ -74,13 +76,13 @@ def test_execute_with_ethForCall(asc, stakedMin, mockTarget, requestsEth):
     # Target storage
     assert mockTarget.x() == 5
     # Registry storage
-    assert asc.r.getRequests() == [requestNoEthForCall, NULL_REQ, requestPayASC, requestPayASCEthForCall]
-    assert asc.r.getRequestsLength() == 4
-    assert asc.r.getRequest(1) == NULL_REQ
+    assert asc.r.getRawRequests() == [requestNoEthForCall, NULL_REQ, requestPayASC, requestPayASCEthForCall]
+    assert asc.r.getRawRequestsLen() == 4
+    assert asc.r.getRawRequest(id) == NULL_REQ
     assert asc.r.getCumulRewardsOf(asc.BOB) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.DENICE) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.ALICE) == INIT_EXECUTOR_REWARD
-    assert tx.events["RequestRemoved"][0].values() == [1, True]
+    assert tx.events["RequestRemoved"][0].values() == [id, True]
 
     # Shouldn't've changed
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
@@ -89,9 +91,10 @@ def test_execute_with_ethForCall(asc, stakedMin, mockTarget, requestsEth):
     assert asc.r.getEthToASCoinRate() == INIT_ETH_TO_ASCOIN_RATE
 
 
-def test_execute_pay_ASC(asc, stakedMin, mockTarget, requestsEth):
+def test_execute_pay_ASC(asc, stakedMin, mockTarget, requests):
     _, staker, __ = stakedMin
-    requestNoEthForCall, requestEthForCall, requestPayASC, requestPayASCEthForCall, valueSent, ethForCall = requestsEth
+    requestNoEthForCall, requestEthForCall, requestPayASC, requestPayASCEthForCall, valueSent, ethForCall = requests
+    id = 2
     assert mockTarget.x() == 0
     assert asc.ALICE.balance() == INIT_ETH_BAL
     assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * valueSent) + ethForCall)
@@ -100,7 +103,7 @@ def test_execute_pay_ASC(asc, stakedMin, mockTarget, requestsEth):
     assert asc.ASCoin.balanceOf(asc.DENICE) == 0
     assert asc.ASCoin.balanceOf(asc.r) == INIT_ASC_REW_POOL
 
-    tx = asc.r.execute(2, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    tx = asc.r.execute(id, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
 
     # Should've changed
     # Eth bals
@@ -119,13 +122,13 @@ def test_execute_pay_ASC(asc, stakedMin, mockTarget, requestsEth):
     # Target storage
     assert mockTarget.x() == 5
     # Registry storage
-    assert asc.r.getRequests() == [requestNoEthForCall, requestEthForCall, NULL_REQ, requestPayASCEthForCall]
-    assert asc.r.getRequestsLength() == 4
-    assert asc.r.getRequest(2) == NULL_REQ
+    assert asc.r.getRawRequests() == [requestNoEthForCall, requestEthForCall, NULL_REQ, requestPayASCEthForCall]
+    assert asc.r.getRawRequestsLen() == 4
+    assert asc.r.getRawRequest(id) == NULL_REQ
     assert asc.r.getCumulRewardsOf(asc.BOB) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.DENICE) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.ALICE) == INIT_EXECUTOR_REWARD
-    assert tx.events["RequestRemoved"][0].values() == [2, True]
+    assert tx.events["RequestRemoved"][0].values() == [id, True]
 
     # Shouldn't've changed
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
@@ -134,9 +137,10 @@ def test_execute_pay_ASC(asc, stakedMin, mockTarget, requestsEth):
     assert asc.r.getEthToASCoinRate() == INIT_ETH_TO_ASCOIN_RATE
 
 
-def test_execute_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, requestsEth):
+def test_execute_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, requests):
     _, staker, __ = stakedMin
-    requestNoEthForCall, requestEthForCall, requestPayASC, requestPayASCEthForCall, valueSent, ethForCall = requestsEth
+    requestNoEthForCall, requestEthForCall, requestPayASC, requestPayASCEthForCall, valueSent, ethForCall = requests
+    id = 3
     assert mockTarget.x() == 0
     assert asc.ALICE.balance() == INIT_ETH_BAL
     assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * valueSent) + ethForCall)
@@ -145,7 +149,7 @@ def test_execute_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, requestsEth
     assert asc.ASCoin.balanceOf(asc.DENICE) == 0
     assert asc.ASCoin.balanceOf(asc.r) == INIT_ASC_REW_POOL
 
-    tx = asc.r.execute(3, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    tx = asc.r.execute(id, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
 
     # Should've changed
     # Eth bals
@@ -164,13 +168,13 @@ def test_execute_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, requestsEth
     # Target storage
     assert mockTarget.x() == 5
     # Registry storage
-    assert asc.r.getRequests() == [requestNoEthForCall, requestEthForCall, requestPayASC, NULL_REQ]
-    assert asc.r.getRequestsLength() == 4
-    assert asc.r.getRequest(3) == NULL_REQ
+    assert asc.r.getRawRequests() == [requestNoEthForCall, requestEthForCall, requestPayASC, NULL_REQ]
+    assert asc.r.getRawRequestsLen() == 4
+    assert asc.r.getRawRequest(id) == NULL_REQ
     assert asc.r.getCumulRewardsOf(asc.BOB) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.DENICE) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.ALICE) == INIT_EXECUTOR_REWARD
-    assert tx.events["RequestRemoved"][0].values() == [3, True]
+    assert tx.events["RequestRemoved"][0].values() == [id, True]
 
     # Shouldn't've changed
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
@@ -179,7 +183,7 @@ def test_execute_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, requestsEth
     assert asc.r.getEthToASCoinRate() == INIT_ETH_TO_ASCOIN_RATE
 
 
-def test_execute_rev_already_executed(asc, stakedMin, requestsEth):
+def test_execute_rev_already_executed(asc, stakedMin, requests):
     _, staker, __ = stakedMin
     asc.r.execute(2, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
 
@@ -187,7 +191,7 @@ def test_execute_rev_already_executed(asc, stakedMin, requestsEth):
         asc.r.execute(2, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
 
 
-def test_execute_rev_not_executor(asc, stakedMin, requestsEth):
+def test_execute_rev_not_executor(asc, stakedMin, requests):
     with reverts(REV_MSG_NOT_EXEC):
         asc.r.execute(2, {'from': asc.DENICE, 'gasPrice': TEST_GAS_PRICE})
 
@@ -199,10 +203,10 @@ def test_execute_rev_not_executor(asc, stakedMin, requestsEth):
 # # just make a new request for recursive ASCs, I see no reason to need to call execute
 # # from a request etc. Can't make a call directly to the registry from the registry
 # # because of `targetNotThis`, so need to call into it from a new contract
-# def test_execute_rev_nonReentrant(asc, stakedMin, requestsEth, mockReentrancyAttack):
+# def test_execute_rev_nonReentrant(asc, stakedMin, requests, mockReentrancyAttack):
 #     _, staker, __ = stakedMin
 #     callData = mockReentrancyAttack.callExecute.encode_input(2)
-#     asc.r.newRequest(mockReentrancyAttack, callData, True, 0, asc.DENICE, {'from': asc.BOB})
+#     asc.r.newRawRequest(mockReentrancyAttack, callData, True, 0, asc.DENICE, {'from': asc.BOB})
 
 #     with reverts(REV_MSG_NOT_EXEC):
 #         asc.r.execute(4, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
