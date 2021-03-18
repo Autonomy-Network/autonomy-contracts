@@ -32,7 +32,7 @@ def test_getHashedIpfsReq(asc, bytes_a, bytes_b, bytes_c):
     assert localHash == solidityHash
 
 
-def test_recreate_request_CID(asc, requests):
+def test_recreate_request_CID(asc, reqsRaw):
     for i in range(asc.r.getRawRequestsLen()):
         req = asc.r.getRawRequest(1)
         reqBytes = convert.to_bytes(asc.r.getReqBytes(req), 'bytes')

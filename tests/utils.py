@@ -1,6 +1,8 @@
 from consts import *
 from brownie import web3, convert
 import base58 as b58
+import ipfshttpclient
+from hashlib import sha256
 
 
 def getEpoch(blockNum):
@@ -80,3 +82,28 @@ def getHashBytesFromCID(CID):
 
 def getHashFromCID(CID):
     return bytesToHex(b58.b58decode(CID)[2:])
+
+
+def addToIpfs(asc, req):
+    reqBytes = asc.r.getReqBytes(req)
+
+    with ipfshttpclient.connect() as client:
+        return client.add_bytes(reqBytes)
+
+
+def getIpfsMetaData(asc, req):
+    reqBytes = asc.r.getReqBytes(req)
+
+    with ipfshttpclient.connect() as client:
+        ipfsCID = client.add_bytes(reqBytes)
+        ipfsBlock = client.block.get(ipfsCID)
+    
+    reqBytesIdx = ipfsBlock.index(reqBytes)
+    dataPrefix = ipfsBlock[:reqBytesIdx]
+    dataSuffix = ipfsBlock[reqBytesIdx + len(reqBytes) : ]
+
+    return dataPrefix, dataSuffix
+
+
+def addReqGetHashBytes(asc, req):
+    return getHashBytesFromCID(addToIpfs(asc, req))

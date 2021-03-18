@@ -182,30 +182,93 @@ def mockReentrancyAttack(asc, MockReentrancyAttack):
     return asc.DEPLOYER.deploy(MockReentrancyAttack, asc.r)
 
 
-# Need to have some requests to test execute. Need a request that has ethForCall
+# Need to have some raw requests to test executeRawReq. Need a request that has ethForCall
 # set to 0 and 1 that doesn't, and 1 that pays with ASC with ethForCall and 1 without
 @pytest.fixture(scope="module")
-def requests(asc, mockTarget):
+def reqsRaw(asc, mockTarget):
     ethForCall = E_18
     msgValue = 2 * ethForCall
 
     callData = mockTarget.setX.encode_input(5)
     asc.r.newRawRequest(mockTarget, callData, False, 0, asc.DENICE, {'from': asc.BOB, 'value': msgValue})
-    requestNoEthForCall = (asc.BOB.address, mockTarget.address, callData, False, msgValue, 0, asc.DENICE.address)
+    reqNoEthForCall = (asc.BOB.address, mockTarget.address, callData, False, msgValue, 0, asc.DENICE.address)
 
     callData = mockTarget.setXPay.encode_input(5)
     asc.r.newRawRequest(mockTarget, callData, False, ethForCall, asc.DENICE, {'from': asc.BOB, 'value': msgValue})
-    requestEthForCall = (asc.BOB.address, mockTarget.address, callData, False, msgValue, ethForCall, asc.DENICE.address)
+    reqEthForCall = (asc.BOB.address, mockTarget.address, callData, False, msgValue, ethForCall, asc.DENICE.address)
 
     asc.ASCoin.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
+
     callData = mockTarget.setX.encode_input(5)
     asc.r.newRawRequest(mockTarget, callData, True, 0, asc.DENICE, {'from': asc.BOB})
-    requestPayASC = (asc.BOB.address, mockTarget.address, callData, True, 0, 0, asc.DENICE.address)
+    reqPayASCNoEthForCall = (asc.BOB.address, mockTarget.address, callData, True, 0, 0, asc.DENICE.address)
 
     callData = mockTarget.setXPay.encode_input(5)
     asc.r.newRawRequest(mockTarget, callData, True, ethForCall, asc.DENICE, {'from': asc.BOB, 'value': ethForCall})
-    requestPayASCEthForCall = (asc.BOB.address, mockTarget.address, callData, True, ethForCall, ethForCall, asc.DENICE.address)
+    reqPayASCEthForCall = (asc.BOB.address, mockTarget.address, callData, True, ethForCall, ethForCall, asc.DENICE.address)
 
     assert asc.r.balance() == (msgValue * 2) + ethForCall
 
-    return requestNoEthForCall, requestEthForCall, requestPayASC, requestPayASCEthForCall, msgValue, ethForCall
+    return reqNoEthForCall, reqEthForCall, reqPayASCNoEthForCall, reqPayASCEthForCall, msgValue, ethForCall
+
+
+# Need to have some hashed requests to test executeHashReqEth. Need a request that has ethForCall
+# set to 0 and 1 that doesn't, and 1 that pays with ASC with ethForCall and 1 without
+@pytest.fixture(scope="module")
+def reqsHashEth(asc, mockTarget):
+    ethForCall = E_18
+    msgValue = 2 * ethForCall
+
+    callData = mockTarget.setX.encode_input(5)
+    reqNoEthForCall = (asc.BOB.address, mockTarget.address, callData, False, msgValue, 0, asc.DENICE.address)
+    tx = asc.r.newHashReqWithEth(mockTarget, callData, False, 0, asc.DENICE, *getIpfsMetaData(asc, reqNoEthForCall), {'from': asc.BOB, 'value': msgValue})
+
+    callData = mockTarget.setXPay.encode_input(5)
+    reqEthForCall = (asc.BOB.address, mockTarget.address, callData, False, msgValue, ethForCall, asc.DENICE.address)
+    tx = asc.r.newHashReqWithEth(mockTarget, callData, False, ethForCall, asc.DENICE, *getIpfsMetaData(asc, reqEthForCall), {'from': asc.BOB, 'value': msgValue})
+
+    asc.ASCoin.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
+    
+    callData = mockTarget.setX.encode_input(5)
+    reqPayASCNoEthForCall = (asc.BOB.address, mockTarget.address, callData, True, 0, 0, asc.DENICE.address)
+    tx = asc.r.newHashReqWithEth(mockTarget, callData, True, 0, asc.DENICE, *getIpfsMetaData(asc, reqPayASCNoEthForCall), {'from': asc.BOB, 'value': 0})
+
+    callData = mockTarget.setXPay.encode_input(5)
+    reqPayASCEthForCall = (asc.BOB.address, mockTarget.address, callData, True, ethForCall, ethForCall, asc.DENICE.address)
+    tx = asc.r.newHashReqWithEth(mockTarget, callData, True, ethForCall, asc.DENICE, *getIpfsMetaData(asc, reqPayASCEthForCall), {'from': asc.BOB, 'value': ethForCall})
+
+    reqs = [reqNoEthForCall, reqEthForCall, reqPayASCNoEthForCall, reqPayASCEthForCall]
+    reqHashes = [bytesToHex(addReqGetHashBytes(asc, r)) for r in reqs]
+
+    return reqs, reqHashes, msgValue, ethForCall
+
+
+# Need to have some hashed requests to test executeHashReqNoEth. Need a request that has ethForCall
+# set to 0 and 1 that doesn't, and 1 that pays with ASC with ethForCall and 1 without
+@pytest.fixture(scope="module")
+def reqsHashNoEth(asc, mockTarget):
+    ethForCall = E_18
+    msgValue = 2 * ethForCall
+
+    callData = mockTarget.setX.encode_input(5)
+    reqNoEthForCall = (asc.BOB.address, mockTarget.address, callData, False, msgValue, 0, asc.DENICE.address)
+    tx = asc.r.newHashReqNoEth(mockTarget, callData, False, 0, asc.DENICE, *getIpfsMetaData(asc, reqNoEthForCall), {'from': asc.BOB, 'value': msgValue})
+
+    callData = mockTarget.setXPay.encode_input(5)
+    reqEthForCall = (asc.BOB.address, mockTarget.address, callData, False, msgValue, ethForCall, asc.DENICE.address)
+    tx = asc.r.newHashReqNoEth(mockTarget, callData, False, ethForCall, asc.DENICE, *getIpfsMetaData(asc, reqEthForCall), {'from': asc.BOB, 'value': msgValue})
+
+    asc.ASCoin.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
+    
+    callData = mockTarget.setX.encode_input(5)
+    reqPayASCNoEthForCall = (asc.BOB.address, mockTarget.address, callData, True, 0, 0, asc.DENICE.address)
+    tx = asc.r.newHashReqNoEth(mockTarget, callData, True, 0, asc.DENICE, *getIpfsMetaData(asc, reqPayASCNoEthForCall), {'from': asc.BOB, 'value': 0})
+
+    callData = mockTarget.setXPay.encode_input(5)
+    reqPayASCEthForCall = (asc.BOB.address, mockTarget.address, callData, True, ethForCall, ethForCall, asc.DENICE.address)
+    tx = asc.r.newHashReqNoEth(mockTarget, callData, True, ethForCall, asc.DENICE, *getIpfsMetaData(asc, reqPayASCEthForCall), {'from': asc.BOB, 'value': ethForCall})
+
+    reqs = [reqNoEthForCall, reqEthForCall, reqPayASCNoEthForCall, reqPayASCEthForCall]
+    reqHashes = [bytesToHex(addReqGetHashBytes(asc, r)) for r in reqs]
+
+    return reqs, reqHashes, msgValue, ethForCall

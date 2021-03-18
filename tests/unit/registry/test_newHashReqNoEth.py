@@ -90,3 +90,39 @@ def test_newHashReqNoEth_real(asc, mockTarget):
     tx2 = asc.r.newHashReqWithEth(mockTarget, callData, True, 0, asc.DENICE, dataPrefix, dataSuffix, asc.FR_BOB)
 
     assert asc.r.getHashedIpfsReqEth(0) == hash
+
+# import time
+# # Ensure that everything still works
+# def test_newHashReqNoEth_spam(asc):
+#     t0 = time.time()
+#     for i in range(1, 100001):
+#         t1 = time.time()
+#         # print(i)
+
+#         t2 = time.time()
+#         asc.r.newHashReqNoEth(i)
+#         # print(f'newHashReqNoEth = {(time.time()-t2)}')
+
+#         if i % 1000 == 0:
+#             print(f'i = {i}')
+#             t2 = time.time()
+#             # asc.r.getHashedIpfsReqsNoEth()
+#             # print(f'getHashedIpfsReqsNoEth = {(time.time()-t2)}')
+
+#             reqs = []
+#             for i in range(asc.r.getHashedIpfsReqsNoEthLen()):
+#                 reqs.append(asc.r.getHashedIpfsReqNoEth(i))
+#             # print(reqs)
+#             print(f'getHashedIpfsReqNoEth total = {(time.time()-t2)}')
+#             print(f'getHashedIpfsReqsNoEth per req  = {(time.time()-t2) / i}')
+#             print()
+
+#         # t2 = time.time()
+#         # asc.r.getHashedIpfsReqsNoEthLen()
+#         # print(f'getHashedIpfsReqsNoEthLen = {(time.time()-t2)}')
+
+#         # print(f'totalRate = {(time.time()-t0)/i}')
+#         # print(f'singleRate = {(time.time()-t1)}')
+#         # print()
+
+

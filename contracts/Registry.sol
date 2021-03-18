@@ -30,6 +30,12 @@ contract Registry is Shared, ReentrancyGuard {
     // uint private _numRequests;
     // mapping(uint => Request) private _idToRequest;
     Request[] private _rawRequests;
+    // We need to have 2 separete arrays for adding requests with and without
+    // eth because, when comparing the hash of a request to be executed to the
+    // stored hash, we have no idea what the request had for the eth values
+    // that was originally stored as a hash and therefore would need to store
+    // an extra bool saying where eth was sent with the new request. Instead, 
+    // that can be known implicitly by having 2 separate arrays.
     bytes32[] private _hashedIpfsReqsEth;
     bytes32[] private _hashedIpfsReqsNoEth;
     // bytes32[] private _hashReqsPayEth;
@@ -55,11 +61,19 @@ contract Registry is Shared, ReentrancyGuard {
         address payable referer;
     }
 
+    enum ReqType {
+        Raw,
+        HashEth,
+        HashNoEth
+    }
+
     
-    event RawRequestAdded(uint indexed id);
-    event RequestRemoved(uint indexed id, bool wasExecuted);
+    event RawReqAdded(uint indexed id);
+    event RawReqRemoved(uint indexed id, bool wasExecuted);
     event HashedReqEthAdded(uint indexed id);
+    event HashedReqEthRemoved(uint indexed id, bool wasExecuted);
     event HashedReqNoEthAdded(uint indexed id);
+    event HashedReqNoEthRemoved(uint indexed id, bool wasExecuted);
 
 
     constructor(
@@ -107,7 +121,7 @@ contract Registry is Shared, ReentrancyGuard {
         uint ethForCall,
         address payable referer
     ) private {
-        emit RawRequestAdded(_rawRequests.length);
+        emit RawReqAdded(_rawRequests.length);
         _rawRequests.push(Request(payable(msg.sender), target, callData, payWithASC, initEthSent, ethForCall, referer));
     }
 
@@ -210,14 +224,9 @@ contract Registry is Shared, ReentrancyGuard {
     }
 
     function getReqFromBytes(bytes memory rBytes) public pure returns (Request memory r) {
-        (Request memory r) = abi.decode(rBytes, (Request));
-        return r;
+        (r) = abi.decode(rBytes, (Request));
     }
     
-    // function getSha256SerialisedIpfsReq2(bytes memory dataPrefix, bytes memory r, bytes memory dataPostfix) public returns (bytes32) {
-    //     return sha256(getIpfsReqBytes(dataPrefix, r, dataPostfix));
-    // }
-
     // function newHashedRequestNoEth
 
     // function newBatchRequestNoEth
@@ -228,11 +237,63 @@ contract Registry is Shared, ReentrancyGuard {
 
     event Test(uint a, uint b, uint c);
 
-    function execute(uint id) external nonReentrant returns (uint) {
-        uint startGas = gasleft();
+
+    function executeRawReq(uint id) external validExec nonReentrant returns (uint gasUsed) {
         Request memory r = _rawRequests[id];
         require(r.requester != _ADDR_0, "Reg: already executed");
-        require(_stakeMan.isCurExec(msg.sender), "Registry:not executor or expired");
+        
+        gasUsed = _execute(r);
+        
+        emit RawReqRemoved(id, true);
+        delete _rawRequests[id];
+    }
+
+    function executeHashReqEth(
+        uint id,
+        Request memory r,
+        bytes memory dataPrefix,
+        bytes memory dataSuffix
+    ) external validExec nonReentrant returns (uint gasUsed) {
+        require(
+            getHashedIpfsReq(dataPrefix, getReqBytes(r), dataSuffix) == _hashedIpfsReqsEth[id], 
+            "Reg: request not the same"
+        );
+
+        gasUsed = _execute(r);
+        
+        emit HashedReqNoEthRemoved(id, true);
+        delete _hashedIpfsReqsEth[id];
+    }
+
+    function executeHashReqNoEth(
+        uint id,
+        Request memory r,
+        bytes memory dataPrefix,
+        bytes memory dataSuffix
+    ) external validExec nonReentrant returns (uint gasUsed) {
+        require(
+            getHashedIpfsReq(dataPrefix, getReqBytes(r), dataSuffix) == _hashedIpfsReqsNoEth[id], 
+            "Reg: request not the same"
+        );
+
+        gasUsed = _execute(r);
+        
+        emit HashedReqEthRemoved(id, true);
+        delete _hashedIpfsReqsNoEth[id];
+    }
+
+
+    function _execute(Request memory r) private returns (uint) {
+        uint startGas = gasleft();
+
+        // if (reqType == ReqType.Raw) {
+        //     r = _rawRequests[id];
+        // } else if (reqType == ReqType.HashEth) {
+        //     r = _hashedIpfsReqsEth[id];
+        // } else if (reqType == ReqType.HashNoEth) {
+        //     r = _hashedIpfsReqsNoEth[id];
+        // }
+
         
         // Make the call that the user requested
         // require(r.proxy.finish(true, r.target, callGas, r.callData), "Reg: call failed");
@@ -255,9 +316,6 @@ contract Registry is Shared, ReentrancyGuard {
         if (r.referer != _ADDR_0) {
             _cumulRewards[r.referer] += _requesterReward;
         }
-
-        emit RequestRemoved(id, true);
-        delete _rawRequests[id];
 
         // +1 since it never divides exactly because of the 4 bytes of methodID
         uint numStorageRefunds = (r.callData.length / 32) + 1;
@@ -318,7 +376,7 @@ contract Registry is Shared, ReentrancyGuard {
         
         // Cancel the request
         delete _rawRequests[id];
-        emit RequestRemoved(id, false);
+        emit RawReqRemoved(id, false);
         
         // Send refund
         if (r.initEthSent > 0) {
@@ -386,12 +444,20 @@ contract Registry is Shared, ReentrancyGuard {
     }
 
     modifier validEth(bool payWithASC, uint ethForCall) {
-        // require(initEthSent == msg.value, "Reg: initEthSent invalid");
         if (payWithASC) {
+            // When paying with ASC, there's no reason to send more ETH than will
+            // be used in the future call
             require(ethForCall == msg.value, "Reg: ethForCall not msg.value");
         } else {
+            // When paying with ETH, ethForCall needs to be lower than msg.value
+            // since some ETH is needed to be left over for paying the fee + bounty
             require(ethForCall <= msg.value, "Reg: ethForCall too high");
         }
+        _;
+    }
+
+    modifier validExec() {
+        require(_stakeMan.isCurExec(msg.sender), "Registry:not executor or expired");
         _;
     }
     

@@ -44,6 +44,9 @@ INIT_REQUESTER_REWARD = 10**19
 INIT_EXECUTOR_REWARD = 10**20
 INIT_ETH_TO_ASCOIN_RATE = 18000 * E_18
 NULL_REQ = (ADDR_0, ADDR_0, NULL_BYTES, False, 0, 0, ADDR_0)
+# NULL_REQ_BYTES = b'\x80\x03O%\xfc\xea\xbf-\x0e\xdfP5\xb2"\xe6\x93$\x9f\x1b\xd3\x0bq\xe2\xc8\xfb\x07\x8a\xad9\x83\xd4j'
+# NULL_REQ_HEX = '0x' + NULL_REQ_BYTES.hex()
+NULL_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000'
 INIT_ASC_REW_POOL = 10**25
 TEST_GAS_PRICE = 10**9
 CID_PREFIX_STR = '1220'
@@ -51,6 +54,7 @@ CID_PREFIX_BYTES = bytes.fromhex(CID_PREFIX_STR)
 
 REV_MSG_TARGET_REG = "Reg: nice try ;)"
 REV_MSG_ALREADY_EXECUTED = "Reg: already executed"
+REV_MSG_NOT_SAME = "Reg: request not the same"
 REV_MSG_NOT_EXEC = "Registry:not executor or expired"
 REV_MSG_ETHFORCALL_NOT_MSGVALUE = "Reg: ethForCall not msg.value"
 REV_MSG_ETHFORCALL_HIGH = "Reg: ethForCall too high"

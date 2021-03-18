@@ -12,7 +12,7 @@ contract MockReentrancyAttack {
     }
 
     function callExecute(uint id) public {
-        reg.execute(id);
+        reg.executeRawReq(id);
     }
 
     function callCancel(uint id) public {
