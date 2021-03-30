@@ -13,10 +13,10 @@ def test_executeHashReqEth_no_ethForCall(asc, stakedMin, mockTarget, reqsHashEth
     assert mockTarget.x() == 0
     assert asc.ALICE.balance() == INIT_ETH_BAL
     assert asc.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - ethForCall
-    assert asc.ASCoin.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
-    assert asc.ASCoin.balanceOf(asc.BOB) == MAX_TEST_STAKE
-    assert asc.ASCoin.balanceOf(asc.DENICE) == 0
-    assert asc.ASCoin.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
+    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
+    assert asc.ASC.balanceOf(asc.DENICE) == 0
+    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
 
     tx = asc.r.executeHashReqEth(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
     
@@ -28,10 +28,10 @@ def test_executeHashReqEth_no_ethForCall(asc, stakedMin, mockTarget, reqsHashEth
     assert asc.r.balance() == msgValue + ethForCall
     assert mockTarget.balance() == 0
     # ASC bals
-    assert asc.ASCoin.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
-    assert asc.ASCoin.balanceOf(asc.BOB) == MAX_TEST_STAKE
-    assert asc.ASCoin.balanceOf(asc.DENICE) == 0
-    assert asc.ASCoin.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
+    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
+    assert asc.ASC.balanceOf(asc.DENICE) == 0
+    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
     # Target state
     assert mockTarget.x() == 5
     # Registry state
@@ -42,7 +42,7 @@ def test_executeHashReqEth_no_ethForCall(asc, stakedMin, mockTarget, reqsHashEth
     assert asc.r.getCumulRewardsOf(asc.BOB) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.DENICE) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.ALICE) == INIT_EXECUTOR_REWARD
-    assert tx.events["HashedReqNoEthRemoved"][0].values() == [id, True]
+    assert tx.events["HashedReqEthRemoved"][0].values() == [id, True]
 
     # Shouldn't've changed
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
@@ -60,10 +60,10 @@ def test_executeHashReqEth_with_ethForCall(asc, stakedMin, mockTarget, reqsHashE
     assert mockTarget.x() == 0
     assert asc.ALICE.balance() == INIT_ETH_BAL
     assert asc.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - ethForCall
-    assert asc.ASCoin.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
-    assert asc.ASCoin.balanceOf(asc.BOB) == MAX_TEST_STAKE
-    assert asc.ASCoin.balanceOf(asc.DENICE) == 0
-    assert asc.ASCoin.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
+    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
+    assert asc.ASC.balanceOf(asc.DENICE) == 0
+    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
 
     tx = asc.r.executeHashReqEth(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
     
@@ -75,22 +75,21 @@ def test_executeHashReqEth_with_ethForCall(asc, stakedMin, mockTarget, reqsHashE
     assert asc.r.balance() == msgValue + ethForCall
     assert mockTarget.balance() == ethForCall
     # ASC bals
-    assert asc.ASCoin.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
-    assert asc.ASCoin.balanceOf(asc.BOB) == MAX_TEST_STAKE
-    assert asc.ASCoin.balanceOf(asc.DENICE) == 0
-    assert asc.ASCoin.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
+    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
+    assert asc.ASC.balanceOf(asc.DENICE) == 0
+    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
     # Target state
     assert mockTarget.x() == 5
     # Registry state
     reqHashes[id] = NULL_HASH
-    print(reqHashes)
     assert asc.r.getHashedIpfsReqsEth() == reqHashes
     assert asc.r.getHashedIpfsReqsEthLen() == 4
     assert asc.r.getHashedIpfsReqEth(id) == NULL_HASH
     assert asc.r.getCumulRewardsOf(asc.BOB) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.DENICE) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.ALICE) == INIT_EXECUTOR_REWARD
-    assert tx.events["HashedReqNoEthRemoved"][0].values() == [id, True]
+    assert tx.events["HashedReqEthRemoved"][0].values() == [id, True]
 
     # Shouldn't've changed
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
@@ -108,10 +107,10 @@ def test_executeHashReqEth_pay_ASC(asc, stakedMin, mockTarget, reqsHashEth):
     assert mockTarget.x() == 0
     assert asc.ALICE.balance() == INIT_ETH_BAL
     assert asc.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - ethForCall
-    assert asc.ASCoin.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
-    assert asc.ASCoin.balanceOf(asc.BOB) == MAX_TEST_STAKE
-    assert asc.ASCoin.balanceOf(asc.DENICE) == 0
-    assert asc.ASCoin.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
+    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
+    assert asc.ASC.balanceOf(asc.DENICE) == 0
+    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
 
     tx = asc.r.executeHashReqEth(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
     
@@ -125,22 +124,21 @@ def test_executeHashReqEth_pay_ASC(asc, stakedMin, mockTarget, reqsHashEth):
     # Need to account for differences in division between Python and Solidity
     ASCForExecNotScaled = ((tx.return_value * tx.gas_price) + INIT_BASE_BOUNTY) * INIT_ETH_TO_ASCOIN_RATE
     ASCForExec = asc.r.divAOverB(ASCForExecNotScaled, E_18)
-    assert asc.ASCoin.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
-    assert asc.ASCoin.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
-    assert asc.ASCoin.balanceOf(asc.DENICE) == 0
-    assert asc.ASCoin.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
+    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
+    assert asc.ASC.balanceOf(asc.DENICE) == 0
+    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
     # Target state
     assert mockTarget.x() == 5
     # Registry state
     reqHashes[id] = NULL_HASH
-    print(reqHashes)
     assert asc.r.getHashedIpfsReqsEth() == reqHashes
     assert asc.r.getHashedIpfsReqsEthLen() == 4
     assert asc.r.getHashedIpfsReqEth(id) == NULL_HASH
     assert asc.r.getCumulRewardsOf(asc.BOB) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.DENICE) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.ALICE) == INIT_EXECUTOR_REWARD
-    assert tx.events["HashedReqNoEthRemoved"][0].values() == [id, True]
+    assert tx.events["HashedReqEthRemoved"][0].values() == [id, True]
 
     # Shouldn't've changed
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
@@ -158,10 +156,10 @@ def test_executeHashReqEth_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, r
     assert mockTarget.x() == 0
     assert asc.ALICE.balance() == INIT_ETH_BAL
     assert asc.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - ethForCall
-    assert asc.ASCoin.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
-    assert asc.ASCoin.balanceOf(asc.BOB) == MAX_TEST_STAKE
-    assert asc.ASCoin.balanceOf(asc.DENICE) == 0
-    assert asc.ASCoin.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
+    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
+    assert asc.ASC.balanceOf(asc.DENICE) == 0
+    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
 
     tx = asc.r.executeHashReqEth(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
     
@@ -175,28 +173,33 @@ def test_executeHashReqEth_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, r
     # Need to account for differences in division between Python and Solidity
     ASCForExecNotScaled = ((tx.return_value * tx.gas_price) + INIT_BASE_BOUNTY) * INIT_ETH_TO_ASCOIN_RATE
     ASCForExec = asc.r.divAOverB(ASCForExecNotScaled, E_18)
-    assert asc.ASCoin.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
-    assert asc.ASCoin.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
-    assert asc.ASCoin.balanceOf(asc.DENICE) == 0
-    assert asc.ASCoin.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
+    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
+    assert asc.ASC.balanceOf(asc.DENICE) == 0
+    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
     # Target state
     assert mockTarget.x() == 5
     # Registry state
     reqHashes[id] = NULL_HASH
-    print(reqHashes)
     assert asc.r.getHashedIpfsReqsEth() == reqHashes
     assert asc.r.getHashedIpfsReqsEthLen() == 4
     assert asc.r.getHashedIpfsReqEth(id) == NULL_HASH
     assert asc.r.getCumulRewardsOf(asc.BOB) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.DENICE) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.ALICE) == INIT_EXECUTOR_REWARD
-    assert tx.events["HashedReqNoEthRemoved"][0].values() == [id, True]
+    assert tx.events["HashedReqEthRemoved"][0].values() == [id, True]
 
     # Shouldn't've changed
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
     assert asc.r.getEthToASCoinRate() == INIT_ETH_TO_ASCOIN_RATE
+
+
+def test_executeHashReqEth_rev_not_executor(asc, stakedMin, reqsHashEth):
+    reqs, reqHashes, msgValue, ethForCall = reqsHashEth
+    with reverts(REV_MSG_NOT_EXEC):
+        asc.r.executeHashReqEth(0, reqs[0], *getIpfsMetaData(asc, reqs[0]), {'from': asc.DENICE, 'gasPrice': TEST_GAS_PRICE})
 
 
 def test_executeHashReqEth_rev_already_executeHashReqEthd(asc, stakedMin, reqsHashEth):
@@ -207,9 +210,3 @@ def test_executeHashReqEth_rev_already_executeHashReqEthd(asc, stakedMin, reqsHa
 
     with reverts(REV_MSG_NOT_SAME):
         asc.r.executeHashReqEth(0, reqs[0], *getIpfsMetaData(asc, reqs[0]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
-
-
-def test_executeHashReqEth_rev_not_executor(asc, stakedMin, reqsHashEth):
-    reqs, reqHashes, msgValue, ethForCall = reqsHashEth
-    with reverts(REV_MSG_NOT_EXEC):
-        asc.r.executeHashReqEth(0, reqs[0], *getIpfsMetaData(asc, reqs[0]), {'from': asc.DENICE, 'gasPrice': TEST_GAS_PRICE})

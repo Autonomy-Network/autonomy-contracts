@@ -10,10 +10,10 @@ def test_executeRawReq_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert mockTarget.x() == 0
     assert asc.ALICE.balance() == INIT_ETH_BAL
     assert asc.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - ethForCall
-    assert asc.ASCoin.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
-    assert asc.ASCoin.balanceOf(asc.BOB) == MAX_TEST_STAKE
-    assert asc.ASCoin.balanceOf(asc.DENICE) == 0
-    assert asc.ASCoin.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
+    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
+    assert asc.ASC.balanceOf(asc.DENICE) == 0
+    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
 
     tx = asc.r.executeRawReq(id, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
 
@@ -25,10 +25,10 @@ def test_executeRawReq_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.r.balance() == msgValue + ethForCall
     assert mockTarget.balance() == 0
     # ASC bals
-    assert asc.ASCoin.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
-    assert asc.ASCoin.balanceOf(asc.BOB) == MAX_TEST_STAKE
-    assert asc.ASCoin.balanceOf(asc.DENICE) == 0
-    assert asc.ASCoin.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
+    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
+    assert asc.ASC.balanceOf(asc.DENICE) == 0
+    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
     # Target state
     assert mockTarget.x() == 5
     # Registry state
@@ -54,10 +54,10 @@ def test_executeRawReq_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert mockTarget.x() == 0
     assert asc.ALICE.balance() == INIT_ETH_BAL
     assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + ethForCall)
-    assert asc.ASCoin.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
-    assert asc.ASCoin.balanceOf(asc.BOB) == MAX_TEST_STAKE
-    assert asc.ASCoin.balanceOf(asc.DENICE) == 0
-    assert asc.ASCoin.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
+    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
+    assert asc.ASC.balanceOf(asc.DENICE) == 0
+    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
 
     tx = asc.r.executeRawReq(id, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
 
@@ -69,10 +69,10 @@ def test_executeRawReq_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.r.balance() == msgValue + ethForCall
     assert mockTarget.balance() == ethForCall
     # ASC bals
-    assert asc.ASCoin.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
-    assert asc.ASCoin.balanceOf(asc.BOB) == MAX_TEST_STAKE
-    assert asc.ASCoin.balanceOf(asc.DENICE) == 0
-    assert asc.ASCoin.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
+    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
+    assert asc.ASC.balanceOf(asc.DENICE) == 0
+    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
     # Target state
     assert mockTarget.x() == 5
     # Registry state
@@ -98,10 +98,10 @@ def test_executeRawReq_pay_ASC(asc, stakedMin, mockTarget, reqsRaw):
     assert mockTarget.x() == 0
     assert asc.ALICE.balance() == INIT_ETH_BAL
     assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + ethForCall)
-    assert asc.ASCoin.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
-    assert asc.ASCoin.balanceOf(asc.BOB) == MAX_TEST_STAKE
-    assert asc.ASCoin.balanceOf(asc.DENICE) == 0
-    assert asc.ASCoin.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
+    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
+    assert asc.ASC.balanceOf(asc.DENICE) == 0
+    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
 
     tx = asc.r.executeRawReq(id, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
 
@@ -115,10 +115,10 @@ def test_executeRawReq_pay_ASC(asc, stakedMin, mockTarget, reqsRaw):
     # Need to account for differences in division between Python and Solidity
     ASCForExecNotScaled = ((tx.return_value * tx.gas_price) + INIT_BASE_BOUNTY) * INIT_ETH_TO_ASCOIN_RATE
     ASCForExec = asc.r.divAOverB(ASCForExecNotScaled, E_18)
-    assert asc.ASCoin.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
-    assert asc.ASCoin.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
-    assert asc.ASCoin.balanceOf(asc.DENICE) == 0
-    assert asc.ASCoin.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
+    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
+    assert asc.ASC.balanceOf(asc.DENICE) == 0
+    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
     # Target state
     assert mockTarget.x() == 5
     # Registry state
@@ -144,10 +144,10 @@ def test_executeRawReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsR
     assert mockTarget.x() == 0
     assert asc.ALICE.balance() == INIT_ETH_BAL
     assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + ethForCall)
-    assert asc.ASCoin.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
-    assert asc.ASCoin.balanceOf(asc.BOB) == MAX_TEST_STAKE
-    assert asc.ASCoin.balanceOf(asc.DENICE) == 0
-    assert asc.ASCoin.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
+    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
+    assert asc.ASC.balanceOf(asc.DENICE) == 0
+    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
 
     tx = asc.r.executeRawReq(id, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
 
@@ -161,10 +161,10 @@ def test_executeRawReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsR
     # Need to account for differences in division between Python and Solidity
     ASCForExecNotScaled = ((tx.return_value * tx.gas_price) + INIT_BASE_BOUNTY) * INIT_ETH_TO_ASCOIN_RATE
     ASCForExec = asc.r.divAOverB(ASCForExecNotScaled, E_18)
-    assert asc.ASCoin.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
-    assert asc.ASCoin.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
-    assert asc.ASCoin.balanceOf(asc.DENICE) == 0
-    assert asc.ASCoin.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
+    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
+    assert asc.ASC.balanceOf(asc.DENICE) == 0
+    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
     # Target state
     assert mockTarget.x() == 5
     # Registry state

@@ -227,16 +227,6 @@ contract Registry is Shared, ReentrancyGuard {
         (r) = abi.decode(rBytes, (Request));
     }
     
-    // function newHashedRequestNoEth
-
-    // function newBatchRequestNoEth
-
-    // function newHashedRequestWithEth
-
-    // function newBatchRequestWithEth
-
-    event Test(uint a, uint b, uint c);
-
 
     function executeRawReq(uint id) external validExec nonReentrant returns (uint gasUsed) {
         Request memory r = _rawRequests[id];
@@ -261,7 +251,7 @@ contract Registry is Shared, ReentrancyGuard {
 
         gasUsed = _execute(r);
         
-        emit HashedReqNoEthRemoved(id, true);
+        emit HashedReqEthRemoved(id, true);
         delete _hashedIpfsReqsEth[id];
     }
 
@@ -270,15 +260,21 @@ contract Registry is Shared, ReentrancyGuard {
         Request memory r,
         bytes memory dataPrefix,
         bytes memory dataSuffix
-    ) external validExec nonReentrant returns (uint gasUsed) {
+    ) external targetNotThis(r.target) validExec nonReentrant returns (uint gasUsed) {
         require(
             getHashedIpfsReq(dataPrefix, getReqBytes(r), dataSuffix) == _hashedIpfsReqsNoEth[id], 
             "Reg: request not the same"
         );
+        require(
+            r.initEthSent == 0 &&
+            r.ethForCall == 0 &&
+            r.payWithASC == true, 
+            "Reg: no eth. Nice try ;)"
+        );
 
         gasUsed = _execute(r);
         
-        emit HashedReqEthRemoved(id, true);
+        emit HashedReqNoEthRemoved(id, true);
         delete _hashedIpfsReqsNoEth[id];
     }
 
@@ -325,7 +321,6 @@ contract Registry is Shared, ReentrancyGuard {
 
         uint gasRefunded = numStorageRefunds * 15000;
 
-        emit Test(startGas, gasleft(), gasUsed);
         uint ethNeeded;
 
         if (r.payWithASC) {
@@ -341,7 +336,6 @@ contract Registry is Shared, ReentrancyGuard {
             uint ASCoinNeeded = ethNeeded * _ethToASCoinRate / _E_18;
 
             // Send the executor their bounty
-            emit Test(_ASCoin.balanceOf(r.requester), _ASCoin.balanceOf(msg.sender), ASCoinNeeded);
             _ASCoin.transferFrom(r.requester, msg.sender, ASCoinNeeded);
         } else {
             gasUsed += GAS_OVERHEAD_ETH;

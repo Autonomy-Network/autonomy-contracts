@@ -24,11 +24,11 @@ def test_cancel_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.ALICE.balance() == INIT_ETH_BAL
     assert asc.DENICE.balance() == INIT_ETH_BAL
 
-    assert asc.ASCoin.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
-    assert asc.ASCoin.balanceOf(asc.BOB) == MAX_TEST_STAKE
-    assert asc.ASCoin.balanceOf(asc.DENICE) == 0
-    assert asc.ASCoin.balanceOf(asc.r) == INIT_ASC_REW_POOL
-    assert asc.ASCoin.balanceOf(mockTarget) == 0
+    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
+    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
+    assert asc.ASC.balanceOf(asc.DENICE) == 0
+    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(mockTarget) == 0
 
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
@@ -61,11 +61,11 @@ def test_cancel_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.ALICE.balance() == INIT_ETH_BAL
     assert asc.DENICE.balance() == INIT_ETH_BAL
 
-    assert asc.ASCoin.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
-    assert asc.ASCoin.balanceOf(asc.BOB) == MAX_TEST_STAKE
-    assert asc.ASCoin.balanceOf(asc.DENICE) == 0
-    assert asc.ASCoin.balanceOf(asc.r) == INIT_ASC_REW_POOL
-    assert asc.ASCoin.balanceOf(mockTarget) == 0
+    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
+    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
+    assert asc.ASC.balanceOf(asc.DENICE) == 0
+    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(mockTarget) == 0
 
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
@@ -99,11 +99,11 @@ def test_cancel_payASC(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - ethForCall
     assert asc.DENICE.balance() == INIT_ETH_BAL
 
-    assert asc.ASCoin.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
-    assert asc.ASCoin.balanceOf(asc.BOB) == MAX_TEST_STAKE
-    assert asc.ASCoin.balanceOf(asc.DENICE) == 0
-    assert asc.ASCoin.balanceOf(asc.r) == INIT_ASC_REW_POOL
-    assert asc.ASCoin.balanceOf(mockTarget) == 0
+    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
+    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
+    assert asc.ASC.balanceOf(asc.DENICE) == 0
+    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(mockTarget) == 0
 
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
@@ -136,11 +136,11 @@ def test_cancel_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.ALICE.balance() == INIT_ETH_BAL
     assert asc.DENICE.balance() == INIT_ETH_BAL
 
-    assert asc.ASCoin.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
-    assert asc.ASCoin.balanceOf(asc.BOB) == MAX_TEST_STAKE
-    assert asc.ASCoin.balanceOf(asc.DENICE) == 0
-    assert asc.ASCoin.balanceOf(asc.r) == INIT_ASC_REW_POOL
-    assert asc.ASCoin.balanceOf(mockTarget) == 0
+    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
+    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
+    assert asc.ASC.balanceOf(asc.DENICE) == 0
+    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(mockTarget) == 0
 
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD

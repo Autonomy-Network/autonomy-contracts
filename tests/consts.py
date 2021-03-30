@@ -52,9 +52,10 @@ TEST_GAS_PRICE = 10**9
 CID_PREFIX_STR = '1220'
 CID_PREFIX_BYTES = bytes.fromhex(CID_PREFIX_STR)
 
-REV_MSG_TARGET_REG = "Reg: nice try ;)"
+REV_MSG_TARGET = "Reg: nice try ;)"
 REV_MSG_ALREADY_EXECUTED = "Reg: already executed"
 REV_MSG_NOT_SAME = "Reg: request not the same"
+REV_MSG_NO_ETH = "Reg: no eth. Nice try ;)"
 REV_MSG_NOT_EXEC = "Registry:not executor or expired"
 REV_MSG_ETHFORCALL_NOT_MSGVALUE = "Reg: ethForCall not msg.value"
 REV_MSG_ETHFORCALL_HIGH = "Reg: ethForCall too high"

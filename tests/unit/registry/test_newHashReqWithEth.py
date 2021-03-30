@@ -28,13 +28,13 @@ def test_newHashReqWithEth(asc, mockTarget, user, target, callData, payWithASC, 
         targetETHStartBal = target.balance()
         assert asc.r.balance() == 0
 
-        # assert asc.ASCoin.balanceOf(user) == MAX_TEST_STAKE
-        userASCStartBal = asc.ASCoin.balanceOf(user)
-        # assert asc.ASCoin.balanceOf(referer) == 0
-        refererASCStartBal = asc.ASCoin.balanceOf(referer)
-        # assert asc.ASCoin.balanceOf(target) == 0
-        targetASCStartBal = asc.ASCoin.balanceOf(target)
-        assert asc.ASCoin.balanceOf(asc.r) == INIT_ASC_REW_POOL
+        # assert asc.ASC.balanceOf(user) == MAX_TEST_STAKE
+        userASCStartBal = asc.ASC.balanceOf(user)
+        # assert asc.ASC.balanceOf(referer) == 0
+        refererASCStartBal = asc.ASC.balanceOf(referer)
+        # assert asc.ASC.balanceOf(target) == 0
+        targetASCStartBal = asc.ASC.balanceOf(target)
+        assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
 
         if payWithASC:
             msgValue = ethForCall
@@ -76,22 +76,22 @@ def test_newHashReqWithEth(asc, mockTarget, user, target, callData, payWithASC, 
         assert target.balance() - targetETHStartBal == 0
         assert asc.r.balance() == msgValue
 
-        assert asc.ASCoin.balanceOf(user) - userASCStartBal == 0
-        assert asc.ASCoin.balanceOf(referer) - refererASCStartBal == 0
-        assert asc.ASCoin.balanceOf(target) - targetASCStartBal == 0
-        assert asc.ASCoin.balanceOf(asc.r) == INIT_ASC_REW_POOL
+        assert asc.ASC.balanceOf(user) - userASCStartBal == 0
+        assert asc.ASC.balanceOf(referer) - refererASCStartBal == 0
+        assert asc.ASC.balanceOf(target) - targetASCStartBal == 0
+        assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
 
 
 def test_newHashReqWithEth_rev_target_is_registry(asc, mockTarget):
     callData = mockTarget.setX.encode_input(5)
-    with reverts(REV_MSG_TARGET_REG):
+    with reverts(REV_MSG_TARGET):
         tx = asc.r.newHashReqWithEth(asc.r, callData, True, 0, asc.DENICE, "", "", asc.FR_BOB)
 
 
 # @given(payWithASC=strategy('bool'))
 def test_newHashReqWithEth_rev_target_is_ASCoin(asc, mockTarget):
     callData = mockTarget.setX.encode_input(5)
-    with reverts(REV_MSG_TARGET_REG):
+    with reverts(REV_MSG_TARGET):
         tx = asc.r.newHashReqWithEth(asc.r, callData, True, 0, asc.DENICE, "", "", asc.FR_BOB)
 
 

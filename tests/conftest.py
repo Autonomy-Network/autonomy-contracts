@@ -35,13 +35,13 @@ def deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Vault, Registry):
     # Calling `updateExecutor` requires the epoch to be > 0
     chain.mine(BLOCKS_IN_EPOCH)
 
-    asc.ASCoin = asc.DEPLOYER.deploy(ASCoin, "Active Smart Contract Protocol", "ASC")
+    asc.ASC = asc.DEPLOYER.deploy(ASCoin, "Active Smart Contract Protocol", "ASC")
     asc.oracle = asc.DEPLOYER.deploy(Oracle)
-    asc.sm = asc.DEPLOYER.deploy(StakeManager, asc.oracle, asc.ASCoin)
-    asc.v = asc.DEPLOYER.deploy(Vault, asc.ASCoin)
+    asc.sm = asc.DEPLOYER.deploy(StakeManager, asc.oracle, asc.ASC)
+    asc.v = asc.DEPLOYER.deploy(Vault, asc.ASC)
     asc.r = asc.DEPLOYER.deploy(
         Registry,
-        asc.ASCoin,
+        asc.ASC,
         asc.sm,
         asc.v,
         INIT_BASE_BOUNTY,
@@ -52,14 +52,14 @@ def deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Vault, Registry):
     asc.v.setAuthorisation(asc.r, True)
 
     # For enabling rewards
-    asc.ASCoin.transfer(asc.r, INIT_ASC_REW_POOL, asc.FR_DEPLOYER)
+    asc.ASC.transfer(asc.r, INIT_ASC_REW_POOL, asc.FR_DEPLOYER)
     # For being able to test staking with
-    asc.ASCoin.transfer(asc.ALICE, MAX_TEST_STAKE, asc.FR_DEPLOYER)
-    asc.ASCoin.approve(asc.sm, MAX_TEST_STAKE, asc.FR_ALICE)
-    asc.ASCoin.transfer(asc.BOB, MAX_TEST_STAKE, asc.FR_DEPLOYER)
-    asc.ASCoin.approve(asc.sm, MAX_TEST_STAKE, asc.FR_BOB)
-    asc.ASCoin.transfer(asc.CHARLIE, MAX_TEST_STAKE, asc.FR_DEPLOYER)
-    asc.ASCoin.approve(asc.sm, MAX_TEST_STAKE, asc.FR_CHARLIE)
+    asc.ASC.transfer(asc.ALICE, MAX_TEST_STAKE, asc.FR_DEPLOYER)
+    asc.ASC.approve(asc.sm, MAX_TEST_STAKE, asc.FR_ALICE)
+    asc.ASC.transfer(asc.BOB, MAX_TEST_STAKE, asc.FR_DEPLOYER)
+    asc.ASC.approve(asc.sm, MAX_TEST_STAKE, asc.FR_BOB)
+    asc.ASC.transfer(asc.CHARLIE, MAX_TEST_STAKE, asc.FR_DEPLOYER)
+    asc.ASC.approve(asc.sm, MAX_TEST_STAKE, asc.FR_CHARLIE)
 
     return asc
 
@@ -156,14 +156,14 @@ def stakedMulti(asc, stakedMin):
 # without unstaking
 @pytest.fixture(scope="module")
 def vulnerableStaker(asc, VulnerableStaker):
-    return asc.DEPLOYER.deploy(VulnerableStaker, asc.oracle.address, asc.ASCoin.address)
+    return asc.DEPLOYER.deploy(VulnerableStaker, asc.oracle.address, asc.ASC.address)
 
 
 # Need to have already staked properly in order to test `noFish`
 @pytest.fixture(scope="module")
 def vulnerableStaked(asc, vulnerableStaker):
     staker = asc.ALICE
-    asc.ASCoin.approve(vulnerableStaker, MAX_TEST_STAKE, {'from': staker})
+    asc.ASC.approve(vulnerableStaker, MAX_TEST_STAKE, {'from': staker})
     # *2 so that `unstake` doesn't fail because of an ERC20 transfer for STAN_STAKE
     vulnerableStaker.stake(2, {'from': staker})
     return vulnerableStaker, staker
@@ -197,7 +197,7 @@ def reqsRaw(asc, mockTarget):
     asc.r.newRawRequest(mockTarget, callData, False, ethForCall, asc.DENICE, {'from': asc.BOB, 'value': msgValue})
     reqEthForCall = (asc.BOB.address, mockTarget.address, callData, False, msgValue, ethForCall, asc.DENICE.address)
 
-    asc.ASCoin.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
+    asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 
     callData = mockTarget.setX.encode_input(5)
     asc.r.newRawRequest(mockTarget, callData, True, 0, asc.DENICE, {'from': asc.BOB})
@@ -227,7 +227,7 @@ def reqsHashEth(asc, mockTarget):
     reqEthForCall = (asc.BOB.address, mockTarget.address, callData, False, msgValue, ethForCall, asc.DENICE.address)
     tx = asc.r.newHashReqWithEth(mockTarget, callData, False, ethForCall, asc.DENICE, *getIpfsMetaData(asc, reqEthForCall), {'from': asc.BOB, 'value': msgValue})
 
-    asc.ASCoin.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
+    asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
     
     callData = mockTarget.setX.encode_input(5)
     reqPayASCNoEthForCall = (asc.BOB.address, mockTarget.address, callData, True, 0, 0, asc.DENICE.address)
@@ -243,32 +243,15 @@ def reqsHashEth(asc, mockTarget):
     return reqs, reqHashes, msgValue, ethForCall
 
 
-# Need to have some hashed requests to test executeHashReqNoEth. Need a request that has ethForCall
-# set to 0 and 1 that doesn't, and 1 that pays with ASC with ethForCall and 1 without
+# With hashReqNoEth, we can't send eth in the call and have to pay via ASC, so
+# only one combination this time
 @pytest.fixture(scope="module")
-def reqsHashNoEth(asc, mockTarget):
-    ethForCall = E_18
-    msgValue = 2 * ethForCall
-
+def reqHashNoEth(asc, mockTarget):
+    asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
     callData = mockTarget.setX.encode_input(5)
-    reqNoEthForCall = (asc.BOB.address, mockTarget.address, callData, False, msgValue, 0, asc.DENICE.address)
-    tx = asc.r.newHashReqNoEth(mockTarget, callData, False, 0, asc.DENICE, *getIpfsMetaData(asc, reqNoEthForCall), {'from': asc.BOB, 'value': msgValue})
+    req = (asc.BOB.address, mockTarget.address, callData, True, 0, 0, asc.DENICE.address)
+    reqHashBytes = addReqGetHashBytes(asc, req)
 
-    callData = mockTarget.setXPay.encode_input(5)
-    reqEthForCall = (asc.BOB.address, mockTarget.address, callData, False, msgValue, ethForCall, asc.DENICE.address)
-    tx = asc.r.newHashReqNoEth(mockTarget, callData, False, ethForCall, asc.DENICE, *getIpfsMetaData(asc, reqEthForCall), {'from': asc.BOB, 'value': msgValue})
+    tx = asc.r.newHashReqNoEth(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
-    asc.ASCoin.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
-    
-    callData = mockTarget.setX.encode_input(5)
-    reqPayASCNoEthForCall = (asc.BOB.address, mockTarget.address, callData, True, 0, 0, asc.DENICE.address)
-    tx = asc.r.newHashReqNoEth(mockTarget, callData, True, 0, asc.DENICE, *getIpfsMetaData(asc, reqPayASCNoEthForCall), {'from': asc.BOB, 'value': 0})
-
-    callData = mockTarget.setXPay.encode_input(5)
-    reqPayASCEthForCall = (asc.BOB.address, mockTarget.address, callData, True, ethForCall, ethForCall, asc.DENICE.address)
-    tx = asc.r.newHashReqNoEth(mockTarget, callData, True, ethForCall, asc.DENICE, *getIpfsMetaData(asc, reqPayASCEthForCall), {'from': asc.BOB, 'value': ethForCall})
-
-    reqs = [reqNoEthForCall, reqEthForCall, reqPayASCNoEthForCall, reqPayASCEthForCall]
-    reqHashes = [bytesToHex(addReqGetHashBytes(asc, r)) for r in reqs]
-
-    return reqs, reqHashes, msgValue, ethForCall
+    return req, reqHashBytes

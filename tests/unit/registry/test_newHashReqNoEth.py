@@ -36,10 +36,10 @@ def test_newHashReqNoEth(asc, mockTarget, hashedIpfsReq, sender):
     assert mockTarget.balance() == 0
     assert asc.r.balance() == 0
 
-    assert asc.ASCoin.balanceOf(asc.BOB) == MAX_TEST_STAKE
-    assert asc.ASCoin.balanceOf(asc.DENICE) == 0
-    assert asc.ASCoin.balanceOf(mockTarget) == 0
-    assert asc.ASCoin.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
+    assert asc.ASC.balanceOf(asc.DENICE) == 0
+    assert asc.ASC.balanceOf(mockTarget) == 0
+    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
 
 def test_newHashReqNoEth_real(asc, mockTarget):
     callData = mockTarget.setX.encode_input(5)
@@ -75,10 +75,10 @@ def test_newHashReqNoEth_real(asc, mockTarget):
     assert mockTarget.balance() == 0
     assert asc.r.balance() == 0
 
-    assert asc.ASCoin.balanceOf(asc.BOB) == MAX_TEST_STAKE
-    assert asc.ASCoin.balanceOf(asc.DENICE) == 0
-    assert asc.ASCoin.balanceOf(mockTarget) == 0
-    assert asc.ASCoin.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
+    assert asc.ASC.balanceOf(asc.DENICE) == 0
+    assert asc.ASC.balanceOf(mockTarget) == 0
+    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
 
 
     # Ensure that the hash used with newHashReqNoEth is the same as 

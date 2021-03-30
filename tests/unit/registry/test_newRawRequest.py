@@ -36,10 +36,10 @@ def test_newRawRequest_no_eth(asc, mockTarget):
     assert mockTarget.balance() == 0
     assert asc.r.balance() == 0
 
-    assert asc.ASCoin.balanceOf(asc.BOB) == MAX_TEST_STAKE
-    assert asc.ASCoin.balanceOf(asc.DENICE) == 0
-    assert asc.ASCoin.balanceOf(mockTarget) == 0
-    assert asc.ASCoin.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
+    assert asc.ASC.balanceOf(asc.DENICE) == 0
+    assert asc.ASC.balanceOf(mockTarget) == 0
+    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
 
 
 def test_newRawRequest_pay_with_ASCoin(asc, mockTarget):
@@ -72,10 +72,10 @@ def test_newRawRequest_pay_with_ASCoin(asc, mockTarget):
     assert mockTarget.balance() == 0
     assert asc.r.balance() == 0
 
-    assert asc.ASCoin.balanceOf(asc.BOB) == MAX_TEST_STAKE
-    assert asc.ASCoin.balanceOf(asc.DENICE) == 0
-    assert asc.ASCoin.balanceOf(mockTarget) == 0
-    assert asc.ASCoin.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
+    assert asc.ASC.balanceOf(asc.DENICE) == 0
+    assert asc.ASC.balanceOf(mockTarget) == 0
+    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
 
 
 @given(
@@ -113,10 +113,10 @@ def test_newRawRequest_with_eth_and_pay_ASCoin(asc, mockTarget, ethForCall, payW
     assert mockTarget.balance() == 0
     assert asc.r.balance() == msgValue
 
-    assert asc.ASCoin.balanceOf(asc.BOB) == MAX_TEST_STAKE
-    assert asc.ASCoin.balanceOf(asc.DENICE) == 0
-    assert asc.ASCoin.balanceOf(mockTarget) == 0
-    assert asc.ASCoin.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
+    assert asc.ASC.balanceOf(asc.DENICE) == 0
+    assert asc.ASC.balanceOf(mockTarget) == 0
+    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
 
 
 def test_newRawRequest_rev_target_empty(asc, mockTarget):
@@ -127,14 +127,14 @@ def test_newRawRequest_rev_target_empty(asc, mockTarget):
 
 def test_newRawRequest_rev_target_is_registry(asc, mockTarget):
     callData = mockTarget.setX.encode_input(5)
-    with reverts(REV_MSG_TARGET_REG):
+    with reverts(REV_MSG_TARGET):
         asc.r.newRawRequest(asc.r, callData, False, 0, asc.DENICE, asc.FR_BOB)
 
 
 def test_newRawRequest_rev_target_is_ASCoin(asc, mockTarget):
     callData = mockTarget.setX.encode_input(5)
-    with reverts(REV_MSG_TARGET_REG):
-        asc.r.newRawRequest(asc.ASCoin, callData, False, 0, asc.DENICE, asc.FR_BOB)
+    with reverts(REV_MSG_TARGET):
+        asc.r.newRawRequest(asc.ASC, callData, False, 0, asc.DENICE, asc.FR_BOB)
 
 
 def test_newRawRequest_rev_callData(asc, mockTarget):
