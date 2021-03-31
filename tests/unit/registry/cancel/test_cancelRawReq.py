@@ -3,10 +3,10 @@ from brownie import chain, reverts, web3
 from brownie.test import given, strategy
 
 
-def test_cancel_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
+def test_cancelRawReq_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, msgValue, ethForCall = reqsRaw
     id = 0
-    tx = asc.r.cancel(id, asc.FR_BOB)
+    tx = asc.r.cancelRawReq(id, asc.FR_BOB)
 
     # Should've changed
     reqs = [NULL_REQ, reqEthForCall, reqPayASC, reqPayASCEthForCall]
@@ -40,11 +40,11 @@ def test_cancel_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.r.getCumulRewardsOf(asc.DENICE) == 0
 
 
-def test_cancel_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
+def test_cancelRawReq_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, msgValue, ethForCall = reqsRaw
     id = 1
 
-    tx = asc.r.cancel(id, asc.FR_BOB)
+    tx = asc.r.cancelRawReq(id, asc.FR_BOB)
 
     # Should've changed
     reqs = [reqNoEthForCall, NULL_REQ, reqPayASC, reqPayASCEthForCall]
@@ -78,11 +78,11 @@ def test_cancel_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
 
 
 
-def test_cancel_payASC(asc, stakedMin, mockTarget, reqsRaw):
+def test_cancelRawReq_payASC(asc, stakedMin, mockTarget, reqsRaw):
     reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, msgValue, ethForCall = reqsRaw
     id = 2
 
-    tx = asc.r.cancel(id, asc.FR_BOB)
+    tx = asc.r.cancelRawReq(id, asc.FR_BOB)
 
     # Should've changed
     reqs = [reqNoEthForCall, reqEthForCall, NULL_REQ, reqPayASCEthForCall]
@@ -115,11 +115,11 @@ def test_cancel_payASC(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.r.getCumulRewardsOf(asc.DENICE) == 0
 
 
-def test_cancel_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
+def test_cancelRawReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, msgValue, ethForCall = reqsRaw
     id = 3
 
-    tx = asc.r.cancel(id, asc.FR_BOB)
+    tx = asc.r.cancelRawReq(id, asc.FR_BOB)
 
     # Should've changed
     reqs = [reqNoEthForCall, reqEthForCall, reqPayASC, NULL_REQ]
@@ -150,3 +150,16 @@ def test_cancel_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.r.getCumulRewardsOf(asc.ALICE) == 0
     assert asc.r.getCumulRewardsOf(asc.BOB) == 0
     assert asc.r.getCumulRewardsOf(asc.DENICE) == 0
+
+
+def test_cancelRawReq_rev_not_requester(asc, stakedMin, reqsRaw):
+    with reverts(REV_MSG_NOT_REQUESTER):
+        asc.r.cancelRawReq(2, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+
+
+# If it's already been executed, then Request.requester will be ETH_ADDR
+def test_cancelRawReq_rev_already_executed(asc, stakedMin, reqsRaw):
+    asc.r.cancelRawReq(2, {'from': asc.BOB, 'gasPrice': TEST_GAS_PRICE})
+
+    with reverts(REV_MSG_NOT_REQUESTER):
+        asc.r.cancelRawReq(2, {'from': asc.BOB, 'gasPrice': TEST_GAS_PRICE})

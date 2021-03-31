@@ -183,7 +183,7 @@ def test_executeRawReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsR
     assert asc.r.getEthToASCoinRate() == INIT_ETH_TO_ASCOIN_RATE
 
 
-def test_executeRawReq_rev_already_executeRawReqd(asc, stakedMin, reqsRaw):
+def test_executeRawReq_rev_already_executed(asc, stakedMin, reqsRaw):
     _, staker, __ = stakedMin
     asc.r.executeRawReq(2, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
 

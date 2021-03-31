@@ -14,7 +14,10 @@ def test_executeHashReqNoEth_rev_initEthSent(asc, mockTarget, stakedMin):
     callData = mockTarget.setX.encode_input(5)
     req = (asc.BOB.address, mockTarget.address, callData, True, 1, 0, asc.DENICE.address)
     reqHashBytes = addReqGetHashBytes(asc, req)
-    print(asc.r.newHashReqNoEth(reqHashBytes, {'from': asc.BOB, 'value': 0}).return_value)
+    asc.r.newHashReqNoEth(reqHashBytes, {'from': asc.BOB, 'value': 0})
+
+    with reverts(REV_MSG_NO_ETH):
+        asc.r.executeHashReqNoEth(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
 
 
 def test_executeHashReqNoEth_rev_ethForCall(asc, mockTarget, stakedMin):
@@ -22,7 +25,10 @@ def test_executeHashReqNoEth_rev_ethForCall(asc, mockTarget, stakedMin):
     callData = mockTarget.setX.encode_input(5)
     req = (asc.BOB.address, mockTarget.address, callData, True, 0, 1, asc.DENICE.address)
     reqHashBytes = addReqGetHashBytes(asc, req)
-    print(asc.r.newHashReqNoEth(reqHashBytes, {'from': asc.BOB, 'value': 0}).return_value)
+    asc.r.newHashReqNoEth(reqHashBytes, {'from': asc.BOB, 'value': 0})
+
+    with reverts(REV_MSG_NO_ETH):
+        asc.r.executeHashReqNoEth(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
 
 
 def test_executeHashReqNoEth_rev_payWithASC(asc, mockTarget, stakedMin):
@@ -30,7 +36,7 @@ def test_executeHashReqNoEth_rev_payWithASC(asc, mockTarget, stakedMin):
     callData = mockTarget.setX.encode_input(5)
     req = (asc.BOB.address, mockTarget.address, callData, False, 0, 0, asc.DENICE.address)
     reqHashBytes = addReqGetHashBytes(asc, req)
-    print(asc.r.newHashReqNoEth(reqHashBytes, {'from': asc.BOB, 'value': 0}).return_value)
+    asc.r.newHashReqNoEth(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
     with reverts(REV_MSG_NO_ETH):
         asc.r.executeHashReqNoEth(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
@@ -106,7 +112,7 @@ def test_executeHashReqNoEth_rev_not_executor(asc, stakedMin, reqHashNoEth):
         asc.r.executeHashReqNoEth(0, req, *getIpfsMetaData(asc, req), {'from': asc.DENICE, 'gasPrice': TEST_GAS_PRICE})
 
 
-def test_executeHashReqNoEth_rev_already_executeHashReqNoEthd(asc, stakedMin, reqHashNoEth):
+def test_executeHashReqNoEth_rev_already_executed(asc, stakedMin, reqHashNoEth):
     _, staker, __ = stakedMin
     req, reqHashBytes = reqHashNoEth
 

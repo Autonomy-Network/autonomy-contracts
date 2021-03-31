@@ -59,6 +59,7 @@ REV_MSG_NO_ETH = "Reg: no eth. Nice try ;)"
 REV_MSG_NOT_EXEC = "Registry:not executor or expired"
 REV_MSG_ETHFORCALL_NOT_MSGVALUE = "Reg: ethForCall not msg.value"
 REV_MSG_ETHFORCALL_HIGH = "Reg: ethForCall too high"
+REV_MSG_NOT_REQUESTER = "Reg: not the requester"
 
 
 # ASCoin

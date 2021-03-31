@@ -228,6 +228,12 @@ contract Registry is Shared, ReentrancyGuard {
     }
     
 
+    //////////////////////////////////////////////////////////////
+    //                                                          //
+    //                         Executions                       //
+    //                                                          //
+    //////////////////////////////////////////////////////////////
+
     function executeRawReq(uint id) external validExec nonReentrant returns (uint gasUsed) {
         Request memory r = _rawRequests[id];
         require(r.requester != _ADDR_0, "Reg: already executed");
@@ -243,12 +249,13 @@ contract Registry is Shared, ReentrancyGuard {
         Request memory r,
         bytes memory dataPrefix,
         bytes memory dataSuffix
-    ) external validExec nonReentrant returns (uint gasUsed) {
-        require(
-            getHashedIpfsReq(dataPrefix, getReqBytes(r), dataSuffix) == _hashedIpfsReqsEth[id], 
-            "Reg: request not the same"
-        );
-
+    )
+        external
+        validExec
+        nonReentrant
+        verReq(id, r, dataPrefix, dataSuffix, _hashedIpfsReqsEth)
+        returns (uint gasUsed)
+    {
         gasUsed = _execute(r);
         
         emit HashedReqEthRemoved(id, true);
@@ -260,11 +267,14 @@ contract Registry is Shared, ReentrancyGuard {
         Request memory r,
         bytes memory dataPrefix,
         bytes memory dataSuffix
-    ) external targetNotThis(r.target) validExec nonReentrant returns (uint gasUsed) {
-        require(
-            getHashedIpfsReq(dataPrefix, getReqBytes(r), dataSuffix) == _hashedIpfsReqsNoEth[id], 
-            "Reg: request not the same"
-        );
+    )
+        external
+        validExec
+        nonReentrant
+        targetNotThis(r.target)
+        verReq(id, r, dataPrefix, dataSuffix, _hashedIpfsReqsNoEth)
+        returns (uint gasUsed)
+    {
         require(
             r.initEthSent == 0 &&
             r.ethForCall == 0 &&
@@ -282,15 +292,6 @@ contract Registry is Shared, ReentrancyGuard {
     function _execute(Request memory r) private returns (uint) {
         uint startGas = gasleft();
 
-        // if (reqType == ReqType.Raw) {
-        //     r = _rawRequests[id];
-        // } else if (reqType == ReqType.HashEth) {
-        //     r = _hashedIpfsReqsEth[id];
-        // } else if (reqType == ReqType.HashNoEth) {
-        //     r = _hashedIpfsReqsNoEth[id];
-        // }
-
-        
         // Make the call that the user requested
         // require(r.proxy.finish(true, r.target, callGas, r.callData), "Reg: call failed");
         (bool success, bytes memory returnData) = r.target.call{value: r.ethForCall}(r.callData); 
@@ -364,7 +365,14 @@ contract Registry is Shared, ReentrancyGuard {
         return gasUsed;
     }
     
-    function cancel(uint id) external nonReentrant {
+
+    //////////////////////////////////////////////////////////////
+    //                                                          //
+    //                        Cancellations                     //
+    //                                                          //
+    //////////////////////////////////////////////////////////////
+    
+    function cancelRawReq(uint id) external nonReentrant {
         Request memory r = _rawRequests[id];
         require(msg.sender == r.requester, "Reg: not the requester");
         
@@ -378,24 +386,63 @@ contract Registry is Shared, ReentrancyGuard {
         }
     }
     
+    function cancelHashReqEth(
+        uint id,
+        Request memory r,
+        bytes memory dataPrefix,
+        bytes memory dataSuffix
+    )
+        external
+        nonReentrant
+        verReq(id, r, dataPrefix, dataSuffix, _hashedIpfsReqsEth)
+    {
+        require(msg.sender == r.requester, "Reg: not the requester");
+        
+        // Cancel the request
+        emit HashedReqEthRemoved(id, false);
+        delete _hashedIpfsReqsEth[id];
+        
+        // Send refund
+        if (r.initEthSent > 0) {
+            r.requester.transfer(r.initEthSent);
+        }
+    }
     
-    // ----------- Setters -----------
+    function cancelHashReqNoEth(
+        uint id,
+        Request memory r,
+        bytes memory dataPrefix,
+        bytes memory dataSuffix
+    )
+        external
+        nonReentrant
+        verReq(id, r, dataPrefix, dataSuffix, _hashedIpfsReqsNoEth)
+    {
+        require(msg.sender == r.requester, "Reg: not the requester");
+        
+        // Cancel the request
+        emit HashedReqNoEthRemoved(id, false);
+        delete _hashedIpfsReqsNoEth[id];
+    }
+    
+    
+    // // ----------- Setters -----------
 
-    function setBaseBountyAsEth(uint newBaseBountyAsEth) external nonReentrant returns (uint) {
-        _baseBountyAsEth = newBaseBountyAsEth;
-    }
+    // function setBaseBountyAsEth(uint newBaseBountyAsEth) external nonReentrant returns (uint) {
+    //     _baseBountyAsEth = newBaseBountyAsEth;
+    // }
     
-    function setRequesterReward(uint newRequesterReward) external nonReentrant returns (uint) {
-        _requesterReward = newRequesterReward;
-    }
+    // function setRequesterReward(uint newRequesterReward) external nonReentrant returns (uint) {
+    //     _requesterReward = newRequesterReward;
+    // }
     
-    function setExecutorReward(uint newEexecutorReward) external nonReentrant returns (uint) {
-        _executorReward = newEexecutorReward;
-    }
+    // function setExecutorReward(uint newEexecutorReward) external nonReentrant returns (uint) {
+    //     _executorReward = newEexecutorReward;
+    // }
     
-    function setEthToASCoinRate(uint newEthToASCoinRate) external nonReentrant returns (uint) {
-        _ethToASCoinRate = newEthToASCoinRate;
-    }
+    // function setEthToASCoinRate(uint newEthToASCoinRate) external nonReentrant returns (uint) {
+    //     _ethToASCoinRate = newEthToASCoinRate;
+    // }
 
 
     // ----------- Getters -----------
@@ -432,6 +479,13 @@ contract Registry is Shared, ReentrancyGuard {
         return a / b;
     }
 
+
+    //////////////////////////////////////////////////////////////
+    //                                                          //
+    //                          Modifiers                       //
+    //                                                          //
+    //////////////////////////////////////////////////////////////
+
     modifier targetNotThis(address target) {
         require(target != address(this) && target != address(_ASCoin), "Reg: nice try ;)");
         _;
@@ -452,6 +506,23 @@ contract Registry is Shared, ReentrancyGuard {
 
     modifier validExec() {
         require(_stakeMan.isCurExec(msg.sender), "Registry:not executor or expired");
+        _;
+    }
+
+    // Verify that a request is the same as the one initially stored. This also
+    // implicitly checks that the request hasn't been deleted as the hash of the
+    // request isn't going to be address(0)
+    modifier verReq(
+        uint id,
+        Request memory r,
+        bytes memory dataPrefix,
+        bytes memory dataSuffix,
+        bytes32[] storage hashedIpfsReqs
+    ) {
+        require(
+            getHashedIpfsReq(dataPrefix, getReqBytes(r), dataSuffix) == hashedIpfsReqs[id], 
+            "Reg: request not the same"
+        );
         _;
     }
     
