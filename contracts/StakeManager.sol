@@ -69,7 +69,12 @@ contract StakeManager is IStakeManager, Shared {
     
     function isCurExec(address addr) external view override returns (bool) {
         // TODO: Maybe do executor ex = _executor so that the storage is only loaded once?
-        if (_executor.addr == addr && _executor.forEpoch == getCurEpoch()) {
+        // If there's no stakes, allow anyone to be the executor so that a random
+        // person can bootstrap the network and nobody needs to be sent any coins
+        if (
+            _stakes.length == 0 ||
+            (_executor.addr == addr && _executor.forEpoch == getCurEpoch())
+        ) {
             return true;
         }
         return false;
@@ -141,13 +146,6 @@ contract StakeManager is IStakeManager, Shared {
         return (randNum, idxOfExecutor, exec);
     }
     
-    // /// @dev    Removes a stake from the stake pool and reduces the length of the array.
-    // ///         Order of addresses in the pool don't matter
-    // function _removeStakeFromStakes(uint idx) private {
-    //     _stakes[idx] = _stakes[_stakes.length-1];
-    //     _stakes.pop();
-    // }
-
     modifier updateExec() {
         // Need to update executor at the start of stake/unstake as opposed to the
         // end of the fcns because otherwise, for the 1st stake/unstake tx in an 

@@ -9,13 +9,13 @@ def test_updateExecutor_no_stake_do_nothing(a, asc):
     assert asc.sm.getTotalStaked() == 0
     assert asc.sm.getExecutor() == NULL_EXEC
     for addr in a:
-        assert asc.sm.isCurExec(addr) == False
+        assert asc.sm.isCurExec(addr) == True
 
     asc.sm.updateExecutor(asc.FR_ALICE)
     
     assert asc.sm.getExecutor() == NULL_EXEC
     for addr in a:
-        assert asc.sm.isCurExec(addr) == False
+        assert asc.sm.isCurExec(addr) == True
 
 
 def test_updateExecutor_stakedMin(asc, stakedMin):
@@ -46,8 +46,9 @@ def test_updateExecutor_same_epoch(a, asc, stakedMin):
     asc.sm.unstake([i for i in range(numStanStakes)], asc.FR_ALICE)
     
     assert asc.sm.getExecutor() == (staker, getEpoch(web3.eth.blockNumber))
+    # isCurExec always true when no stake
     for addr in a:
-        assert asc.sm.isCurExec(addr) == (addr == staker)
+        assert asc.sm.isCurExec(addr) == True
     
     staker2 = asc.BOB
     asc.sm.stake(INIT_NUM_STAKES, asc.FR_BOB)
