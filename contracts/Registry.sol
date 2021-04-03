@@ -1,9 +1,8 @@
-pragma solidity ^0.7.0;
-pragma abicoder v2;
+pragma solidity ^0.8;
 
 
-import "OpenZeppelin/openzeppelin-contracts@3.3.0-solc-0.7/contracts/token/ERC20/IERC20.sol";
-import "OpenZeppelin/openzeppelin-contracts@3.3.0-solc-0.7/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "../interfaces/IStakeManager.sol";
 // import "./ASCProxy.sol";
 import "./Vault.sol";
@@ -343,11 +342,11 @@ contract Registry is Shared, ReentrancyGuard {
         bool success;
         bytes memory returnData;
         if (r.verifySender) {
-            (success, returnData) = _veriForwarder.forward{value: r.ethForCall}(r.target, r.ethForCall, r.callData);
+            _veriForwarder.forward{value: r.ethForCall}(r.target, r.ethForCall, r.callData);
         } else {
-            (success, returnData) = _unveriForwarder.forward{value: r.ethForCall}(r.target, r.ethForCall, r.callData);
+            _unveriForwarder.forward{value: r.ethForCall}(r.target, r.ethForCall, r.callData);
         }
-        require(success, string(returnData));
+        // require(success, returnData);
         
         // Store ASCoin rewards
         // It's cheaper to store the cumulative rewards than it is to send
@@ -404,7 +403,6 @@ contract Registry is Shared, ReentrancyGuard {
             uint ethReceived = r.initEthSent - r.ethForCall;
 
             // Send the executor their bounty
-            emit Test(ethReceived, ethNeeded);
             require(ethReceived >= ethNeeded, "Reg: not enough eth sent");
             payable(msg.sender).transfer(ethNeeded);
 
@@ -417,7 +415,6 @@ contract Registry is Shared, ReentrancyGuard {
 
         return gasUsed;
     }
-    event Test(uint a, uint b);
 
     //////////////////////////////////////////////////////////////
     //                                                          //
