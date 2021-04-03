@@ -19,6 +19,7 @@ ERROR_FACTOR = 1.000000000000001
 REV_MSG_NZ_UINT = "Shared: uint input is empty"
 REV_MSG_NZ_ADDR = "Shared: address input is empty"
 REV_MSG_NZ_BYTES = "Shared: bytes input is empty"
+REV_MSG_NZ_BYTES32 = "Shared: bytes32 input is empty"
 REV_MSG_NZ_UINT_ARR = "Shared: uint arr input is empty"
 
 
@@ -43,7 +44,7 @@ INIT_BASE_BOUNTY = 10**15
 INIT_REQUESTER_REWARD = 10**19
 INIT_EXECUTOR_REWARD = 10**20
 INIT_ETH_TO_ASCOIN_RATE = 18000 * E_18
-NULL_REQ = (ADDR_0, ADDR_0, NULL_BYTES, False, 0, 0, ADDR_0)
+NULL_REQ = (ADDR_0, ADDR_0, NULL_BYTES, False, False, 0, 0, ADDR_0)
 # NULL_REQ_BYTES = b'\x80\x03O%\xfc\xea\xbf-\x0e\xdfP5\xb2"\xe6\x93$\x9f\x1b\xd3\x0bq\xe2\xc8\xfb\x07\x8a\xad9\x83\xd4j'
 # NULL_REQ_HEX = '0x' + NULL_REQ_BYTES.hex()
 NULL_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000'
@@ -60,6 +61,7 @@ REV_MSG_NOT_EXEC = "Registry:not executor or expired"
 REV_MSG_ETHFORCALL_NOT_MSGVALUE = "Reg: ethForCall not msg.value"
 REV_MSG_ETHFORCALL_HIGH = "Reg: ethForCall too high"
 REV_MSG_NOT_REQUESTER = "Reg: not the requester"
+REV_MSG_CALLDATA_NOT_VER = "Reg: calldata not verified"
 
 
 # ASCoin

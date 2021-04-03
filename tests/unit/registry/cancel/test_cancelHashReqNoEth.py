@@ -42,7 +42,7 @@ def test_cancelHashReqNoEth_rev_req_not_the_same(asc, stakedMin, mockTarget, req
     req, reqHashBytes = reqHashNoEth
     # Alter the request
     invalidReq = list(req)
-    invalidReq[4] = 1
+    invalidReq[6] = 1
     id = 0
 
     with reverts(REV_MSG_NOT_SAME):

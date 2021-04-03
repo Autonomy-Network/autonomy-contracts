@@ -8,7 +8,7 @@ import base58 as b58
 
 
 @given(
-    hashedIpfsReq=strategy('bytes32'),
+    hashedIpfsReq=strategy('bytes32', exclude=bytes(32)),
     sender=strategy('address')
 )
 def test_newHashReqNoEth(asc, mockTarget, hashedIpfsReq, sender):
@@ -43,7 +43,7 @@ def test_newHashReqNoEth(asc, mockTarget, hashedIpfsReq, sender):
 
 def test_newHashReqNoEth_real(asc, mockTarget):
     callData = mockTarget.setX.encode_input(5)
-    req = (asc.BOB.address, mockTarget, callData, True, 0, 0, asc.DENICE)
+    req = (asc.BOB.address, mockTarget, callData, False, True, 0, 0, asc.DENICE)
     reqBytes = asc.r.getReqBytes(req)
 
     with ipfshttpclient.connect() as client:
@@ -87,9 +87,15 @@ def test_newHashReqNoEth_real(asc, mockTarget):
     dataPrefix = ipfsBlock[:reqBytesIdx]
     dataSuffix = ipfsBlock[reqBytesIdx + len(reqBytes) : ]
 
-    tx2 = asc.r.newHashReqWithEth(mockTarget, callData, True, 0, asc.DENICE, dataPrefix, dataSuffix, asc.FR_BOB)
+    tx2 = asc.r.newHashReqWithEth(mockTarget, callData, False, True, 0, asc.DENICE, dataPrefix, dataSuffix, asc.FR_BOB)
 
     assert asc.r.getHashedIpfsReqEth(0) == hash
+
+
+def test_newHashReqNoEth_rev_empty_hashedIpfsReq(asc, mockTarget):
+    with reverts(REV_MSG_NZ_BYTES32):
+        asc.r.newHashReqNoEth("")
+
 
 # import time
 # # Ensure that everything still works

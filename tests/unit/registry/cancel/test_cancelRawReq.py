@@ -4,19 +4,19 @@ from brownie.test import given, strategy
 
 
 def test_cancelRawReq_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
-    reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, msgValue, ethForCall = reqsRaw
+    reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender, msgValue, ethForCall = reqsRaw
     id = 0
     tx = asc.r.cancelRawReq(id, asc.FR_BOB)
 
     # Should've changed
-    reqs = [NULL_REQ, reqEthForCall, reqPayASC, reqPayASCEthForCall]
+    reqs = [NULL_REQ, reqEthForCall, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender]
     assert asc.r.getRawRequests() == reqs
-    assert asc.r.getRawRequestsLen() == 4
+    assert asc.r.getRawRequestsLen() == 5
     for i, req in enumerate(reqs):
         assert asc.r.getRawRequest(i) == req
     assert tx.events["RawReqRemoved"][0].values() == [id, False]
 
-    assert asc.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - ethForCall + msgValue
+    assert asc.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (2 * ethForCall) + msgValue
 
     # Shouldn't've changed
     assert mockTarget.x() == 0
@@ -41,19 +41,19 @@ def test_cancelRawReq_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
 
 
 def test_cancelRawReq_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
-    reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, msgValue, ethForCall = reqsRaw
+    reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender, msgValue, ethForCall = reqsRaw
     id = 1
 
     tx = asc.r.cancelRawReq(id, asc.FR_BOB)
 
     # Should've changed
-    reqs = [reqNoEthForCall, NULL_REQ, reqPayASC, reqPayASCEthForCall]
+    reqs = [reqNoEthForCall, NULL_REQ, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender]
     assert asc.r.getRawRequests() == reqs
-    assert asc.r.getRawRequestsLen() == 4
+    assert asc.r.getRawRequestsLen() == 5
     for i, req in enumerate(reqs):
         assert asc.r.getRawRequest(i) == req
     assert tx.events["RawReqRemoved"][0].values() == [id, False]
-    assert asc.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - ethForCall + msgValue
+    assert asc.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (2 * ethForCall) + msgValue
 
     # Shouldn't've changed
     assert mockTarget.x() == 0
@@ -79,15 +79,15 @@ def test_cancelRawReq_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
 
 
 def test_cancelRawReq_payASC(asc, stakedMin, mockTarget, reqsRaw):
-    reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, msgValue, ethForCall = reqsRaw
+    reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender, msgValue, ethForCall = reqsRaw
     id = 2
 
     tx = asc.r.cancelRawReq(id, asc.FR_BOB)
 
     # Should've changed
-    reqs = [reqNoEthForCall, reqEthForCall, NULL_REQ, reqPayASCEthForCall]
+    reqs = [reqNoEthForCall, reqEthForCall, NULL_REQ, reqPayASCEthForCall, reqPayASCEthForCallVerifySender]
     assert asc.r.getRawRequests() == reqs
-    assert asc.r.getRawRequestsLen() == 4
+    assert asc.r.getRawRequestsLen() == 5
     for i, req in enumerate(reqs):
         assert asc.r.getRawRequest(i) == req
     assert tx.events["RawReqRemoved"][0].values() == [id, False]
@@ -96,7 +96,7 @@ def test_cancelRawReq_payASC(asc, stakedMin, mockTarget, reqsRaw):
     assert mockTarget.x() == 0
 
     assert asc.ALICE.balance() == INIT_ETH_BAL
-    assert asc.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - ethForCall
+    assert asc.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (2 * ethForCall)
     assert asc.DENICE.balance() == INIT_ETH_BAL
 
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
@@ -116,19 +116,56 @@ def test_cancelRawReq_payASC(asc, stakedMin, mockTarget, reqsRaw):
 
 
 def test_cancelRawReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
-    reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, msgValue, ethForCall = reqsRaw
+    reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender, msgValue, ethForCall = reqsRaw
     id = 3
 
     tx = asc.r.cancelRawReq(id, asc.FR_BOB)
 
     # Should've changed
-    reqs = [reqNoEthForCall, reqEthForCall, reqPayASC, NULL_REQ]
+    reqs = [reqNoEthForCall, reqEthForCall, reqPayASC, NULL_REQ, reqPayASCEthForCallVerifySender]
     assert asc.r.getRawRequests() == reqs
-    assert asc.r.getRawRequestsLen() == 4
+    assert asc.r.getRawRequestsLen() == 5
     for i, req in enumerate(reqs):
         assert asc.r.getRawRequest(i) == req
     assert tx.events["RawReqRemoved"][0].values() == [id, False]
-    assert asc.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - ethForCall + ethForCall
+    assert asc.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (2 * ethForCall) + ethForCall
+
+    # Shouldn't've changed
+    assert mockTarget.x() == 0
+
+    assert asc.ALICE.balance() == INIT_ETH_BAL
+    assert asc.DENICE.balance() == INIT_ETH_BAL
+
+    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
+    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
+    assert asc.ASC.balanceOf(asc.DENICE) == 0
+    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(mockTarget) == 0
+
+    assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
+    assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
+    assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
+    assert asc.r.getEthToASCoinRate() == INIT_ETH_TO_ASCOIN_RATE
+
+    assert asc.r.getCumulRewardsOf(asc.ALICE) == 0
+    assert asc.r.getCumulRewardsOf(asc.BOB) == 0
+    assert asc.r.getCumulRewardsOf(asc.DENICE) == 0
+
+
+def test_cancelRawReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, mockTarget, reqsRaw):
+    reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender, msgValue, ethForCall = reqsRaw
+    id = 4
+
+    tx = asc.r.cancelRawReq(id, asc.FR_BOB)
+
+    # Should've changed
+    reqs = [reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, NULL_REQ]
+    assert asc.r.getRawRequests() == reqs
+    assert asc.r.getRawRequestsLen() == 5
+    for i, req in enumerate(reqs):
+        assert asc.r.getRawRequest(i) == req
+    assert tx.events["RawReqRemoved"][0].values() == [id, False]
+    assert asc.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (2 * ethForCall) + ethForCall
 
     # Shouldn't've changed
     assert mockTarget.x() == 0

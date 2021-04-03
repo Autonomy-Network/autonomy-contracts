@@ -7,6 +7,7 @@ import "OpenZeppelin/openzeppelin-contracts@3.3.0-solc-0.7/contracts/utils/Reent
 import "../interfaces/IStakeManager.sol";
 // import "./ASCProxy.sol";
 import "./Vault.sol";
+import "./Forwarder.sol";
 import "./abstract/Shared.sol";
 
 
@@ -27,6 +28,8 @@ contract Registry is Shared, ReentrancyGuard {
     IERC20 private _ASCoin;
     IStakeManager private _stakeMan;
     Vault private _vault;
+    Forwarder private _veriForwarder;
+    Forwarder private _unveriForwarder;
     // uint private _numRequests;
     // mapping(uint => Request) private _idToRequest;
     Request[] private _rawRequests;
@@ -55,6 +58,7 @@ contract Registry is Shared, ReentrancyGuard {
         address payable requester;
         address target;
         bytes callData;
+        bool verifySender;
         bool payWithASC;
         uint initEthSent;
         uint ethForCall;
@@ -92,6 +96,8 @@ contract Registry is Shared, ReentrancyGuard {
         _executorReward = executorReward;
         _ethToASCoinRate = ethToASCoinRate;
         _vault = vault;
+        _veriForwarder = new Forwarder();
+        _unveriForwarder = new Forwarder();
     }
 
     // setRewards
@@ -105,25 +111,44 @@ contract Registry is Shared, ReentrancyGuard {
     function newRawRequest(
         address target,
         bytes calldata callData,
+        bool verifySender,
         bool payWithASC,
         uint ethForCall,
         address payable referer
-    ) external payable nzAddr(target) targetNotThis(target) nzBytes(callData) validEth(payWithASC, ethForCall) returns (uint id) {
+    )
+        external
+        payable
+        // validCalldata(verifySender, msg.sender, callData)
+        nzAddr(target)
+        targetNotThis(target)
+        validEth(payWithASC, ethForCall)
+        returns (uint id)
+    {
+        // Annoyingly, this has to be pasted from validCalldata because of
+        // a 'stack too deep' error otherwise
+        if (verifySender) {
+            require(abi.decode(callData[4:36], (address)) == msg.sender, "Reg: calldata not verified");
+        }
+
         id = _rawRequests.length;
-        _newRawRequest(target, callData, payWithASC, msg.value, ethForCall, referer);
+        // _newRawRequest(target, callData, verifySender, payWithASC, msg.value, ethForCall, referer);
+        emit RawReqAdded(id);
+        // _rawRequests.push(Request(payable(msg.sender), target, callData, verifySender, payWithASC, msg.value, ethForCall, referer));
+        _rawRequests.push(Request(payable(msg.sender), target, callData, verifySender, payWithASC, msg.value, ethForCall, referer));
     }
 
-    function _newRawRequest(
-        address target,
-        bytes calldata callData,
-        bool payWithASC,
-        uint initEthSent,
-        uint ethForCall,
-        address payable referer
-    ) private {
-        emit RawReqAdded(_rawRequests.length);
-        _rawRequests.push(Request(payable(msg.sender), target, callData, payWithASC, initEthSent, ethForCall, referer));
-    }
+    // function _newRawRequest(
+    //     address target,
+    //     bytes calldata callData,
+    //     bool verifySender,
+    //     bool payWithASC,
+    //     uint initEthSent,
+    //     uint ethForCall,
+    //     address payable referer
+    // ) private {
+    //     emit RawReqAdded(_rawRequests.length);
+    //     _rawRequests.push(Request(payable(msg.sender), target, callData, verifySender, payWithASC, initEthSent, ethForCall, referer));
+    // }
 
     function getRawRequests() external view returns (Request[] memory) {
         return _rawRequests;
@@ -147,6 +172,7 @@ contract Registry is Shared, ReentrancyGuard {
     function newHashReqWithEth(
         address target,
         bytes calldata callData,
+        bool verifySender,
         bool payWithASC,
         uint ethForCall,
         address payable referer,
@@ -154,8 +180,14 @@ contract Registry is Shared, ReentrancyGuard {
         bytes memory dataSuffix
     // Stack too deep with the extra nz checks
     // ) external payable nzAddr(target) targetNotThis(target) nzBytes(callData) validEth(ethForCall) returns (uint id) {
-    ) external payable targetNotThis(target) validEth(payWithASC, ethForCall) returns (uint id) {
-        Request memory r = Request(payable(msg.sender), target, callData, payWithASC, msg.value, ethForCall, referer);
+    )
+        external
+        payable
+        targetNotThis(target)
+        validEth(payWithASC, ethForCall)
+        returns (uint id)
+    {
+        Request memory r = Request(payable(msg.sender), target, callData, verifySender, payWithASC, msg.value, ethForCall, referer);
         bytes32 hashedIpfsReq = getHashedIpfsReq(dataPrefix, getReqBytes(r), dataSuffix);
 
         id = _hashedIpfsReqsEth.length;
@@ -182,7 +214,7 @@ contract Registry is Shared, ReentrancyGuard {
     //                                                          //
     //////////////////////////////////////////////////////////////
 
-    function newHashReqNoEth(bytes32 hashedIpfsReq) external returns (uint id) {
+    function newHashReqNoEth(bytes32 hashedIpfsReq) external nzBytes32(hashedIpfsReq) returns (uint id) {
         id = _hashedIpfsReqsNoEth.length;
         _hashedIpfsReqsNoEth.push(hashedIpfsReq);
         emit HashedReqNoEthAdded(id);
@@ -244,15 +276,24 @@ contract Registry is Shared, ReentrancyGuard {
         delete _rawRequests[id];
     }
 
+    /**
+     * @dev validCalldata needs to be before anything that would convert it to memory
+     *      since that is persistent and would prevent validCalldata, that requries
+     *      calldata, from working. Can't do the check in _execute for the same reason.
+     *      Note: targetNotThis and validEth are used in newHashReqWithEth.
+     *      validCalldata is only used here because it causes an unknown
+     *      'InternalCompilerError' when using it with newHashReqWithEth
+     */
     function executeHashReqEth(
         uint id,
-        Request memory r,
+        Request calldata r,
         bytes memory dataPrefix,
         bytes memory dataSuffix
     )
         external
         validExec
         nonReentrant
+        validCalldata(r)
         verReq(id, r, dataPrefix, dataSuffix, _hashedIpfsReqsEth)
         returns (uint gasUsed)
     {
@@ -262,15 +303,21 @@ contract Registry is Shared, ReentrancyGuard {
         delete _hashedIpfsReqsEth[id];
     }
 
+    /**
+     * @dev validCalldata needs to be before anything that would convert it to memory
+     *      since that is persistent and would prevent validCalldata, that requries
+     *      calldata, from working. Can't do the check in _execute for the same reason
+     */
     function executeHashReqNoEth(
         uint id,
-        Request memory r,
+        Request calldata r,
         bytes memory dataPrefix,
         bytes memory dataSuffix
     )
         external
         validExec
         nonReentrant
+        validCalldata(r)
         targetNotThis(r.target)
         verReq(id, r, dataPrefix, dataSuffix, _hashedIpfsReqsNoEth)
         returns (uint gasUsed)
@@ -293,8 +340,13 @@ contract Registry is Shared, ReentrancyGuard {
         uint startGas = gasleft();
 
         // Make the call that the user requested
-        // require(r.proxy.finish(true, r.target, callGas, r.callData), "Reg: call failed");
-        (bool success, bytes memory returnData) = r.target.call{value: r.ethForCall}(r.callData); 
+        bool success;
+        bytes memory returnData;
+        if (r.verifySender) {
+            (success, returnData) = _veriForwarder.forward{value: r.ethForCall}(r.target, r.ethForCall, r.callData);
+        } else {
+            (success, returnData) = _unveriForwarder.forward{value: r.ethForCall}(r.target, r.ethForCall, r.callData);
+        }
         require(success, string(returnData));
         
         // Store ASCoin rewards
@@ -352,6 +404,7 @@ contract Registry is Shared, ReentrancyGuard {
             uint ethReceived = r.initEthSent - r.ethForCall;
 
             // Send the executor their bounty
+            emit Test(ethReceived, ethNeeded);
             require(ethReceived >= ethNeeded, "Reg: not enough eth sent");
             payable(msg.sender).transfer(ethNeeded);
 
@@ -364,7 +417,7 @@ contract Registry is Shared, ReentrancyGuard {
 
         return gasUsed;
     }
-    
+    event Test(uint a, uint b);
 
     //////////////////////////////////////////////////////////////
     //                                                          //
@@ -455,6 +508,14 @@ contract Registry is Shared, ReentrancyGuard {
         return address(_stakeMan);
     }
     
+    function getVerifiedForwarder() external view returns (address) {
+        return address(_veriForwarder);
+    }
+    
+    function getUnverifiedForwarder() external view returns (address) {
+        return address(_unveriForwarder);
+    }
+    
     function getBaseBountyAsEth() external view returns (uint) {
         return _baseBountyAsEth;
     }
@@ -500,6 +561,13 @@ contract Registry is Shared, ReentrancyGuard {
             // When paying with ETH, ethForCall needs to be lower than msg.value
             // since some ETH is needed to be left over for paying the fee + bounty
             require(ethForCall <= msg.value, "Reg: ethForCall too high");
+        }
+        _;
+    }
+
+    modifier validCalldata(Request calldata r) {
+        if (r.verifySender) {
+            require(abi.decode(r.callData[4:36], (address)) == r.requester, "Reg: calldata not verified");
         }
         _;
     }

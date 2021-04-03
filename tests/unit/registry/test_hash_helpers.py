@@ -55,14 +55,14 @@ def test_recreate_request_CID(asc, reqsRaw):
     user=strategy('address'),
     target=strategy('address'),
     callData=strategy('bytes'),
+    verifySender=strategy('bool'),
     payWithASC=strategy('bool'),
     msgValue=strategy('uint256', max_value=E_18),
     ethForCall=strategy('uint256', max_value=E_18),
     referer=strategy('address')
 )
-def test_getReqFromBytes(asc, mockTarget, user, target, callData, payWithASC, msgValue, ethForCall, referer):
-    req = (user, target, bytesToHex(callData), payWithASC, msgValue, ethForCall, referer)
+def test_getReqFromBytes(asc, mockTarget, user, target, callData, verifySender, payWithASC, msgValue, ethForCall, referer):
+    req = (user, target, bytesToHex(callData), verifySender, payWithASC, msgValue, ethForCall, referer)
     reqBytes = asc.r.getReqBytes(req)
-    print(asc.r.getReqFromBytes(reqBytes))
     
     assert asc.r.getReqFromBytes(reqBytes) == req

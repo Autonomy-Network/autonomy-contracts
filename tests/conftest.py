@@ -49,6 +49,8 @@ def deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Vault, Registry):
         INIT_EXECUTOR_REWARD,
         INIT_ETH_TO_ASCOIN_RATE
     )
+    asc.vf = asc.r.getVerifiedForwarder()
+    asc.uvf = asc.r.getUnverifiedForwarder()
     asc.v.setAuthorisation(asc.r, True)
 
     # For enabling rewards
@@ -173,7 +175,7 @@ def vulnerableStaked(asc, vulnerableStaker):
 # to use ASC
 @pytest.fixture(scope="module")
 def mockTarget(asc, MockTarget):
-    return asc.DEPLOYER.deploy(MockTarget)
+    return asc.DEPLOYER.deploy(MockTarget, asc.uvf)
 
 
 # Need to test nonReentrant modifier
@@ -187,29 +189,33 @@ def mockReentrancyAttack(asc, MockReentrancyAttack):
 @pytest.fixture(scope="module")
 def reqsRaw(asc, mockTarget):
     ethForCall = E_18
-    msgValue = 2 * ethForCall
+    msgValue = 1.5 * ethForCall
 
     callData = mockTarget.setX.encode_input(5)
-    asc.r.newRawRequest(mockTarget, callData, False, 0, asc.DENICE, {'from': asc.BOB, 'value': msgValue})
-    reqNoEthForCall = (asc.BOB.address, mockTarget.address, callData, False, msgValue, 0, asc.DENICE.address)
+    asc.r.newRawRequest(mockTarget, callData, False, False, 0, asc.DENICE, {'from': asc.BOB, 'value': msgValue})
+    reqNoEthForCall = (asc.BOB.address, mockTarget.address, callData, False, False, msgValue, 0, asc.DENICE.address)
 
     callData = mockTarget.setXPay.encode_input(5)
-    asc.r.newRawRequest(mockTarget, callData, False, ethForCall, asc.DENICE, {'from': asc.BOB, 'value': msgValue})
-    reqEthForCall = (asc.BOB.address, mockTarget.address, callData, False, msgValue, ethForCall, asc.DENICE.address)
+    asc.r.newRawRequest(mockTarget, callData, False, False, ethForCall, asc.DENICE, {'from': asc.BOB, 'value': msgValue})
+    reqEthForCall = (asc.BOB.address, mockTarget.address, callData, False, False, msgValue, ethForCall, asc.DENICE.address)
 
     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 
     callData = mockTarget.setX.encode_input(5)
-    asc.r.newRawRequest(mockTarget, callData, True, 0, asc.DENICE, {'from': asc.BOB})
-    reqPayASCNoEthForCall = (asc.BOB.address, mockTarget.address, callData, True, 0, 0, asc.DENICE.address)
+    asc.r.newRawRequest(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB})
+    reqPayASCNoEthForCall = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
 
     callData = mockTarget.setXPay.encode_input(5)
-    asc.r.newRawRequest(mockTarget, callData, True, ethForCall, asc.DENICE, {'from': asc.BOB, 'value': ethForCall})
-    reqPayASCEthForCall = (asc.BOB.address, mockTarget.address, callData, True, ethForCall, ethForCall, asc.DENICE.address)
+    asc.r.newRawRequest(mockTarget, callData, False, True, ethForCall, asc.DENICE, {'from': asc.BOB, 'value': ethForCall})
+    reqPayASCEthForCall = (asc.BOB.address, mockTarget.address, callData, False, True, ethForCall, ethForCall, asc.DENICE.address)
 
-    assert asc.r.balance() == (msgValue * 2) + ethForCall
+    callData = mockTarget.setAddrPay.encode_input(asc.BOB)
+    asc.r.newRawRequest(mockTarget, callData, True, True, ethForCall, asc.DENICE, {'from': asc.BOB, 'value': ethForCall})
+    reqPayASCEthForCallVerifySender = (asc.BOB.address, mockTarget.address, callData, True, True, ethForCall, ethForCall, asc.DENICE.address)
 
-    return reqNoEthForCall, reqEthForCall, reqPayASCNoEthForCall, reqPayASCEthForCall, msgValue, ethForCall
+    assert asc.r.balance() == (msgValue * 2) + (ethForCall * 2)
+
+    return reqNoEthForCall, reqEthForCall, reqPayASCNoEthForCall, reqPayASCEthForCall, reqPayASCEthForCallVerifySender, msgValue, ethForCall
 
 
 # Need to have some hashed requests to test executeHashReqEth. Need a request that has ethForCall
@@ -217,27 +223,31 @@ def reqsRaw(asc, mockTarget):
 @pytest.fixture(scope="module")
 def reqsHashEth(asc, mockTarget):
     ethForCall = E_18
-    msgValue = 2 * ethForCall
+    msgValue = 1.5 * ethForCall
 
     callData = mockTarget.setX.encode_input(5)
-    reqNoEthForCall = (asc.BOB.address, mockTarget.address, callData, False, msgValue, 0, asc.DENICE.address)
-    tx = asc.r.newHashReqWithEth(mockTarget, callData, False, 0, asc.DENICE, *getIpfsMetaData(asc, reqNoEthForCall), {'from': asc.BOB, 'value': msgValue})
+    reqNoEthForCall = (asc.BOB.address, mockTarget.address, callData, False, False, msgValue, 0, asc.DENICE.address)
+    tx = asc.r.newHashReqWithEth(mockTarget, callData, False, False, 0, asc.DENICE, *getIpfsMetaData(asc, reqNoEthForCall), {'from': asc.BOB, 'value': msgValue})
 
     callData = mockTarget.setXPay.encode_input(5)
-    reqEthForCall = (asc.BOB.address, mockTarget.address, callData, False, msgValue, ethForCall, asc.DENICE.address)
-    tx = asc.r.newHashReqWithEth(mockTarget, callData, False, ethForCall, asc.DENICE, *getIpfsMetaData(asc, reqEthForCall), {'from': asc.BOB, 'value': msgValue})
+    reqEthForCall = (asc.BOB.address, mockTarget.address, callData, False, False, msgValue, ethForCall, asc.DENICE.address)
+    tx = asc.r.newHashReqWithEth(mockTarget, callData, False, False, ethForCall, asc.DENICE, *getIpfsMetaData(asc, reqEthForCall), {'from': asc.BOB, 'value': msgValue})
 
     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
     
     callData = mockTarget.setX.encode_input(5)
-    reqPayASCNoEthForCall = (asc.BOB.address, mockTarget.address, callData, True, 0, 0, asc.DENICE.address)
-    tx = asc.r.newHashReqWithEth(mockTarget, callData, True, 0, asc.DENICE, *getIpfsMetaData(asc, reqPayASCNoEthForCall), {'from': asc.BOB, 'value': 0})
+    reqPayASCNoEthForCall = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+    tx = asc.r.newHashReqWithEth(mockTarget, callData, False, True, 0, asc.DENICE, *getIpfsMetaData(asc, reqPayASCNoEthForCall), {'from': asc.BOB, 'value': 0})
 
     callData = mockTarget.setXPay.encode_input(5)
-    reqPayASCEthForCall = (asc.BOB.address, mockTarget.address, callData, True, ethForCall, ethForCall, asc.DENICE.address)
-    tx = asc.r.newHashReqWithEth(mockTarget, callData, True, ethForCall, asc.DENICE, *getIpfsMetaData(asc, reqPayASCEthForCall), {'from': asc.BOB, 'value': ethForCall})
+    reqPayASCEthForCall = (asc.BOB.address, mockTarget.address, callData, False, True, ethForCall, ethForCall, asc.DENICE.address)
+    tx = asc.r.newHashReqWithEth(mockTarget, callData, False, True, ethForCall, asc.DENICE, *getIpfsMetaData(asc, reqPayASCEthForCall), {'from': asc.BOB, 'value': ethForCall})
 
-    reqs = [reqNoEthForCall, reqEthForCall, reqPayASCNoEthForCall, reqPayASCEthForCall]
+    callData = mockTarget.setAddrPay.encode_input(asc.BOB)
+    reqPayASCEthForCallVerifySender = (asc.BOB.address, mockTarget.address, callData, True, True, ethForCall, ethForCall, asc.DENICE.address)
+    tx = asc.r.newHashReqWithEth(mockTarget, callData, True, True, ethForCall, asc.DENICE, *getIpfsMetaData(asc, reqPayASCEthForCall), {'from': asc.BOB, 'value': ethForCall})
+
+    reqs = [reqNoEthForCall, reqEthForCall, reqPayASCNoEthForCall, reqPayASCEthForCall, reqPayASCEthForCallVerifySender]
     reqHashes = [bytesToHex(addReqGetHashBytes(asc, r)) for r in reqs]
 
     return reqs, reqHashes, msgValue, ethForCall
@@ -249,7 +259,7 @@ def reqsHashEth(asc, mockTarget):
 def reqHashNoEth(asc, mockTarget):
     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
     callData = mockTarget.setX.encode_input(5)
-    req = (asc.BOB.address, mockTarget.address, callData, True, 0, 0, asc.DENICE.address)
+    req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
     reqHashBytes = addReqGetHashBytes(asc, req)
 
     tx = asc.r.newHashReqNoEth(reqHashBytes, {'from': asc.BOB, 'value': 0})

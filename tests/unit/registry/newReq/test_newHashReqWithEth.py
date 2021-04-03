@@ -7,18 +7,17 @@ import ipfshttpclient
 import base58 as b58
 
 
-
-
 @given(
     user=strategy('address'),
     target=strategy('address'),
     callData=strategy('bytes'),
+    verifySender=strategy('bool'),
     payWithASC=strategy('bool'),
     msgValue=strategy('uint256', max_value=E_18),
     ethForCall=strategy('uint256', max_value=E_18),
     referer=strategy('address')
 )
-def test_newHashReqWithEth(asc, mockTarget, user, target, callData, payWithASC, msgValue, ethForCall, referer):
+def test_newHashReqWithEth(asc, mockTarget, user, target, callData, verifySender, payWithASC, msgValue, ethForCall, referer):
     if user != target and user != referer:
         # assert user.balance() == INIT_ETH_BAL
         userETHStartBal = user.balance()
@@ -41,7 +40,7 @@ def test_newHashReqWithEth(asc, mockTarget, user, target, callData, payWithASC, 
         else:
             msgValue = ethForCall if msgValue < ethForCall else msgValue
 
-        req = (user, target, callData, payWithASC, msgValue, ethForCall, referer)
+        req = (user, target, callData, verifySender, payWithASC, msgValue, ethForCall, referer)
         reqBytes = asc.r.getReqBytes(req)
         
         with ipfshttpclient.connect() as client:
@@ -52,7 +51,7 @@ def test_newHashReqWithEth(asc, mockTarget, user, target, callData, payWithASC, 
         dataPrefix = ipfsBlock[:reqBytesIdx]
         dataSuffix = ipfsBlock[reqBytesIdx + len(reqBytes) : ]
 
-        tx = asc.r.newHashReqWithEth(target, callData, payWithASC, ethForCall, referer, dataPrefix, dataSuffix, {'from': user, 'value': msgValue})
+        tx = asc.r.newHashReqWithEth(target, callData, verifySender, payWithASC, ethForCall, referer, dataPrefix, dataSuffix, {'from': user, 'value': msgValue})
 
         assert tx.return_value == 0
         assert tx.events["HashedReqEthAdded"][0].values() == [0]
@@ -85,14 +84,13 @@ def test_newHashReqWithEth(asc, mockTarget, user, target, callData, payWithASC, 
 def test_newHashReqWithEth_rev_target_is_registry(asc, mockTarget):
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_TARGET):
-        tx = asc.r.newHashReqWithEth(asc.r, callData, True, 0, asc.DENICE, "", "", asc.FR_BOB)
+        tx = asc.r.newHashReqWithEth(asc.r, callData, False, True, 0, asc.DENICE, "", "", asc.FR_BOB)
 
 
-# @given(payWithASC=strategy('bool'))
 def test_newHashReqWithEth_rev_target_is_ASCoin(asc, mockTarget):
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_TARGET):
-        tx = asc.r.newHashReqWithEth(asc.r, callData, True, 0, asc.DENICE, "", "", asc.FR_BOB)
+        tx = asc.r.newHashReqWithEth(asc.r, callData, False, True, 0, asc.DENICE, "", "", asc.FR_BOB)
 
 
 @given(
@@ -103,7 +101,7 @@ def test_newHashReqWithEth_rev_validEth_payWithASC(asc, mockTarget, msgValue, et
     if msgValue != ethForCall:
         callData = mockTarget.setX.encode_input(5)
         with reverts(REV_MSG_ETHFORCALL_NOT_MSGVALUE):
-            tx = asc.r.newHashReqWithEth(mockTarget, "", True, ethForCall, asc.DENICE, "", "", {'from': asc.BOB, 'value': msgValue})
+            tx = asc.r.newHashReqWithEth(mockTarget, "", False, True, ethForCall, asc.DENICE, "", "", {'from': asc.BOB, 'value': msgValue})
 
 
 @given(
@@ -114,4 +112,4 @@ def test_newHashReqWithEth_rev_validEth_not_payWithASC(asc, mockTarget, msgValue
     ethForCall = msgValue + 1 if ethForCall <= msgValue else ethForCall
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_ETHFORCALL_HIGH):
-        tx = asc.r.newHashReqWithEth(mockTarget, "", False, ethForCall, asc.DENICE, "", "", {'from': asc.BOB, 'value': msgValue})
+        tx = asc.r.newHashReqWithEth(mockTarget, "", False, False, ethForCall, asc.DENICE, "", "", {'from': asc.BOB, 'value': msgValue})

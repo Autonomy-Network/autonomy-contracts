@@ -5,11 +5,11 @@ from brownie.test import given, strategy
 
 def test_executeRawReq_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     _, staker, __ = stakedMin
-    reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, msgValue, ethForCall = reqsRaw
+    reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender, msgValue, ethForCall = reqsRaw
     id = 0
     assert mockTarget.x() == 0
     assert asc.ALICE.balance() == INIT_ETH_BAL
-    assert asc.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - ethForCall
+    assert asc.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (2 * ethForCall)
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
     assert asc.ASC.balanceOf(asc.DENICE) == 0
@@ -21,8 +21,8 @@ def test_executeRawReq_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     # Eth bals
     ethForExec = (tx.return_value * tx.gas_price) + (INIT_BASE_BOUNTY * 2)
     assert asc.ALICE.balance() == INIT_ETH_BAL + ethForExec - (tx.gas_used * tx.gas_price)
-    assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + ethForCall) + msgValue - ethForExec
-    assert asc.r.balance() == msgValue + ethForCall
+    assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall)) + msgValue - ethForExec
+    assert asc.r.balance() == msgValue + (2 * ethForCall)
     assert mockTarget.balance() == 0
     # ASC bals
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
@@ -32,8 +32,8 @@ def test_executeRawReq_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     # Target state
     assert mockTarget.x() == 5
     # Registry state
-    assert asc.r.getRawRequests() == [NULL_REQ, reqEthForCall, reqPayASC, reqPayASCEthForCall]
-    assert asc.r.getRawRequestsLen() == 4
+    assert asc.r.getRawRequests() == [NULL_REQ, reqEthForCall, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender]
+    assert asc.r.getRawRequestsLen() == 5
     assert asc.r.getRawRequest(id) == NULL_REQ
     assert asc.r.getCumulRewardsOf(asc.BOB) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.DENICE) == INIT_REQUESTER_REWARD
@@ -41,6 +41,7 @@ def test_executeRawReq_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert tx.events["RawReqRemoved"][0].values() == [id, True]
 
     # Shouldn't've changed
+    assert mockTarget.addr() == ADDR_0
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
@@ -49,11 +50,11 @@ def test_executeRawReq_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
 
 def test_executeRawReq_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     _, staker, __ = stakedMin
-    reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, msgValue, ethForCall = reqsRaw
+    reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender, msgValue, ethForCall = reqsRaw
     id = 1
     assert mockTarget.x() == 0
     assert asc.ALICE.balance() == INIT_ETH_BAL
-    assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + ethForCall)
+    assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall))
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
     assert asc.ASC.balanceOf(asc.DENICE) == 0
@@ -65,8 +66,8 @@ def test_executeRawReq_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     # Eth bals
     ethForExec = (tx.return_value * tx.gas_price) + (INIT_BASE_BOUNTY * 2)
     assert asc.ALICE.balance() == INIT_ETH_BAL + ethForExec - (tx.gas_used * tx.gas_price)
-    assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + ethForCall) + msgValue - ethForCall - ethForExec
-    assert asc.r.balance() == msgValue + ethForCall
+    assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall)) + msgValue - ethForCall - ethForExec
+    assert asc.r.balance() == msgValue + (2 * ethForCall)
     assert mockTarget.balance() == ethForCall
     # ASC bals
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
@@ -76,8 +77,8 @@ def test_executeRawReq_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     # Target state
     assert mockTarget.x() == 5
     # Registry state
-    assert asc.r.getRawRequests() == [reqNoEthForCall, NULL_REQ, reqPayASC, reqPayASCEthForCall]
-    assert asc.r.getRawRequestsLen() == 4
+    assert asc.r.getRawRequests() == [reqNoEthForCall, NULL_REQ, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender]
+    assert asc.r.getRawRequestsLen() == 5
     assert asc.r.getRawRequest(id) == NULL_REQ
     assert asc.r.getCumulRewardsOf(asc.BOB) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.DENICE) == INIT_REQUESTER_REWARD
@@ -85,6 +86,7 @@ def test_executeRawReq_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert tx.events["RawReqRemoved"][0].values() == [id, True]
 
     # Shouldn't've changed
+    assert mockTarget.addr() == ADDR_0
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
@@ -93,11 +95,11 @@ def test_executeRawReq_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
 
 def test_executeRawReq_pay_ASC(asc, stakedMin, mockTarget, reqsRaw):
     _, staker, __ = stakedMin
-    reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, msgValue, ethForCall = reqsRaw
+    reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender, msgValue, ethForCall = reqsRaw
     id = 2
     assert mockTarget.x() == 0
     assert asc.ALICE.balance() == INIT_ETH_BAL
-    assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + ethForCall)
+    assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall))
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
     assert asc.ASC.balanceOf(asc.DENICE) == 0
@@ -108,8 +110,8 @@ def test_executeRawReq_pay_ASC(asc, stakedMin, mockTarget, reqsRaw):
     # Should've changed
     # Eth bals
     assert asc.ALICE.balance() == INIT_ETH_BAL - (tx.gas_used * tx.gas_price)
-    assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + ethForCall)
-    assert asc.r.balance() == (2 * msgValue) + ethForCall
+    assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall))
+    assert asc.r.balance() == (2 * msgValue) + (2 * ethForCall)
     assert mockTarget.balance() == 0
     # ASC bals
     # Need to account for differences in division between Python and Solidity
@@ -122,8 +124,8 @@ def test_executeRawReq_pay_ASC(asc, stakedMin, mockTarget, reqsRaw):
     # Target state
     assert mockTarget.x() == 5
     # Registry state
-    assert asc.r.getRawRequests() == [reqNoEthForCall, reqEthForCall, NULL_REQ, reqPayASCEthForCall]
-    assert asc.r.getRawRequestsLen() == 4
+    assert asc.r.getRawRequests() == [reqNoEthForCall, reqEthForCall, NULL_REQ, reqPayASCEthForCall, reqPayASCEthForCallVerifySender]
+    assert asc.r.getRawRequestsLen() == 5
     assert asc.r.getRawRequest(id) == NULL_REQ
     assert asc.r.getCumulRewardsOf(asc.BOB) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.DENICE) == INIT_REQUESTER_REWARD
@@ -131,6 +133,7 @@ def test_executeRawReq_pay_ASC(asc, stakedMin, mockTarget, reqsRaw):
     assert tx.events["RawReqRemoved"][0].values() == [id, True]
 
     # Shouldn't've changed
+    assert mockTarget.addr() == ADDR_0
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
@@ -139,11 +142,11 @@ def test_executeRawReq_pay_ASC(asc, stakedMin, mockTarget, reqsRaw):
 
 def test_executeRawReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     _, staker, __ = stakedMin
-    reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, msgValue, ethForCall = reqsRaw
+    reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender, msgValue, ethForCall = reqsRaw
     id = 3
     assert mockTarget.x() == 0
     assert asc.ALICE.balance() == INIT_ETH_BAL
-    assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + ethForCall)
+    assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall))
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
     assert asc.ASC.balanceOf(asc.DENICE) == 0
@@ -154,8 +157,8 @@ def test_executeRawReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsR
     # Should've changed
     # Eth bals
     assert asc.ALICE.balance() == INIT_ETH_BAL - (tx.gas_used * tx.gas_price)
-    assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + ethForCall)
-    assert asc.r.balance() == 2 * msgValue
+    assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall))
+    assert asc.r.balance() == 2 * msgValue + ethForCall
     assert mockTarget.balance() == ethForCall
     # ASC bals
     # Need to account for differences in division between Python and Solidity
@@ -168,8 +171,8 @@ def test_executeRawReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsR
     # Target state
     assert mockTarget.x() == 5
     # Registry state
-    assert asc.r.getRawRequests() == [reqNoEthForCall, reqEthForCall, reqPayASC, NULL_REQ]
-    assert asc.r.getRawRequestsLen() == 4
+    assert asc.r.getRawRequests() == [reqNoEthForCall, reqEthForCall, reqPayASC, NULL_REQ, reqPayASCEthForCallVerifySender]
+    assert asc.r.getRawRequestsLen() == 5
     assert asc.r.getRawRequest(id) == NULL_REQ
     assert asc.r.getCumulRewardsOf(asc.BOB) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.DENICE) == INIT_REQUESTER_REWARD
@@ -177,6 +180,55 @@ def test_executeRawReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsR
     assert tx.events["RawReqRemoved"][0].values() == [id, True]
 
     # Shouldn't've changed
+    assert mockTarget.addr() == ADDR_0
+    assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
+    assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
+    assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
+    assert asc.r.getEthToASCoinRate() == INIT_ETH_TO_ASCOIN_RATE
+
+
+def test_executeRawReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, mockTarget, reqsRaw):
+    _, staker, __ = stakedMin
+    reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender, msgValue, ethForCall = reqsRaw
+    id = 4
+    assert mockTarget.x() == 0
+    assert mockTarget.addr() == ADDR_0
+    assert asc.ALICE.balance() == INIT_ETH_BAL
+    assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall))
+    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
+    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
+    assert asc.ASC.balanceOf(asc.DENICE) == 0
+    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+
+    tx = asc.r.executeRawReq(id, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+
+    # Should've changed
+    # Eth bals
+    assert asc.ALICE.balance() == INIT_ETH_BAL - (tx.gas_used * tx.gas_price)
+    assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall))
+    assert asc.r.balance() == 2 * msgValue + ethForCall
+    assert mockTarget.balance() == ethForCall
+    # ASC bals
+    # Need to account for differences in division between Python and Solidity
+    ASCForExecNotScaled = ((tx.return_value * tx.gas_price) + INIT_BASE_BOUNTY) * INIT_ETH_TO_ASCOIN_RATE
+    ASCForExec = asc.r.divAOverB(ASCForExecNotScaled, E_18)
+    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
+    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
+    assert asc.ASC.balanceOf(asc.DENICE) == 0
+    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    # Target state
+    assert mockTarget.addr() == asc.BOB.address
+    # Registry state
+    assert asc.r.getRawRequests() == [reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, NULL_REQ]
+    assert asc.r.getRawRequestsLen() == 5
+    assert asc.r.getRawRequest(id) == NULL_REQ
+    assert asc.r.getCumulRewardsOf(asc.BOB) == INIT_REQUESTER_REWARD
+    assert asc.r.getCumulRewardsOf(asc.DENICE) == INIT_REQUESTER_REWARD
+    assert asc.r.getCumulRewardsOf(asc.ALICE) == INIT_EXECUTOR_REWARD
+    assert tx.events["RawReqRemoved"][0].values() == [id, True]
+
+    # Shouldn't've changed
+    assert mockTarget.x() == 0
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
@@ -206,7 +258,7 @@ def test_executeRawReq_rev_not_executor(asc, stakedMin, reqsRaw):
 # def test_executeRawReq_rev_nonReentrant(asc, stakedMin, reqsRaw, mockReentrancyAttack):
 #     _, staker, __ = stakedMin
 #     callData = mockReentrancyAttack.callExecute.encode_input(2)
-#     asc.r.newRawRequest(mockReentrancyAttack, callData, True, 0, asc.DENICE, {'from': asc.BOB})
+#     asc.r.newRawRequest(mockReentrancyAttack, callData, False, True, 0, asc.DENICE, {'from': asc.BOB})
 
 #     with reverts(REV_MSG_NOT_EXEC):
 #         asc.r.executeRawReq(4, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
