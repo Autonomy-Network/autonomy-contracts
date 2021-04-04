@@ -22,7 +22,8 @@ def test_cancelHashReqEth_no_ethForCall(asc, stakedMin, mockTarget, reqsHashEth)
 
     # Shouldn't've changed
     assert mockTarget.x() == 0
-    assert mockTarget.addr() == ADDR_0
+    assert mockTarget.userAddr() == ADDR_0
+    assert mockTarget.msgSender() == ADDR_0
 
     assert asc.ALICE.balance() == INIT_ETH_BAL
     assert asc.DENICE.balance() == INIT_ETH_BAL
@@ -62,7 +63,8 @@ def test_cancelHashReqEth_with_ethForCall(asc, stakedMin, mockTarget, reqsHashEt
 
     # Shouldn't've changed
     assert mockTarget.x() == 0
-    assert mockTarget.addr() == ADDR_0
+    assert mockTarget.userAddr() == ADDR_0
+    assert mockTarget.msgSender() == ADDR_0
 
     assert asc.ALICE.balance() == INIT_ETH_BAL
     assert asc.DENICE.balance() == INIT_ETH_BAL
@@ -102,7 +104,8 @@ def test_cancelHashReqEth_payASC(asc, stakedMin, mockTarget, reqsHashEth):
 
     # Shouldn't've changed
     assert mockTarget.x() == 0
-    assert mockTarget.addr() == ADDR_0
+    assert mockTarget.userAddr() == ADDR_0
+    assert mockTarget.msgSender() == ADDR_0
 
     assert asc.ALICE.balance() == INIT_ETH_BAL
     assert asc.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (2 * ethForCall)
@@ -143,7 +146,8 @@ def test_cancelHashReqEth_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, re
 
     # Shouldn't've changed
     assert mockTarget.x() == 0
-    assert mockTarget.addr() == ADDR_0
+    assert mockTarget.userAddr() == ADDR_0
+    assert mockTarget.msgSender() == ADDR_0
 
     assert asc.ALICE.balance() == INIT_ETH_BAL
     assert asc.DENICE.balance() == INIT_ETH_BAL
@@ -183,7 +187,8 @@ def test_cancelHashReqEth_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMi
 
     # Shouldn't've changed
     assert mockTarget.x() == 0
-    assert mockTarget.addr() == ADDR_0
+    assert mockTarget.userAddr() == ADDR_0
+    assert mockTarget.msgSender() == ADDR_0
 
     assert asc.ALICE.balance() == INIT_ETH_BAL
     assert asc.DENICE.balance() == INIT_ETH_BAL

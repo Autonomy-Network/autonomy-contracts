@@ -17,6 +17,8 @@ def test_cancelHashReqNoEth_no_ethForCall(asc, stakedMin, mockTarget, reqHashNoE
 
     # Shouldn't've changed
     assert mockTarget.x() == 0
+    assert mockTarget.userAddr() == ADDR_0
+    assert mockTarget.msgSender() == ADDR_0
 
     assert asc.ALICE.balance() == INIT_ETH_BAL
     assert asc.BOB.balance() == INIT_ETH_BAL

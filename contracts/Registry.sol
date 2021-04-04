@@ -4,8 +4,6 @@ pragma solidity ^0.8;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "../interfaces/IStakeManager.sol";
-// import "./ASCProxy.sol";
-import "./Vault.sol";
 import "./Forwarder.sol";
 import "./abstract/Shared.sol";
 
@@ -26,7 +24,6 @@ contract Registry is Shared, ReentrancyGuard {
     
     IERC20 private _ASCoin;
     IStakeManager private _stakeMan;
-    Vault private _vault;
     Forwarder private _veriForwarder;
     Forwarder private _unveriForwarder;
     // uint private _numRequests;
@@ -48,8 +45,6 @@ contract Registry is Shared, ReentrancyGuard {
     uint private _baseBountyAsEth;
     uint private _requesterReward;
     uint private _executorReward;
-    // The amount of ASCoin that 1 Eth is worth, scaled to 1E18 as 1:1
-    uint private _ethToASCoinRate;
     mapping(address => uint) private _cumulRewards;
     
     
@@ -82,7 +77,6 @@ contract Registry is Shared, ReentrancyGuard {
     constructor(
         IERC20 ASCoin,
         IStakeManager staker,
-        Vault vault,
         uint baseBountyAsEth,
         uint requesterReward,
         uint executorReward,
@@ -93,8 +87,6 @@ contract Registry is Shared, ReentrancyGuard {
         _baseBountyAsEth = baseBountyAsEth;
         _requesterReward = requesterReward;
         _executorReward = executorReward;
-        _ethToASCoinRate = ethToASCoinRate;
-        _vault = vault;
         _veriForwarder = new Forwarder();
         _unveriForwarder = new Forwarder();
     }
@@ -334,7 +326,7 @@ contract Registry is Shared, ReentrancyGuard {
         delete _hashedIpfsReqsNoEth[id];
     }
 
-
+    event RegTest(bool a, bytes b);
     function _execute(Request memory r) private returns (uint) {
         uint startGas = gasleft();
 
@@ -342,11 +334,17 @@ contract Registry is Shared, ReentrancyGuard {
         bool success;
         bytes memory returnData;
         if (r.verifySender) {
-            _veriForwarder.forward{value: r.ethForCall}(r.target, r.ethForCall, r.callData);
+            (success, returnData) = _veriForwarder.forward{value: r.ethForCall}(r.target, r.callData);
         } else {
-            _unveriForwarder.forward{value: r.ethForCall}(r.target, r.ethForCall, r.callData);
+            (success, returnData) = _unveriForwarder.forward{value: r.ethForCall}(r.target, r.callData);
         }
-        // require(success, returnData);
+        emit RegTest(success, returnData);
+        // Need this if statement because if the call succeeds, the tx will revert
+        // with an EVM error because it can't decode 0x00
+        if (!success) {
+            require(success, abi.decode(returnData, (string)));
+        }
+        // require(success, string(returnData));
         
         // Store ASCoin rewards
         // It's cheaper to store the cumulative rewards than it is to send
@@ -490,10 +488,6 @@ contract Registry is Shared, ReentrancyGuard {
     //     _executorReward = newEexecutorReward;
     // }
     
-    // function setEthToASCoinRate(uint newEthToASCoinRate) external nonReentrant returns (uint) {
-    //     _ethToASCoinRate = newEthToASCoinRate;
-    // }
-
 
     // ----------- Getters -----------
     
@@ -523,10 +517,6 @@ contract Registry is Shared, ReentrancyGuard {
     
     function getExecutorReward() external view returns (uint) {
         return _executorReward;
-    }
-    
-    function getEthToASCoinRate() external view returns (uint) {
-        return _ethToASCoinRate;
     }
     
     function getCumulRewardsOf(address addr) external view returns (uint) {

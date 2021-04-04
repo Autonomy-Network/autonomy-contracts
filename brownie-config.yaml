@@ -1,5 +1,5 @@
 hypothesis:
-    max_examples: 10
+    max_examples: 50
     
 # Path remapping to support OpenZepplin imports with NPM-style path
 compiler:

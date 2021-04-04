@@ -13,16 +13,16 @@ from utils import *
 # Randomly generate addresses for the sender and calldata input independently
 # to test validCalldata upon calling executeHashReqNoEth
 @given(
-    newAddr=strategy('address'),
+    userAddr=strategy('address'),
     sender=strategy('address')
 )
-def test_executeHashReqNoEth_validCalldata(asc, stakedMin, mockTarget, newAddr, sender):
+def test_executeHashReqNoEth_validCalldata(asc, stakedMin, mockTarget, userAddr, sender):
     # It's gonna be a pain in the ass to do the accounting if they're equal
     if sender != asc.ALICE and sender != asc.DENICE:
         _, staker, __ = stakedMin
 
         id = 0
-        callData = mockTarget.setAddrPay.encode_input(newAddr)
+        callData = mockTarget.setAddrPayVerified.encode_input(userAddr)
         req = (sender.address, mockTarget.address, callData, True, True, 0, 0, asc.DENICE.address)
         addToIpfs(asc, req)
 
@@ -31,7 +31,7 @@ def test_executeHashReqNoEth_validCalldata(asc, stakedMin, mockTarget, newAddr, 
         senderASCStartBal = asc.ASC.balanceOf(sender)
         asc.r.newHashReqNoEth(addReqGetHashBytes(asc, req), {'from': sender})
 
-        if newAddr != sender:
+        if userAddr != sender:
             with reverts(REV_MSG_CALLDATA_NOT_VER):
                 asc.r.executeHashReqNoEth(id, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
         else:
@@ -51,7 +51,8 @@ def test_executeHashReqNoEth_validCalldata(asc, stakedMin, mockTarget, newAddr, 
             assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
 
             # Target state
-            assert mockTarget.addr() == sender.address
+            assert mockTarget.userAddr() == sender.address
+            assert mockTarget.msgSender() == asc.vf.address
             # Registry state
             assert asc.r.getHashedIpfsReqsNoEth() == [NULL_HASH]
             assert asc.r.getHashedIpfsReqsNoEthLen() == 1
@@ -132,6 +133,7 @@ def test_executeHashReqNoEth_pay_ASC(asc, stakedMin, mockTarget, reqHashNoEth):
     assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
     # Target state
     assert mockTarget.x() == 5
+    assert mockTarget.msgSender() == asc.uvf.address
     # Registry state
     assert asc.r.getHashedIpfsReqsNoEth() == [NULL_HASH]
     assert asc.r.getHashedIpfsReqsNoEthLen() == 1
@@ -142,6 +144,7 @@ def test_executeHashReqNoEth_pay_ASC(asc, stakedMin, mockTarget, reqHashNoEth):
     assert tx.events["HashedReqNoEthRemoved"][0].values() == [id, True]
 
     # Shouldn't've changed
+    assert mockTarget.userAddr() == ADDR_0
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD

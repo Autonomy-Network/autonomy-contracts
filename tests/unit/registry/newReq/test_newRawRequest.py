@@ -18,6 +18,8 @@ def test_newRawRequest_no_eth(asc, mockTarget):
     assert tx.events["RawReqAdded"][0].values() == [0]
     # Shouldn't've changed
     assert mockTarget.x() == 0
+    assert mockTarget.userAddr() == ADDR_0
+    assert mockTarget.msgSender() == ADDR_0
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
 
@@ -54,6 +56,8 @@ def test_newRawRequest_pay_with_ASCoin(asc, mockTarget):
     assert tx.events["RawReqAdded"][0].values() == [0]
     # Shouldn't've changed
     assert mockTarget.x() == 0
+    assert mockTarget.userAddr() == ADDR_0
+    assert mockTarget.msgSender() == ADDR_0
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
 
@@ -95,6 +99,8 @@ def test_newRawRequest_with_eth_and_pay_ASCoin(asc, mockTarget, ethForCall, payW
     assert tx.events["RawReqAdded"][0].values() == [0]
     # Shouldn't've changed
     assert mockTarget.x() == 0
+    assert mockTarget.userAddr() == ADDR_0
+    assert mockTarget.msgSender() == ADDR_0
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
 
@@ -122,15 +128,15 @@ def test_newRawRequest_with_eth_and_pay_ASCoin(asc, mockTarget, ethForCall, payW
 @given(
     ethForCall=strategy('uint256', max_value=E_18),
     payWithASC=strategy('bool'),
-    newAddr=strategy('address'),
+    userAddr=strategy('address'),
     sender=strategy('address')
 )
-def test_newRawRequest_verifySender(asc, mockTarget, ethForCall, payWithASC, newAddr, sender):
-    assert mockTarget.addr() == ADDR_0
+def test_newRawRequest_verifySender(asc, mockTarget, ethForCall, payWithASC, userAddr, sender):
+    assert mockTarget.userAddr() == ADDR_0
     msgValue = ethForCall
-    callData = mockTarget.setAddrPay.encode_input(newAddr)
+    callData = mockTarget.setAddrPayVerified.encode_input(userAddr)
 
-    if newAddr != sender:
+    if userAddr != sender:
         with reverts(REV_MSG_CALLDATA_NOT_VER):
             asc.r.newRawRequest(mockTarget, callData, True, False, ethForCall, asc.DENICE, {'from': sender, 'value': msgValue})
     else:
@@ -146,7 +152,9 @@ def test_newRawRequest_verifySender(asc, mockTarget, ethForCall, payWithASC, new
         assert asc.r.balance() == msgValue
 
         # Shouldn't've changed
-        assert mockTarget.addr() == ADDR_0
+        assert mockTarget.x() == 0
+        assert mockTarget.userAddr() == ADDR_0
+        assert mockTarget.msgSender() == ADDR_0
         assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
         assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
 

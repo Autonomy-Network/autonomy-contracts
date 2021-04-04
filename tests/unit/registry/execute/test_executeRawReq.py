@@ -31,6 +31,7 @@ def test_executeRawReq_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
     # Target state
     assert mockTarget.x() == 5
+    assert mockTarget.msgSender() == asc.uvf.address
     # Registry state
     assert asc.r.getRawRequests() == [NULL_REQ, reqEthForCall, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender]
     assert asc.r.getRawRequestsLen() == 5
@@ -41,7 +42,7 @@ def test_executeRawReq_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert tx.events["RawReqRemoved"][0].values() == [id, True]
 
     # Shouldn't've changed
-    assert mockTarget.addr() == ADDR_0
+    assert mockTarget.userAddr() == ADDR_0
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
@@ -76,6 +77,7 @@ def test_executeRawReq_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
     # Target state
     assert mockTarget.x() == 5
+    assert mockTarget.msgSender() == asc.uvf.address
     # Registry state
     assert asc.r.getRawRequests() == [reqNoEthForCall, NULL_REQ, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender]
     assert asc.r.getRawRequestsLen() == 5
@@ -86,7 +88,7 @@ def test_executeRawReq_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert tx.events["RawReqRemoved"][0].values() == [id, True]
 
     # Shouldn't've changed
-    assert mockTarget.addr() == ADDR_0
+    assert mockTarget.userAddr() == ADDR_0
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
@@ -123,6 +125,7 @@ def test_executeRawReq_pay_ASC(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
     # Target state
     assert mockTarget.x() == 5
+    assert mockTarget.msgSender() == asc.uvf.address
     # Registry state
     assert asc.r.getRawRequests() == [reqNoEthForCall, reqEthForCall, NULL_REQ, reqPayASCEthForCall, reqPayASCEthForCallVerifySender]
     assert asc.r.getRawRequestsLen() == 5
@@ -133,7 +136,7 @@ def test_executeRawReq_pay_ASC(asc, stakedMin, mockTarget, reqsRaw):
     assert tx.events["RawReqRemoved"][0].values() == [id, True]
 
     # Shouldn't've changed
-    assert mockTarget.addr() == ADDR_0
+    assert mockTarget.userAddr() == ADDR_0
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
@@ -170,6 +173,7 @@ def test_executeRawReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsR
     assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
     # Target state
     assert mockTarget.x() == 5
+    assert mockTarget.msgSender() == asc.uvf.address
     # Registry state
     assert asc.r.getRawRequests() == [reqNoEthForCall, reqEthForCall, reqPayASC, NULL_REQ, reqPayASCEthForCallVerifySender]
     assert asc.r.getRawRequestsLen() == 5
@@ -180,7 +184,7 @@ def test_executeRawReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsR
     assert tx.events["RawReqRemoved"][0].values() == [id, True]
 
     # Shouldn't've changed
-    assert mockTarget.addr() == ADDR_0
+    assert mockTarget.userAddr() == ADDR_0
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
@@ -192,7 +196,8 @@ def test_executeRawReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, 
     reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender, msgValue, ethForCall = reqsRaw
     id = 4
     assert mockTarget.x() == 0
-    assert mockTarget.addr() == ADDR_0
+    assert mockTarget.userAddr() == ADDR_0
+    assert mockTarget.msgSender() == ADDR_0
     assert asc.ALICE.balance() == INIT_ETH_BAL
     assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall))
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
@@ -217,7 +222,8 @@ def test_executeRawReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, 
     assert asc.ASC.balanceOf(asc.DENICE) == 0
     assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
     # Target state
-    assert mockTarget.addr() == asc.BOB.address
+    assert mockTarget.userAddr() == asc.BOB.address
+    assert mockTarget.msgSender() == asc.vf.address
     # Registry state
     assert asc.r.getRawRequests() == [reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, NULL_REQ]
     assert asc.r.getRawRequestsLen() == 5

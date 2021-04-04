@@ -13,7 +13,7 @@ def isolation(fn_isolation):
 
 # Deploy the contracts for repeated tests without having to redeploy each time
 
-def deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Vault, Registry):
+def deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Registry, Forwarder):
     class Context:
         pass
 
@@ -38,20 +38,17 @@ def deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Vault, Registry):
     asc.ASC = asc.DEPLOYER.deploy(ASCoin, "Active Smart Contract Protocol", "ASC")
     asc.oracle = asc.DEPLOYER.deploy(Oracle)
     asc.sm = asc.DEPLOYER.deploy(StakeManager, asc.oracle, asc.ASC)
-    asc.v = asc.DEPLOYER.deploy(Vault, asc.ASC)
     asc.r = asc.DEPLOYER.deploy(
         Registry,
         asc.ASC,
         asc.sm,
-        asc.v,
         INIT_BASE_BOUNTY,
         INIT_REQUESTER_REWARD,
         INIT_EXECUTOR_REWARD,
         INIT_ETH_TO_ASCOIN_RATE
     )
-    asc.vf = asc.r.getVerifiedForwarder()
-    asc.uvf = asc.r.getUnverifiedForwarder()
-    asc.v.setAuthorisation(asc.r, True)
+    asc.vf = Forwarder.at(asc.r.getVerifiedForwarder())
+    asc.uvf = Forwarder.at(asc.r.getUnverifiedForwarder())
 
     # For enabling rewards
     asc.ASC.transfer(asc.r, INIT_ASC_REW_POOL, asc.FR_DEPLOYER)
@@ -67,8 +64,8 @@ def deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Vault, Registry):
 
 
 @pytest.fixture(scope="module")
-def asc(ASCoin, Oracle, StakeManager, Vault, Registry):
-    return deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Vault, Registry)
+def asc(ASCoin, Oracle, StakeManager, Registry, Forwarder):
+    return deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Registry, Forwarder)
 
 
 @pytest.fixture(scope="module")
@@ -175,7 +172,7 @@ def vulnerableStaked(asc, vulnerableStaker):
 # to use ASC
 @pytest.fixture(scope="module")
 def mockTarget(asc, MockTarget):
-    return asc.DEPLOYER.deploy(MockTarget, asc.uvf)
+    return asc.DEPLOYER.deploy(MockTarget, asc.vf, asc.uvf)
 
 
 # Need to test nonReentrant modifier
@@ -209,7 +206,7 @@ def reqsRaw(asc, mockTarget):
     asc.r.newRawRequest(mockTarget, callData, False, True, ethForCall, asc.DENICE, {'from': asc.BOB, 'value': ethForCall})
     reqPayASCEthForCall = (asc.BOB.address, mockTarget.address, callData, False, True, ethForCall, ethForCall, asc.DENICE.address)
 
-    callData = mockTarget.setAddrPay.encode_input(asc.BOB)
+    callData = mockTarget.setAddrPayVerified.encode_input(asc.BOB)
     asc.r.newRawRequest(mockTarget, callData, True, True, ethForCall, asc.DENICE, {'from': asc.BOB, 'value': ethForCall})
     reqPayASCEthForCallVerifySender = (asc.BOB.address, mockTarget.address, callData, True, True, ethForCall, ethForCall, asc.DENICE.address)
 
@@ -243,7 +240,7 @@ def reqsHashEth(asc, mockTarget):
     reqPayASCEthForCall = (asc.BOB.address, mockTarget.address, callData, False, True, ethForCall, ethForCall, asc.DENICE.address)
     tx = asc.r.newHashReqWithEth(mockTarget, callData, False, True, ethForCall, asc.DENICE, *getIpfsMetaData(asc, reqPayASCEthForCall), {'from': asc.BOB, 'value': ethForCall})
 
-    callData = mockTarget.setAddrPay.encode_input(asc.BOB)
+    callData = mockTarget.setAddrPayVerified.encode_input(asc.BOB)
     reqPayASCEthForCallVerifySender = (asc.BOB.address, mockTarget.address, callData, True, True, ethForCall, ethForCall, asc.DENICE.address)
     tx = asc.r.newHashReqWithEth(mockTarget, callData, True, True, ethForCall, asc.DENICE, *getIpfsMetaData(asc, reqPayASCEthForCall), {'from': asc.BOB, 'value': ethForCall})
 

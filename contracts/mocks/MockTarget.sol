@@ -4,36 +4,39 @@ pragma solidity ^0.8;
 contract MockTarget {
     
     address public veriForwarderAddr;
+    address public unveriForwarderAddr;
     uint public x;
-    address public addr;
+    address public userAddr;
+    address public msgSender;
 
 
-    constructor(address newVeriForwarderAddr) {
+    constructor(address newVeriForwarderAddr, address newUnveriForwarderAddr) {
         veriForwarderAddr = newVeriForwarderAddr;
+        unveriForwarderAddr = newUnveriForwarderAddr;
     }
 
 
-    function setX(uint newX) public {
+    function setX(uint newX) public onlyUnverifiedSender updateMsgSender {
         x = newX;
     }
 
-    function setXPay(uint newX) public payable {
+    function setXPay(uint newX) public payable onlyUnverifiedSender updateMsgSender {
         x = newX;
     }
     
-    function setAddr(address newAddr) public {
-        addr = newAddr;
-    }
-
-    function setAddrPay(address newAddr) public payable {
-        emit Test(msg.sender, veriForwarderAddr);
+    function setAddrPayVerified(address newUserAddr) public payable updateMsgSender {
         require(msg.sender == veriForwarderAddr, "Not sent from veriForwarder");
-        addr = newAddr;
+        userAddr = newUserAddr;
     }
-    event Test(address a, address b);
 
-    // function setAddrPayVeri(address newAddr) public payable {
-    //     require(msg.sender == veriForwarderAddr, "Not sent from veriForwarder");
-    //     addr = newAddr;
-    // }
+
+    modifier updateMsgSender() {
+        _;
+        msgSender = msg.sender;
+    }
+
+    modifier onlyUnverifiedSender() {
+        require(msg.sender == unveriForwarderAddr, "Not sent from unveriForwarder");
+        _;
+    }
 }

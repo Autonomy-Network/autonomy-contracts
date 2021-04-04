@@ -20,6 +20,8 @@ def test_cancelRawReq_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
 
     # Shouldn't've changed
     assert mockTarget.x() == 0
+    assert mockTarget.userAddr() == ADDR_0
+    assert mockTarget.msgSender() == ADDR_0
 
     assert asc.ALICE.balance() == INIT_ETH_BAL
     assert asc.DENICE.balance() == INIT_ETH_BAL
@@ -57,6 +59,8 @@ def test_cancelRawReq_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
 
     # Shouldn't've changed
     assert mockTarget.x() == 0
+    assert mockTarget.userAddr() == ADDR_0
+    assert mockTarget.msgSender() == ADDR_0
 
     assert asc.ALICE.balance() == INIT_ETH_BAL
     assert asc.DENICE.balance() == INIT_ETH_BAL
@@ -94,6 +98,8 @@ def test_cancelRawReq_payASC(asc, stakedMin, mockTarget, reqsRaw):
 
     # Shouldn't've changed
     assert mockTarget.x() == 0
+    assert mockTarget.userAddr() == ADDR_0
+    assert mockTarget.msgSender() == ADDR_0
 
     assert asc.ALICE.balance() == INIT_ETH_BAL
     assert asc.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (2 * ethForCall)
@@ -132,6 +138,8 @@ def test_cancelRawReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsRa
 
     # Shouldn't've changed
     assert mockTarget.x() == 0
+    assert mockTarget.userAddr() == ADDR_0
+    assert mockTarget.msgSender() == ADDR_0
 
     assert asc.ALICE.balance() == INIT_ETH_BAL
     assert asc.DENICE.balance() == INIT_ETH_BAL
@@ -169,6 +177,8 @@ def test_cancelRawReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, m
 
     # Shouldn't've changed
     assert mockTarget.x() == 0
+    assert mockTarget.userAddr() == ADDR_0
+    assert mockTarget.msgSender() == ADDR_0
 
     assert asc.ALICE.balance() == INIT_ETH_BAL
     assert asc.DENICE.balance() == INIT_ETH_BAL
