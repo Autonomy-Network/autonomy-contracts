@@ -4,7 +4,6 @@ from consts import *
 from utils import *
 
 
-
 # Test isolation
 @pytest.fixture(autouse=True)
 def isolation(fn_isolation):
@@ -36,12 +35,13 @@ def deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Registry, Forward
     chain.mine(BLOCKS_IN_EPOCH)
 
     asc.ASC = asc.DEPLOYER.deploy(ASCoin, "Active Smart Contract Protocol", "ASC")
-    asc.oracle = asc.DEPLOYER.deploy(Oracle)
-    asc.sm = asc.DEPLOYER.deploy(StakeManager, asc.oracle, asc.ASC)
+    asc.o = asc.DEPLOYER.deploy(Oracle, INIT_ETH_TO_ASCOIN_RATE)
+    asc.sm = asc.DEPLOYER.deploy(StakeManager, asc.o, asc.ASC)
     asc.r = asc.DEPLOYER.deploy(
         Registry,
         asc.ASC,
         asc.sm,
+        asc.o,
         INIT_BASE_BOUNTY,
         INIT_REQUESTER_REWARD,
         INIT_EXECUTOR_REWARD,
@@ -155,7 +155,7 @@ def stakedMulti(asc, stakedMin):
 # without unstaking
 @pytest.fixture(scope="module")
 def vulnerableStaker(asc, VulnerableStaker):
-    return asc.DEPLOYER.deploy(VulnerableStaker, asc.oracle.address, asc.ASC.address)
+    return asc.DEPLOYER.deploy(VulnerableStaker, asc.o.address, asc.ASC.address)
 
 
 # Need to have already staked properly in order to test `noFish`

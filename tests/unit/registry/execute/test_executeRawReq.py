@@ -46,7 +46,6 @@ def test_executeRawReq_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
-    assert asc.r.getEthToASCoinRate() == INIT_ETH_TO_ASCOIN_RATE
 
 
 def test_executeRawReq_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
@@ -92,7 +91,6 @@ def test_executeRawReq_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
-    assert asc.r.getEthToASCoinRate() == INIT_ETH_TO_ASCOIN_RATE
 
 
 def test_executeRawReq_pay_ASC(asc, stakedMin, mockTarget, reqsRaw):
@@ -140,7 +138,6 @@ def test_executeRawReq_pay_ASC(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
-    assert asc.r.getEthToASCoinRate() == INIT_ETH_TO_ASCOIN_RATE
 
 
 def test_executeRawReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
@@ -188,7 +185,6 @@ def test_executeRawReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsR
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
-    assert asc.r.getEthToASCoinRate() == INIT_ETH_TO_ASCOIN_RATE
 
 
 def test_executeRawReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, mockTarget, reqsRaw):
@@ -238,7 +234,6 @@ def test_executeRawReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, 
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
-    assert asc.r.getEthToASCoinRate() == INIT_ETH_TO_ASCOIN_RATE
 
 
 def test_executeRawReq_rev_already_executed(asc, stakedMin, reqsRaw):

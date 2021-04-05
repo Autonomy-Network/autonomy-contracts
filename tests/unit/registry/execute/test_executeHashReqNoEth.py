@@ -148,7 +148,6 @@ def test_executeHashReqNoEth_pay_ASC(asc, stakedMin, mockTarget, reqHashNoEth):
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
-    assert asc.r.getEthToASCoinRate() == INIT_ETH_TO_ASCOIN_RATE
 
 
 def test_executeHashReqNoEth_rev_target_is_registry(asc, mockTarget, stakedMin, reqHashNoEth):

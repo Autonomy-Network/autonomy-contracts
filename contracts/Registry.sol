@@ -3,12 +3,14 @@ pragma solidity ^0.8;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "../interfaces/IStakeManager.sol";
+import "../interfaces/IOracle.sol";
 import "./Forwarder.sol";
 import "./abstract/Shared.sol";
 
 
-contract Registry is Shared, ReentrancyGuard {
+contract Registry is Shared, Ownable, ReentrancyGuard {
     
     // Constant public
     // uint public constant EXEC_GAS_OVERHEAD_NO_REF = 40000;
@@ -24,6 +26,7 @@ contract Registry is Shared, ReentrancyGuard {
     
     IERC20 private _ASCoin;
     IStakeManager private _stakeMan;
+    IOracle private _oracle;
     Forwarder private _veriForwarder;
     Forwarder private _unveriForwarder;
     // uint private _numRequests;
@@ -77,22 +80,23 @@ contract Registry is Shared, ReentrancyGuard {
     constructor(
         IERC20 ASCoin,
         IStakeManager staker,
+        IOracle oracle,
         uint baseBountyAsEth,
         uint requesterReward,
         uint executorReward,
         uint ethToASCoinRate
-    ) ReentrancyGuard() {
+    ) Ownable() ReentrancyGuard() {
         _ASCoin = ASCoin;
         _stakeMan = staker;
+        _oracle = oracle;
         _baseBountyAsEth = baseBountyAsEth;
         _requesterReward = requesterReward;
         _executorReward = executorReward;
-        _veriForwarder = new Forwarder();
-        _unveriForwarder = new Forwarder();
+        _veriForwarder = new Forwarder(address(this));
+        _unveriForwarder = new Forwarder(address(this));
     }
 
-    // setRewards
-    
+
     //////////////////////////////////////////////////////////////
     //                                                          //
     //                       Raw Requests                       //
@@ -128,19 +132,6 @@ contract Registry is Shared, ReentrancyGuard {
         _rawRequests.push(Request(payable(msg.sender), target, callData, verifySender, payWithASC, msg.value, ethForCall, referer));
     }
 
-    // function _newRawRequest(
-    //     address target,
-    //     bytes calldata callData,
-    //     bool verifySender,
-    //     bool payWithASC,
-    //     uint initEthSent,
-    //     uint ethForCall,
-    //     address payable referer
-    // ) private {
-    //     emit RawReqAdded(_rawRequests.length);
-    //     _rawRequests.push(Request(payable(msg.sender), target, callData, verifySender, payWithASC, initEthSent, ethForCall, referer));
-    // }
-
     function getRawRequests() external view returns (Request[] memory) {
         return _rawRequests;
     }
@@ -170,7 +161,7 @@ contract Registry is Shared, ReentrancyGuard {
         bytes memory dataPrefix,
         bytes memory dataSuffix
     // Stack too deep with the extra nz checks
-    // ) external payable nzAddr(target) targetNotThis(target) nzBytes(callData) validEth(ethForCall) returns (uint id) {
+    // ) external payable nzAddr(target) targetNotThis(target) validEth(ethForCall) returns (uint id) {
     )
         external
         payable
@@ -326,7 +317,6 @@ contract Registry is Shared, ReentrancyGuard {
         delete _hashedIpfsReqsNoEth[id];
     }
 
-    event RegTest(bool a, bytes b);
     function _execute(Request memory r) private returns (uint) {
         uint startGas = gasleft();
 
@@ -338,11 +328,10 @@ contract Registry is Shared, ReentrancyGuard {
         } else {
             (success, returnData) = _unveriForwarder.forward{value: r.ethForCall}(r.target, r.callData);
         }
-        emit RegTest(success, returnData);
         // Need this if statement because if the call succeeds, the tx will revert
         // with an EVM error because it can't decode 0x00
         if (!success) {
-            require(success, abi.decode(returnData, (string)));
+            revert(abi.decode(returnData, (string)));
         }
         // require(success, string(returnData));
         
@@ -356,7 +345,7 @@ contract Registry is Shared, ReentrancyGuard {
         // but it's better to be paranoid and totally separate the contracts.
         // Need to include these storages in the gas cost that the user pays since
         // they benefit from part of it and the costs can vary depending on whether
-        // the amounts changed were 0 or non-0
+        // the amounts changed from were 0 or non-0
         _cumulRewards[r.requester] += _requesterReward;
         _cumulRewards[msg.sender] += _executorReward;
         if (r.referer != _ADDR_0) {
@@ -383,7 +372,7 @@ contract Registry is Shared, ReentrancyGuard {
             // gasUsed = gasUsed * 11 / 10;
 
             ethNeeded = (gasUsed * tx.gasprice) + _baseBountyAsEth;
-            uint ASCoinNeeded = ethNeeded * _ethToASCoinRate / _E_18;
+            uint ASCoinNeeded = ethNeeded * _oracle.getASCPerETH() / _E_18;
 
             // Send the executor their bounty
             _ASCoin.transferFrom(r.requester, msg.sender, ASCoinNeeded);

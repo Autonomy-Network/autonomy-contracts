@@ -15,6 +15,7 @@ NORM_FACTOR = 115792089237316195423570985008687907853269984665640564039457
 # to choose from a relatively small list of stakers, this difference is negligible
 # and won't impact the result of the executor
 ERROR_FACTOR = 1.000000000000001
+INIT_ETH_TO_ASCOIN_RATE = 18000 * E_18
 
 REV_MSG_NZ_UINT = "Shared: uint input is empty"
 REV_MSG_NZ_ADDR = "Shared: address input is empty"
@@ -43,7 +44,6 @@ GAS_OVERHEAD_ASCOIN = 20000
 INIT_BASE_BOUNTY = 10**15
 INIT_REQUESTER_REWARD = 10**19
 INIT_EXECUTOR_REWARD = 10**20
-INIT_ETH_TO_ASCOIN_RATE = 18000 * E_18
 NULL_REQ = (ADDR_0, ADDR_0, NULL_BYTES, False, False, 0, 0, ADDR_0)
 # NULL_REQ_BYTES = b'\x80\x03O%\xfc\xea\xbf-\x0e\xdfP5\xb2"\xe6\x93$\x9f\x1b\xd3\x0bq\xe2\xc8\xfb\x07\x8a\xad9\x83\xd4j'
 # NULL_REQ_HEX = '0x' + NULL_REQ_BYTES.hex()

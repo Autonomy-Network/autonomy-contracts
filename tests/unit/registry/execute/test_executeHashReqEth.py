@@ -126,7 +126,6 @@ def test_executeHashReqEth_no_ethForCall(asc, stakedMin, mockTarget, reqsHashEth
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
-    assert asc.r.getEthToASCoinRate() == INIT_ETH_TO_ASCOIN_RATE
 
 
 def test_executeHashReqEth_with_ethForCall(asc, stakedMin, mockTarget, reqsHashEth):
@@ -175,7 +174,6 @@ def test_executeHashReqEth_with_ethForCall(asc, stakedMin, mockTarget, reqsHashE
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
-    assert asc.r.getEthToASCoinRate() == INIT_ETH_TO_ASCOIN_RATE
 
 
 def test_executeHashReqEth_pay_ASC(asc, stakedMin, mockTarget, reqsHashEth):
@@ -226,7 +224,6 @@ def test_executeHashReqEth_pay_ASC(asc, stakedMin, mockTarget, reqsHashEth):
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
-    assert asc.r.getEthToASCoinRate() == INIT_ETH_TO_ASCOIN_RATE
 
 
 def test_executeHashReqEth_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsHashEth):
@@ -277,7 +274,6 @@ def test_executeHashReqEth_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, r
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
-    assert asc.r.getEthToASCoinRate() == INIT_ETH_TO_ASCOIN_RATE
 
 
 def test_executeHashReqEth_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, mockTarget, reqsHashEth):
@@ -328,7 +324,6 @@ def test_executeHashReqEth_pay_ASC_with_ethForCall_and_verifySender(asc, stakedM
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
-    assert asc.r.getEthToASCoinRate() == INIT_ETH_TO_ASCOIN_RATE
 
 
 def test_executeHashReqEth_rev_not_executor(asc, stakedMin, reqsHashEth):

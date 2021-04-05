@@ -2,7 +2,7 @@ pragma solidity ^0.8;
 
 
 contract MockTarget {
-    
+
     address public veriForwarderAddr;
     address public unveriForwarderAddr;
     uint public x;
@@ -30,13 +30,13 @@ contract MockTarget {
     }
 
 
-    modifier updateMsgSender() {
-        _;
-        msgSender = msg.sender;
-    }
-
     modifier onlyUnverifiedSender() {
         require(msg.sender == unveriForwarderAddr, "Not sent from unveriForwarder");
         _;
+    }
+
+    modifier updateMsgSender() {
+        _;
+        msgSender = msg.sender;
     }
 }

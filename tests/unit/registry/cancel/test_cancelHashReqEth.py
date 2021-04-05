@@ -37,7 +37,6 @@ def test_cancelHashReqEth_no_ethForCall(asc, stakedMin, mockTarget, reqsHashEth)
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
-    assert asc.r.getEthToASCoinRate() == INIT_ETH_TO_ASCOIN_RATE
 
     assert asc.r.getCumulRewardsOf(asc.ALICE) == 0
     assert asc.r.getCumulRewardsOf(asc.BOB) == 0
@@ -78,7 +77,6 @@ def test_cancelHashReqEth_with_ethForCall(asc, stakedMin, mockTarget, reqsHashEt
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
-    assert asc.r.getEthToASCoinRate() == INIT_ETH_TO_ASCOIN_RATE
 
     assert asc.r.getCumulRewardsOf(asc.ALICE) == 0
     assert asc.r.getCumulRewardsOf(asc.BOB) == 0
@@ -120,7 +118,6 @@ def test_cancelHashReqEth_payASC(asc, stakedMin, mockTarget, reqsHashEth):
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
-    assert asc.r.getEthToASCoinRate() == INIT_ETH_TO_ASCOIN_RATE
 
     assert asc.r.getCumulRewardsOf(asc.ALICE) == 0
     assert asc.r.getCumulRewardsOf(asc.BOB) == 0
@@ -161,7 +158,6 @@ def test_cancelHashReqEth_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, re
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
-    assert asc.r.getEthToASCoinRate() == INIT_ETH_TO_ASCOIN_RATE
 
     assert asc.r.getCumulRewardsOf(asc.ALICE) == 0
     assert asc.r.getCumulRewardsOf(asc.BOB) == 0
@@ -202,7 +198,6 @@ def test_cancelHashReqEth_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMi
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
-    assert asc.r.getEthToASCoinRate() == INIT_ETH_TO_ASCOIN_RATE
 
     assert asc.r.getCumulRewardsOf(asc.ALICE) == 0
     assert asc.r.getCumulRewardsOf(asc.BOB) == 0

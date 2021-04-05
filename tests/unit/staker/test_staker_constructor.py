@@ -3,7 +3,7 @@ from utils import *
 
 
 def test_constructor(asc, web3):
-    assert asc.sm.getOracle() == asc.oracle.address
+    assert asc.sm.getOracle() == asc.o.address
     assert asc.sm.getASCoin() == asc.ASC.address
     assert asc.sm.getTotalStaked() == 0
     assert asc.sm.getStake(asc.DEPLOYER) == 0
