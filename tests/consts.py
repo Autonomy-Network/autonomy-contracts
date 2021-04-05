@@ -24,6 +24,10 @@ REV_MSG_NZ_BYTES32 = "Shared: bytes32 input is empty"
 REV_MSG_NZ_UINT_ARR = "Shared: uint arr input is empty"
 
 
+# Owner
+REV_MSG_OWNER = "Ownable: caller is not the owner"
+
+
 # StakeMan
 BLOCKS_IN_EPOCH = 100
 STAN_STAKE = 10000 * E_18

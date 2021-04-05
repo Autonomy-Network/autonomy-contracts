@@ -13,17 +13,15 @@ contract Forwarder is IForwarder, Ownable {
     constructor() Ownable() {}
 
 
-    event Test(address a, address b);
     function forward(
         address target,
         bytes calldata callData
     ) external override payable returns (bool success, bytes memory returnData) {
-        emit Test(msg.sender, _reg);
-        require(msg.sender == _reg, "Caller not the Registry");
+        require(msg.sender == _reg, "Forw: caller not the Registry");
         (success, returnData) = target.call{value: msg.value}(callData);
     }
 
-    function getReg() external returns (address) {
+    function getReg() external view returns (address) {
         return _reg;
     }
 

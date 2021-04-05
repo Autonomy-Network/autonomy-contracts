@@ -14,6 +14,7 @@ contract Oracle is IOracle, Ownable {
         _ASCPerETH = ASCPerETH;
     }
 
+
     function getRandNum(uint seed) external override view returns (uint) {
         return uint(blockhash(seed));
     }
