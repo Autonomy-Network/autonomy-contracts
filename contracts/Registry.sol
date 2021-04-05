@@ -31,15 +31,15 @@ contract Registry is Shared, Ownable, ReentrancyGuard {
     IForwarder private _unveriForwarder;
     // uint private _numRequests;
     // mapping(uint => Request) private _idToRequest;
-    Request[] private _rawRequests;
+    Request[] private _rawReqs;
     // We need to have 2 separete arrays for adding requests with and without
     // eth because, when comparing the hash of a request to be executed to the
     // stored hash, we have no idea what the request had for the eth values
     // that was originally stored as a hash and therefore would need to store
     // an extra bool saying where eth was sent with the new request. Instead, 
     // that can be known implicitly by having 2 separate arrays.
-    bytes32[] private _hashedIpfsReqsEth;
-    bytes32[] private _hashedIpfsReqsNoEth;
+    bytes32[] private _hashedReqs;
+    bytes32[] private _hashedReqsUnveri;
     // bytes32[] private _hashReqsPayEth;
     // bytes32[] private _hashReqsPayASC;
     // The minimum bounty priced in Eth. This amount is converted
@@ -71,10 +71,10 @@ contract Registry is Shared, Ownable, ReentrancyGuard {
     
     event RawReqAdded(uint indexed id);
     event RawReqRemoved(uint indexed id, bool wasExecuted);
-    event HashedReqEthAdded(uint indexed id);
-    event HashedReqEthRemoved(uint indexed id, bool wasExecuted);
-    event HashedReqNoEthAdded(uint indexed id);
-    event HashedReqNoEthRemoved(uint indexed id, bool wasExecuted);
+    event HashedReqAdded(uint indexed id);
+    event HashedReqRemoved(uint indexed id, bool wasExecuted);
+    event HashedReqUnveriAdded(uint indexed id);
+    event HashedReqUnveriRemoved(uint indexed id, bool wasExecuted);
 
 
     constructor(
@@ -105,7 +105,7 @@ contract Registry is Shared, Ownable, ReentrancyGuard {
     //                                                          //
     //////////////////////////////////////////////////////////////
     
-    function newRawRequest(
+    function newRawReq(
         address target,
         bytes calldata callData,
         bool verifySender,
@@ -127,33 +127,31 @@ contract Registry is Shared, Ownable, ReentrancyGuard {
             require(abi.decode(callData[4:36], (address)) == msg.sender, "Reg: calldata not verified");
         }
 
-        id = _rawRequests.length;
-        // _newRawRequest(target, callData, verifySender, payWithASC, msg.value, ethForCall, referer);
+        id = _rawReqs.length;
         emit RawReqAdded(id);
-        // _rawRequests.push(Request(payable(msg.sender), target, callData, verifySender, payWithASC, msg.value, ethForCall, referer));
-        _rawRequests.push(Request(payable(msg.sender), target, callData, verifySender, payWithASC, msg.value, ethForCall, referer));
+        _rawReqs.push(Request(payable(msg.sender), target, callData, verifySender, payWithASC, msg.value, ethForCall, referer));
     }
 
-    function getRawRequests() external view returns (Request[] memory) {
-        return _rawRequests;
+    function getRawReqs() external view returns (Request[] memory) {
+        return _rawReqs;
     }
 
-    function getRawRequestsLen() external view returns (uint) {
-        return _rawRequests.length;
+    function getRawReqLen() external view returns (uint) {
+        return _rawReqs.length;
     }
     
-    function getRawRequest(uint id) external view returns (Request memory) {
-        return _rawRequests[id];
+    function getRawReq(uint id) external view returns (Request memory) {
+        return _rawReqs[id];
     }
 
 
     //////////////////////////////////////////////////////////////
     //                                                          //
-    //                    Hashed Requests Eth                   //
+    //                      Hashed Requests                     //
     //                                                          //
     //////////////////////////////////////////////////////////////
 
-    function newHashReqWithEth(
+    function newHashedReq(
         address target,
         bytes calldata callData,
         bool verifySender,
@@ -174,46 +172,46 @@ contract Registry is Shared, Ownable, ReentrancyGuard {
         Request memory r = Request(payable(msg.sender), target, callData, verifySender, payWithASC, msg.value, ethForCall, referer);
         bytes32 hashedIpfsReq = getHashedIpfsReq(dataPrefix, getReqBytes(r), dataSuffix);
 
-        id = _hashedIpfsReqsEth.length;
-        emit HashedReqEthAdded(id);
-        _hashedIpfsReqsEth.push(hashedIpfsReq);
+        id = _hashedReqs.length;
+        emit HashedReqAdded(id);
+        _hashedReqs.push(hashedIpfsReq);
     }
 
-    function getHashedIpfsReqsEth() external view returns (bytes32[] memory) {
-        return _hashedIpfsReqsEth;
+    function getHashedReqs() external view returns (bytes32[] memory) {
+        return _hashedReqs;
     }
 
-    function getHashedIpfsReqsEthLen() external view returns (uint) {
-        return _hashedIpfsReqsEth.length;
+    function getHashedReqsLen() external view returns (uint) {
+        return _hashedReqs.length;
     }
     
-    function getHashedIpfsReqEth(uint id) external view returns (bytes32) {
-        return _hashedIpfsReqsEth[id];
+    function getHashedReq(uint id) external view returns (bytes32) {
+        return _hashedReqs[id];
     }
 
 
     //////////////////////////////////////////////////////////////
     //                                                          //
-    //                  Hashed Requests No Eth                  //
+    //                Hashed Requests Unverified                //
     //                                                          //
     //////////////////////////////////////////////////////////////
 
-    function newHashReqNoEth(bytes32 hashedIpfsReq) external nzBytes32(hashedIpfsReq) returns (uint id) {
-        id = _hashedIpfsReqsNoEth.length;
-        _hashedIpfsReqsNoEth.push(hashedIpfsReq);
-        emit HashedReqNoEthAdded(id);
+    function newHashedReqUnveri(bytes32 hashedIpfsReq) external nzBytes32(hashedIpfsReq) returns (uint id) {
+        id = _hashedReqsUnveri.length;
+        _hashedReqsUnveri.push(hashedIpfsReq);
+        emit HashedReqUnveriAdded(id);
     }
     
-    function getHashedIpfsReqsNoEth() external view returns (bytes32[] memory) {
-        return _hashedIpfsReqsNoEth;
+    function getHashedReqsUnveri() external view returns (bytes32[] memory) {
+        return _hashedReqsUnveri;
     }
 
-    function getHashedIpfsReqsNoEthLen() external view returns (uint) {
-        return _hashedIpfsReqsNoEth.length;
+    function getHashedReqsUnveriLen() external view returns (uint) {
+        return _hashedReqsUnveri.length;
     }
     
-    function getHashedIpfsReqNoEth(uint id) external view returns (bytes32) {
-        return _hashedIpfsReqsNoEth[id];
+    function getHashedReqUnveri(uint id) external view returns (bytes32) {
+        return _hashedReqsUnveri[id];
     }
 
 
@@ -251,24 +249,24 @@ contract Registry is Shared, Ownable, ReentrancyGuard {
     //////////////////////////////////////////////////////////////
 
     function executeRawReq(uint id) external validExec nonReentrant returns (uint gasUsed) {
-        Request memory r = _rawRequests[id];
+        Request memory r = _rawReqs[id];
         require(r.requester != _ADDR_0, "Reg: already executed");
         
         gasUsed = _execute(r);
         
         emit RawReqRemoved(id, true);
-        delete _rawRequests[id];
+        delete _rawReqs[id];
     }
 
     /**
      * @dev validCalldata needs to be before anything that would convert it to memory
      *      since that is persistent and would prevent validCalldata, that requries
      *      calldata, from working. Can't do the check in _execute for the same reason.
-     *      Note: targetNotThis and validEth are used in newHashReqWithEth.
+     *      Note: targetNotThis and validEth are used in newHashedReq.
      *      validCalldata is only used here because it causes an unknown
-     *      'InternalCompilerError' when using it with newHashReqWithEth
+     *      'InternalCompilerError' when using it with newHashedReq
      */
-    function executeHashReqEth(
+    function executeHashedReq(
         uint id,
         Request calldata r,
         bytes memory dataPrefix,
@@ -278,13 +276,13 @@ contract Registry is Shared, Ownable, ReentrancyGuard {
         validExec
         nonReentrant
         validCalldata(r)
-        verReq(id, r, dataPrefix, dataSuffix, _hashedIpfsReqsEth)
+        verReq(id, r, dataPrefix, dataSuffix, _hashedReqs)
         returns (uint gasUsed)
     {
         gasUsed = _execute(r);
         
-        emit HashedReqEthRemoved(id, true);
-        delete _hashedIpfsReqsEth[id];
+        emit HashedReqRemoved(id, true);
+        delete _hashedReqs[id];
     }
 
     /**
@@ -292,7 +290,7 @@ contract Registry is Shared, Ownable, ReentrancyGuard {
      *      since that is persistent and would prevent validCalldata, that requries
      *      calldata, from working. Can't do the check in _execute for the same reason
      */
-    function executeHashReqNoEth(
+    function executeHashedReqUnveri(
         uint id,
         Request calldata r,
         bytes memory dataPrefix,
@@ -302,7 +300,7 @@ contract Registry is Shared, Ownable, ReentrancyGuard {
         validExec
         nonReentrant
         targetNotThis(r.target)
-        verReq(id, r, dataPrefix, dataSuffix, _hashedIpfsReqsNoEth)
+        verReq(id, r, dataPrefix, dataSuffix, _hashedReqsUnveri)
         returns (uint gasUsed)
     {
         require(
@@ -315,8 +313,8 @@ contract Registry is Shared, Ownable, ReentrancyGuard {
 
         gasUsed = _execute(r);
         
-        emit HashedReqNoEthRemoved(id, true);
-        delete _hashedIpfsReqsNoEth[id];
+        emit HashedReqUnveriRemoved(id, true);
+        delete _hashedReqsUnveri[id];
     }
 
     function _execute(Request memory r) private returns (uint) {
@@ -412,11 +410,11 @@ contract Registry is Shared, Ownable, ReentrancyGuard {
     //////////////////////////////////////////////////////////////
     
     function cancelRawReq(uint id) external nonReentrant {
-        Request memory r = _rawRequests[id];
+        Request memory r = _rawReqs[id];
         require(msg.sender == r.requester, "Reg: not the requester");
         
         // Cancel the request
-        delete _rawRequests[id];
+        delete _rawReqs[id];
         emit RawReqRemoved(id, false);
         
         // Send refund
@@ -425,7 +423,7 @@ contract Registry is Shared, Ownable, ReentrancyGuard {
         }
     }
     
-    function cancelHashReqEth(
+    function cancelHashedReq(
         uint id,
         Request memory r,
         bytes memory dataPrefix,
@@ -433,13 +431,13 @@ contract Registry is Shared, Ownable, ReentrancyGuard {
     )
         external
         nonReentrant
-        verReq(id, r, dataPrefix, dataSuffix, _hashedIpfsReqsEth)
+        verReq(id, r, dataPrefix, dataSuffix, _hashedReqs)
     {
         require(msg.sender == r.requester, "Reg: not the requester");
         
         // Cancel the request
-        emit HashedReqEthRemoved(id, false);
-        delete _hashedIpfsReqsEth[id];
+        emit HashedReqRemoved(id, false);
+        delete _hashedReqs[id];
         
         // Send refund
         if (r.initEthSent > 0) {
@@ -447,7 +445,7 @@ contract Registry is Shared, Ownable, ReentrancyGuard {
         }
     }
     
-    function cancelHashReqNoEth(
+    function cancelHashedReqUnveri(
         uint id,
         Request memory r,
         bytes memory dataPrefix,
@@ -455,13 +453,13 @@ contract Registry is Shared, Ownable, ReentrancyGuard {
     )
         external
         nonReentrant
-        verReq(id, r, dataPrefix, dataSuffix, _hashedIpfsReqsNoEth)
+        verReq(id, r, dataPrefix, dataSuffix, _hashedReqsUnveri)
     {
         require(msg.sender == r.requester, "Reg: not the requester");
         
         // Cancel the request
-        emit HashedReqNoEthRemoved(id, false);
-        delete _hashedIpfsReqsNoEth[id];
+        emit HashedReqUnveriRemoved(id, false);
+        delete _hashedReqsUnveri[id];
     }
     
     

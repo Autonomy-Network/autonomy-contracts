@@ -11,25 +11,25 @@ import base58 as b58
     hashedIpfsReq=strategy('bytes32', exclude=bytes(32)),
     sender=strategy('address')
 )
-def test_newHashReqNoEth(asc, mockTarget, hashedIpfsReq, sender):
-    tx = asc.r.newHashReqNoEth(hashedIpfsReq)
+def test_newHashedReqUnveri(asc, mockTarget, hashedIpfsReq, sender):
+    tx = asc.r.newHashedReqUnveri(hashedIpfsReq)
 
-    assert tx.events["HashedReqNoEthAdded"][0].values() == [0]
+    assert tx.events["HashedReqUnveriAdded"][0].values() == [0]
     assert tx.return_value == 0
-    hashedIpfsReqs = [convert.to_bytes(hash, 'bytes') for hash in asc.r.getHashedIpfsReqsNoEth()]
+    hashedIpfsReqs = [convert.to_bytes(hash, 'bytes') for hash in asc.r.getHashedReqsUnveri()]
     assert hashedIpfsReqs == [hashedIpfsReq]
-    assert asc.r.getHashedIpfsReqsNoEthLen() == 1
-    assert asc.r.getHashedIpfsReqNoEth(0) == bytesToHex(hashedIpfsReq)
+    assert asc.r.getHashedReqsUnveriLen() == 1
+    assert asc.r.getHashedReqUnveri(0) == bytesToHex(hashedIpfsReq)
 
-    assert asc.r.getRawRequests() == []
-    assert asc.r.getRawRequestsLen() == 0
+    assert asc.r.getRawReqs() == []
+    assert asc.r.getRawReqLen() == 0
     with reverts():
-        asc.r.getRawRequest(0)
+        asc.r.getRawReq(0)
     
-    assert asc.r.getHashedIpfsReqsEth() == []
-    assert asc.r.getHashedIpfsReqsEthLen() == 0
+    assert asc.r.getHashedReqs() == []
+    assert asc.r.getHashedReqsLen() == 0
     with reverts():
-        asc.r.getHashedIpfsReqEth(0)
+        asc.r.getHashedReq(0)
 
     assert asc.BOB.balance() == INIT_ETH_BAL
     assert asc.DENICE.balance() == INIT_ETH_BAL
@@ -41,7 +41,7 @@ def test_newHashReqNoEth(asc, mockTarget, hashedIpfsReq, sender):
     assert asc.ASC.balanceOf(mockTarget) == 0
     assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
 
-def test_newHashReqNoEth_real(asc, mockTarget):
+def test_newHashedReqUnveri_real(asc, mockTarget):
     callData = mockTarget.setX.encode_input(5)
     req = (asc.BOB.address, mockTarget, callData, False, True, 0, 0, asc.DENICE)
     reqBytes = asc.r.getReqBytes(req)
@@ -52,23 +52,23 @@ def test_newHashReqNoEth_real(asc, mockTarget):
     
     hash = getHashFromCID(ipfsCID)
 
-    tx = asc.r.newHashReqNoEth(hash)
+    tx = asc.r.newHashedReqUnveri(hash)
 
-    assert tx.events["HashedReqNoEthAdded"][0].values() == [0]
+    assert tx.events["HashedReqUnveriAdded"][0].values() == [0]
     assert tx.return_value == 0
-    assert asc.r.getHashedIpfsReqsNoEth() == [hash]
-    assert asc.r.getHashedIpfsReqsNoEthLen() == 1
-    assert asc.r.getHashedIpfsReqNoEth(0) == getHashFromCID(ipfsCID)
+    assert asc.r.getHashedReqsUnveri() == [hash]
+    assert asc.r.getHashedReqsUnveriLen() == 1
+    assert asc.r.getHashedReqUnveri(0) == getHashFromCID(ipfsCID)
 
-    assert asc.r.getRawRequests() == []
-    assert asc.r.getRawRequestsLen() == 0
+    assert asc.r.getRawReqs() == []
+    assert asc.r.getRawReqLen() == 0
     with reverts():
-        asc.r.getRawRequest(0)
+        asc.r.getRawReq(0)
     
-    assert asc.r.getHashedIpfsReqsEth() == []
-    assert asc.r.getHashedIpfsReqsEthLen() == 0
+    assert asc.r.getHashedReqs() == []
+    assert asc.r.getHashedReqsLen() == 0
     with reverts():
-        asc.r.getHashedIpfsReqEth(0)
+        asc.r.getHashedReq(0)
 
     assert asc.BOB.balance() == INIT_ETH_BAL
     assert asc.DENICE.balance() == INIT_ETH_BAL
@@ -81,51 +81,51 @@ def test_newHashReqNoEth_real(asc, mockTarget):
     assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
 
 
-    # Ensure that the hash used with newHashReqNoEth is the same as 
-    # the one generated with newHashReqWithEth
+    # Ensure that the hash used with newHashedReqUnveri is the same as 
+    # the one generated with newHashedReq
     reqBytesIdx = ipfsBlock.index(reqBytes)
     dataPrefix = ipfsBlock[:reqBytesIdx]
     dataSuffix = ipfsBlock[reqBytesIdx + len(reqBytes) : ]
 
-    tx2 = asc.r.newHashReqWithEth(mockTarget, callData, False, True, 0, asc.DENICE, dataPrefix, dataSuffix, asc.FR_BOB)
+    tx2 = asc.r.newHashedReq(mockTarget, callData, False, True, 0, asc.DENICE, dataPrefix, dataSuffix, asc.FR_BOB)
 
-    assert asc.r.getHashedIpfsReqEth(0) == hash
+    assert asc.r.getHashedReq(0) == hash
 
 
-def test_newHashReqNoEth_rev_empty_hashedIpfsReq(asc, mockTarget):
+def test_newHashedReqUnveri_rev_empty_hashedIpfsReq(asc, mockTarget):
     with reverts(REV_MSG_NZ_BYTES32):
-        asc.r.newHashReqNoEth("")
+        asc.r.newHashedReqUnveri("")
 
 
 # import time
 # # Ensure that everything still works
-# def test_newHashReqNoEth_spam(asc):
+# def test_newHashedReqUnveri_spam(asc):
 #     t0 = time.time()
 #     for i in range(1, 100001):
 #         t1 = time.time()
 #         # print(i)
 
 #         t2 = time.time()
-#         asc.r.newHashReqNoEth(i)
-#         # print(f'newHashReqNoEth = {(time.time()-t2)}')
+#         asc.r.newHashedReqUnveri(i)
+#         # print(f'newHashedReqUnveri = {(time.time()-t2)}')
 
 #         if i % 1000 == 0:
 #             print(f'i = {i}')
 #             t2 = time.time()
-#             # asc.r.getHashedIpfsReqsNoEth()
-#             # print(f'getHashedIpfsReqsNoEth = {(time.time()-t2)}')
+#             # asc.r.getHashedReqsUnveri()
+#             # print(f'getHashedReqsUnveri = {(time.time()-t2)}')
 
 #             reqs = []
-#             for i in range(asc.r.getHashedIpfsReqsNoEthLen()):
-#                 reqs.append(asc.r.getHashedIpfsReqNoEth(i))
+#             for i in range(asc.r.getHashedReqsUnveriLen()):
+#                 reqs.append(asc.r.getHashedReqUnveri(i))
 #             # print(reqs)
-#             print(f'getHashedIpfsReqNoEth total = {(time.time()-t2)}')
-#             print(f'getHashedIpfsReqsNoEth per req  = {(time.time()-t2) / i}')
+#             print(f'getHashedReqUnveri total = {(time.time()-t2)}')
+#             print(f'getHashedReqsUnveri per req  = {(time.time()-t2) / i}')
 #             print()
 
 #         # t2 = time.time()
-#         # asc.r.getHashedIpfsReqsNoEthLen()
-#         # print(f'getHashedIpfsReqsNoEthLen = {(time.time()-t2)}')
+#         # asc.r.getHashedReqsUnveriLen()
+#         # print(f'getHashedReqsUnveriLen = {(time.time()-t2)}')
 
 #         # print(f'totalRate = {(time.time()-t0)/i}')
 #         # print(f'singleRate = {(time.time()-t1)}')

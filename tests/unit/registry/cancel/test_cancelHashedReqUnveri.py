@@ -4,16 +4,16 @@ from brownie.test import given, strategy
 from utils import *
 
 
-def test_cancelHashReqNoEth_no_ethForCall(asc, stakedMin, mockTarget, reqHashNoEth):
+def test_cancelHashedReqUnveri_no_ethForCall(asc, stakedMin, mockTarget, reqHashNoEth):
     req, reqHashBytes = reqHashNoEth
     id = 0
-    tx = asc.r.cancelHashReqNoEth(id, req, *getIpfsMetaData(asc, req), asc.FR_BOB)
+    tx = asc.r.cancelHashedReqUnveri(id, req, *getIpfsMetaData(asc, req), asc.FR_BOB)
 
     # Should've changed
-    assert asc.r.getHashedIpfsReqsNoEth() == [NULL_HASH]
-    assert asc.r.getHashedIpfsReqsNoEthLen() == 1
-    assert asc.r.getHashedIpfsReqNoEth(0) == NULL_HASH
-    assert tx.events["HashedReqNoEthRemoved"][0].values() == [id, False]
+    assert asc.r.getHashedReqsUnveri() == [NULL_HASH]
+    assert asc.r.getHashedReqsUnveriLen() == 1
+    assert asc.r.getHashedReqUnveri(0) == NULL_HASH
+    assert tx.events["HashedReqUnveriRemoved"][0].values() == [id, False]
 
     # Shouldn't've changed
     assert mockTarget.x() == 0
@@ -39,7 +39,7 @@ def test_cancelHashReqNoEth_no_ethForCall(asc, stakedMin, mockTarget, reqHashNoE
     assert asc.r.getCumulRewardsOf(asc.DENICE) == 0
 
 
-def test_cancelHashReqNoEth_rev_req_not_the_same(asc, stakedMin, mockTarget, reqHashNoEth):
+def test_cancelHashedReqUnveri_rev_req_not_the_same(asc, stakedMin, mockTarget, reqHashNoEth):
     req, reqHashBytes = reqHashNoEth
     # Alter the request
     invalidReq = list(req)
@@ -47,22 +47,22 @@ def test_cancelHashReqNoEth_rev_req_not_the_same(asc, stakedMin, mockTarget, req
     id = 0
 
     with reverts(REV_MSG_NOT_SAME):
-        asc.r.cancelHashReqNoEth(id, invalidReq, *getIpfsMetaData(asc, req), asc.FR_BOB)
+        asc.r.cancelHashedReqUnveri(id, invalidReq, *getIpfsMetaData(asc, req), asc.FR_BOB)
 
 
-def test_cancelHashReqNoEth_rev_already_executed(asc, stakedMin, mockTarget, reqHashNoEth):
+def test_cancelHashedReqUnveri_rev_already_executed(asc, stakedMin, mockTarget, reqHashNoEth):
     _, staker, __ = stakedMin
     req, reqHashBytes = reqHashNoEth
     id = 0
-    asc.r.executeHashReqNoEth(id, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    asc.r.executeHashedReqUnveri(id, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
 
     with reverts(REV_MSG_NOT_SAME):
-        asc.r.cancelHashReqNoEth(id, req, *getIpfsMetaData(asc, req), asc.FR_BOB)
+        asc.r.cancelHashedReqUnveri(id, req, *getIpfsMetaData(asc, req), asc.FR_BOB)
 
 
-def test_cancelHashReqNoEth_rev_not_the_requester(asc, stakedMin, mockTarget, reqHashNoEth):
+def test_cancelHashedReqUnveri_rev_not_the_requester(asc, stakedMin, mockTarget, reqHashNoEth):
     req, reqHashBytes = reqHashNoEth
     id = 0
 
     with reverts(REV_MSG_NOT_REQUESTER):
-        asc.r.cancelHashReqNoEth(id, req, *getIpfsMetaData(asc, req), asc.FR_ALICE)
+        asc.r.cancelHashedReqUnveri(id, req, *getIpfsMetaData(asc, req), asc.FR_ALICE)

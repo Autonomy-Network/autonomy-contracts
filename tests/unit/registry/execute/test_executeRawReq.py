@@ -33,9 +33,9 @@ def test_executeRawReq_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert mockTarget.x() == 5
     assert mockTarget.msgSender() == asc.uvf.address
     # Registry state
-    assert asc.r.getRawRequests() == [NULL_REQ, reqEthForCall, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender]
-    assert asc.r.getRawRequestsLen() == 5
-    assert asc.r.getRawRequest(id) == NULL_REQ
+    assert asc.r.getRawReqs() == [NULL_REQ, reqEthForCall, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender]
+    assert asc.r.getRawReqLen() == 5
+    assert asc.r.getRawReq(id) == NULL_REQ
     assert asc.r.getCumulRewardsOf(asc.BOB) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.DENICE) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.ALICE) == INIT_EXECUTOR_REWARD
@@ -78,9 +78,9 @@ def test_executeRawReq_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert mockTarget.x() == 5
     assert mockTarget.msgSender() == asc.uvf.address
     # Registry state
-    assert asc.r.getRawRequests() == [reqNoEthForCall, NULL_REQ, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender]
-    assert asc.r.getRawRequestsLen() == 5
-    assert asc.r.getRawRequest(id) == NULL_REQ
+    assert asc.r.getRawReqs() == [reqNoEthForCall, NULL_REQ, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender]
+    assert asc.r.getRawReqLen() == 5
+    assert asc.r.getRawReq(id) == NULL_REQ
     assert asc.r.getCumulRewardsOf(asc.BOB) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.DENICE) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.ALICE) == INIT_EXECUTOR_REWARD
@@ -125,9 +125,9 @@ def test_executeRawReq_pay_ASC(asc, stakedMin, mockTarget, reqsRaw):
     assert mockTarget.x() == 5
     assert mockTarget.msgSender() == asc.uvf.address
     # Registry state
-    assert asc.r.getRawRequests() == [reqNoEthForCall, reqEthForCall, NULL_REQ, reqPayASCEthForCall, reqPayASCEthForCallVerifySender]
-    assert asc.r.getRawRequestsLen() == 5
-    assert asc.r.getRawRequest(id) == NULL_REQ
+    assert asc.r.getRawReqs() == [reqNoEthForCall, reqEthForCall, NULL_REQ, reqPayASCEthForCall, reqPayASCEthForCallVerifySender]
+    assert asc.r.getRawReqLen() == 5
+    assert asc.r.getRawReq(id) == NULL_REQ
     assert asc.r.getCumulRewardsOf(asc.BOB) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.DENICE) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.ALICE) == INIT_EXECUTOR_REWARD
@@ -172,9 +172,9 @@ def test_executeRawReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsR
     assert mockTarget.x() == 5
     assert mockTarget.msgSender() == asc.uvf.address
     # Registry state
-    assert asc.r.getRawRequests() == [reqNoEthForCall, reqEthForCall, reqPayASC, NULL_REQ, reqPayASCEthForCallVerifySender]
-    assert asc.r.getRawRequestsLen() == 5
-    assert asc.r.getRawRequest(id) == NULL_REQ
+    assert asc.r.getRawReqs() == [reqNoEthForCall, reqEthForCall, reqPayASC, NULL_REQ, reqPayASCEthForCallVerifySender]
+    assert asc.r.getRawReqLen() == 5
+    assert asc.r.getRawReq(id) == NULL_REQ
     assert asc.r.getCumulRewardsOf(asc.BOB) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.DENICE) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.ALICE) == INIT_EXECUTOR_REWARD
@@ -221,9 +221,9 @@ def test_executeRawReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, 
     assert mockTarget.userAddr() == asc.BOB.address
     assert mockTarget.msgSender() == asc.vf.address
     # Registry state
-    assert asc.r.getRawRequests() == [reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, NULL_REQ]
-    assert asc.r.getRawRequestsLen() == 5
-    assert asc.r.getRawRequest(id) == NULL_REQ
+    assert asc.r.getRawReqs() == [reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, NULL_REQ]
+    assert asc.r.getRawReqLen() == 5
+    assert asc.r.getRawReq(id) == NULL_REQ
     assert asc.r.getCumulRewardsOf(asc.BOB) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.DENICE) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.ALICE) == INIT_EXECUTOR_REWARD
@@ -259,7 +259,7 @@ def test_executeRawReq_rev_not_executor(asc, stakedMin, reqsRaw):
 # def test_executeRawReq_rev_nonReentrant(asc, stakedMin, reqsRaw, mockReentrancyAttack):
 #     _, staker, __ = stakedMin
 #     callData = mockReentrancyAttack.callExecute.encode_input(2)
-#     asc.r.newRawRequest(mockReentrancyAttack, callData, False, True, 0, asc.DENICE, {'from': asc.BOB})
+#     asc.r.newRawReq(mockReentrancyAttack, callData, False, True, 0, asc.DENICE, {'from': asc.BOB})
 
 #     with reverts(REV_MSG_NOT_EXEC):
 #         asc.r.executeRawReq(4, {'from': staker, 'gasPrice': TEST_GAS_PRICE})

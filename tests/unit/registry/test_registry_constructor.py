@@ -11,20 +11,20 @@ def test_constructor(asc):
     assert asc.r.getASCoin() == asc.ASC
     assert asc.r.getStakeManager() == asc.sm
 
-    assert asc.r.getRawRequests() == []
-    assert asc.r.getRawRequestsLen() == 0
+    assert asc.r.getRawReqs() == []
+    assert asc.r.getRawReqLen() == 0
     with reverts():
-        assert asc.r.getRawRequest(0)
+        assert asc.r.getRawReq(0)
     
-    assert asc.r.getHashedIpfsReqsEth() == []
-    assert asc.r.getHashedIpfsReqsEthLen() == 0
+    assert asc.r.getHashedReqs() == []
+    assert asc.r.getHashedReqsLen() == 0
     with reverts():
-        asc.r.getHashedIpfsReqEth(0)
+        asc.r.getHashedReq(0)
     
-    assert asc.r.getHashedIpfsReqsNoEth() == []
-    assert asc.r.getHashedIpfsReqsNoEthLen() == 0
+    assert asc.r.getHashedReqsUnveri() == []
+    assert asc.r.getHashedReqsUnveriLen() == 0
     with reverts():
-        asc.r.getHashedIpfsReqNoEth(0)
+        asc.r.getHashedReqUnveri(0)
     
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
     assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD

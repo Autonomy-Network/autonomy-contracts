@@ -4,20 +4,20 @@ from brownie.test import given, strategy
 from utils import *
 
 
-def test_cancelHashReqEth_no_ethForCall(asc, stakedMin, mockTarget, reqsHashEth):
+def test_cancelHashedReq_no_ethForCall(asc, stakedMin, mockTarget, reqsHashEth):
     reqs, reqHashes, msgValue, ethForCall = reqsHashEth
     # reqHashes will modify the original even after this test has finished otherwise since it's a reference
     reqHashes = reqHashes[:]
     id = 0
-    tx = asc.r.cancelHashReqEth(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), asc.FR_BOB)
+    tx = asc.r.cancelHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), asc.FR_BOB)
 
     # Should've changed
     reqHashes[id] = NULL_HASH
-    assert asc.r.getHashedIpfsReqsEth() == reqHashes
-    assert asc.r.getHashedIpfsReqsEthLen() == 5
+    assert asc.r.getHashedReqs() == reqHashes
+    assert asc.r.getHashedReqsLen() == 5
     for i, reqHash in enumerate(reqHashes):
-        assert asc.r.getHashedIpfsReqEth(i) == reqHash
-    assert tx.events["HashedReqEthRemoved"][0].values() == [id, False]
+        assert asc.r.getHashedReq(i) == reqHash
+    assert tx.events["HashedReqRemoved"][0].values() == [id, False]
     assert asc.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (2 * ethForCall) + msgValue
 
     # Shouldn't've changed
@@ -43,21 +43,21 @@ def test_cancelHashReqEth_no_ethForCall(asc, stakedMin, mockTarget, reqsHashEth)
     assert asc.r.getCumulRewardsOf(asc.DENICE) == 0
 
 
-def test_cancelHashReqEth_with_ethForCall(asc, stakedMin, mockTarget, reqsHashEth):
+def test_cancelHashedReq_with_ethForCall(asc, stakedMin, mockTarget, reqsHashEth):
     reqs, reqHashes, msgValue, ethForCall = reqsHashEth
     # reqHashes will modify the original even after this test has finished otherwise since it's a reference
     reqHashes = reqHashes[:]
     id = 1
 
-    tx = asc.r.cancelHashReqEth(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), asc.FR_BOB)
+    tx = asc.r.cancelHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), asc.FR_BOB)
 
     # Should've changed
     reqHashes[id] = NULL_HASH
-    assert asc.r.getHashedIpfsReqsEth() == reqHashes
-    assert asc.r.getHashedIpfsReqsEthLen() == 5
+    assert asc.r.getHashedReqs() == reqHashes
+    assert asc.r.getHashedReqsLen() == 5
     for i, reqHash in enumerate(reqHashes):
-        assert asc.r.getHashedIpfsReqEth(i) == reqHash
-    assert tx.events["HashedReqEthRemoved"][0].values() == [id, False]
+        assert asc.r.getHashedReq(i) == reqHash
+    assert tx.events["HashedReqRemoved"][0].values() == [id, False]
     assert asc.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (2 * ethForCall) + msgValue
 
     # Shouldn't've changed
@@ -84,21 +84,21 @@ def test_cancelHashReqEth_with_ethForCall(asc, stakedMin, mockTarget, reqsHashEt
 
 
 
-def test_cancelHashReqEth_payASC(asc, stakedMin, mockTarget, reqsHashEth):
+def test_cancelHashedReq_payASC(asc, stakedMin, mockTarget, reqsHashEth):
     reqs, reqHashes, msgValue, ethForCall = reqsHashEth
     # reqHashes will modify the original even after this test has finished otherwise since it's a reference
     reqHashes = reqHashes[:]
     id = 2
 
-    tx = asc.r.cancelHashReqEth(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), asc.FR_BOB)
+    tx = asc.r.cancelHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), asc.FR_BOB)
 
     # Should've changed
     reqHashes[id] = NULL_HASH
-    assert asc.r.getHashedIpfsReqsEth() == reqHashes
-    assert asc.r.getHashedIpfsReqsEthLen() == 5
+    assert asc.r.getHashedReqs() == reqHashes
+    assert asc.r.getHashedReqsLen() == 5
     for i, reqHash in enumerate(reqHashes):
-        assert asc.r.getHashedIpfsReqEth(i) == reqHash
-    assert tx.events["HashedReqEthRemoved"][0].values() == [id, False]
+        assert asc.r.getHashedReq(i) == reqHash
+    assert tx.events["HashedReqRemoved"][0].values() == [id, False]
 
     # Shouldn't've changed
     assert mockTarget.x() == 0
@@ -124,21 +124,21 @@ def test_cancelHashReqEth_payASC(asc, stakedMin, mockTarget, reqsHashEth):
     assert asc.r.getCumulRewardsOf(asc.DENICE) == 0
 
 
-def test_cancelHashReqEth_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsHashEth):
+def test_cancelHashedReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsHashEth):
     reqs, reqHashes, msgValue, ethForCall = reqsHashEth
     # reqHashes will modify the original even after this test has finished otherwise since it's a reference
     reqHashes = reqHashes[:]
     id = 3
 
-    tx = asc.r.cancelHashReqEth(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), asc.FR_BOB)
+    tx = asc.r.cancelHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), asc.FR_BOB)
 
     # Should've changed
     reqHashes[id] = NULL_HASH
-    assert asc.r.getHashedIpfsReqsEth() == reqHashes
-    assert asc.r.getHashedIpfsReqsEthLen() == 5
+    assert asc.r.getHashedReqs() == reqHashes
+    assert asc.r.getHashedReqsLen() == 5
     for i, reqHash in enumerate(reqHashes):
-        assert asc.r.getHashedIpfsReqEth(i) == reqHash
-    assert tx.events["HashedReqEthRemoved"][0].values() == [id, False]
+        assert asc.r.getHashedReq(i) == reqHash
+    assert tx.events["HashedReqRemoved"][0].values() == [id, False]
     assert asc.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (2 * ethForCall) + ethForCall
 
     # Shouldn't've changed
@@ -164,21 +164,21 @@ def test_cancelHashReqEth_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, re
     assert asc.r.getCumulRewardsOf(asc.DENICE) == 0
 
 
-def test_cancelHashReqEth_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, mockTarget, reqsHashEth):
+def test_cancelHashedReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, mockTarget, reqsHashEth):
     reqs, reqHashes, msgValue, ethForCall = reqsHashEth
     # reqHashes will modify the original even after this test has finished otherwise since it's a reference
     reqHashes = reqHashes[:]
     id = 4
 
-    tx = asc.r.cancelHashReqEth(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), asc.FR_BOB)
+    tx = asc.r.cancelHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), asc.FR_BOB)
 
     # Should've changed
     reqHashes[id] = NULL_HASH
-    assert asc.r.getHashedIpfsReqsEth() == reqHashes
-    assert asc.r.getHashedIpfsReqsEthLen() == 5
+    assert asc.r.getHashedReqs() == reqHashes
+    assert asc.r.getHashedReqsLen() == 5
     for i, reqHash in enumerate(reqHashes):
-        assert asc.r.getHashedIpfsReqEth(i) == reqHash
-    assert tx.events["HashedReqEthRemoved"][0].values() == [id, False]
+        assert asc.r.getHashedReq(i) == reqHash
+    assert tx.events["HashedReqRemoved"][0].values() == [id, False]
     assert asc.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (2 * ethForCall) + ethForCall
 
     # Shouldn't've changed
@@ -204,27 +204,27 @@ def test_cancelHashReqEth_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMi
     assert asc.r.getCumulRewardsOf(asc.DENICE) == 0
 
 
-def test_cancelHashReqEth_rev_req_not_the_same(asc, stakedMin, mockTarget, reqsHashEth):
+def test_cancelHashedReq_rev_req_not_the_same(asc, stakedMin, mockTarget, reqsHashEth):
     reqs, reqHashes, msgValue, ethForCall = reqsHashEth
     id = 1
 
     with reverts(REV_MSG_NOT_SAME):
-        asc.r.cancelHashReqEth(id, reqs[2], *getIpfsMetaData(asc, reqs[id]), asc.FR_BOB)
+        asc.r.cancelHashedReq(id, reqs[2], *getIpfsMetaData(asc, reqs[id]), asc.FR_BOB)
 
 
-def test_cancelHashReqEth_rev_already_executed(asc, stakedMin, mockTarget, reqsHashEth):
+def test_cancelHashedReq_rev_already_executed(asc, stakedMin, mockTarget, reqsHashEth):
     _, staker, __ = stakedMin
     reqs, reqHashes, msgValue, ethForCall = reqsHashEth
     id = 1
-    asc.r.executeHashReqEth(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    asc.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
 
     with reverts(REV_MSG_NOT_SAME):
-        asc.r.cancelHashReqEth(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), asc.FR_BOB)
+        asc.r.cancelHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), asc.FR_BOB)
 
 
-def test_cancelHashReqEth_rev_not_the_requester(asc, stakedMin, mockTarget, reqsHashEth):
+def test_cancelHashedReq_rev_not_the_requester(asc, stakedMin, mockTarget, reqsHashEth):
     reqs, reqHashes, msgValue, ethForCall = reqsHashEth
     id = 1
 
     with reverts(REV_MSG_NOT_REQUESTER):
-        asc.r.cancelHashReqEth(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), asc.FR_ALICE)
+        asc.r.cancelHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), asc.FR_ALICE)

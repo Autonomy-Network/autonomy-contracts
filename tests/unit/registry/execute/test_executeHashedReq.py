@@ -5,14 +5,14 @@ from utils import *
 
 
 # Randomly generate addresses for the sender and calldata input independently
-# to test validCalldata upon calling executeHashReqEth
+# to test validCalldata upon calling executeHashedReq
 @given(
     ethForCall=strategy('uint256', max_value=E_18),
     payWithASC=strategy('bool'),
     userAddr=strategy('address'),
     sender=strategy('address')
 )
-def test_executeHashReqEth_validCalldata(asc, stakedMin, mockTarget, ethForCall, payWithASC, userAddr, sender):
+def test_executeHashedReq_validCalldata(asc, stakedMin, mockTarget, ethForCall, payWithASC, userAddr, sender):
     # It's gonna be a pain in the ass to do the accounting if they're equal
     if sender != asc.ALICE and sender != asc.DENICE:
         _, staker, __ = stakedMin
@@ -29,13 +29,13 @@ def test_executeHashReqEth_validCalldata(asc, stakedMin, mockTarget, ethForCall,
         asc.ASC.approve(asc.r, MAX_TEST_STAKE, {'from': sender})
         asc.ASC.transfer(sender, MAX_TEST_STAKE, asc.FR_DEPLOYER)
         senderASCStartBal = asc.ASC.balanceOf(sender)
-        asc.r.newHashReqWithEth(mockTarget, callData, True, payWithASC, ethForCall, asc.DENICE, *getIpfsMetaData(asc, req), {'from': sender, 'value': msgValue})
+        asc.r.newHashedReq(mockTarget, callData, True, payWithASC, ethForCall, asc.DENICE, *getIpfsMetaData(asc, req), {'from': sender, 'value': msgValue})
 
         if userAddr != sender:
             with reverts(REV_MSG_CALLDATA_NOT_VER):
-                asc.r.executeHashReqEth(id, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+                asc.r.executeHashedReq(id, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
         else:
-            tx = asc.r.executeHashReqEth(id, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+            tx = asc.r.executeHashedReq(id, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
 
             ethForExec = (tx.return_value * tx.gas_price) + (INIT_BASE_BOUNTY * 2)
             assert mockTarget.balance() == ethForCall
@@ -64,13 +64,13 @@ def test_executeHashReqEth_validCalldata(asc, stakedMin, mockTarget, ethForCall,
             assert mockTarget.userAddr() == sender.address
             assert mockTarget.msgSender() == asc.vf.address
             # Registry state
-            assert asc.r.getHashedIpfsReqsEth() == [NULL_HASH]
-            assert asc.r.getHashedIpfsReqsEthLen() == 1
-            assert asc.r.getHashedIpfsReqEth(id) == NULL_HASH
+            assert asc.r.getHashedReqs() == [NULL_HASH]
+            assert asc.r.getHashedReqsLen() == 1
+            assert asc.r.getHashedReq(id) == NULL_HASH
             assert asc.r.getCumulRewardsOf(sender) == INIT_REQUESTER_REWARD
             assert asc.r.getCumulRewardsOf(asc.DENICE) == INIT_REQUESTER_REWARD
             assert asc.r.getCumulRewardsOf(asc.ALICE) == INIT_EXECUTOR_REWARD
-            assert tx.events["HashedReqEthRemoved"][0].values() == [id, True]
+            assert tx.events["HashedReqRemoved"][0].values() == [id, True]
 
             # Shouldn't've changed
             assert mockTarget.x() == 0
@@ -80,7 +80,7 @@ def test_executeHashReqEth_validCalldata(asc, stakedMin, mockTarget, ethForCall,
             assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
 
 
-def test_executeHashReqEth_no_ethForCall(asc, stakedMin, mockTarget, reqsHashEth):
+def test_executeHashedReq_no_ethForCall(asc, stakedMin, mockTarget, reqsHashEth):
     _, staker, __ = stakedMin
     reqs, reqHashes, msgValue, ethForCall = reqsHashEth
     # reqHashes will modify the original even after this test has finished otherwise since it's a reference
@@ -94,7 +94,7 @@ def test_executeHashReqEth_no_ethForCall(asc, stakedMin, mockTarget, reqsHashEth
     assert asc.ASC.balanceOf(asc.DENICE) == 0
     assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
 
-    tx = asc.r.executeHashReqEth(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    tx = asc.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
     
     # Should've changed
     # Eth bals
@@ -113,13 +113,13 @@ def test_executeHashReqEth_no_ethForCall(asc, stakedMin, mockTarget, reqsHashEth
     assert mockTarget.msgSender() == asc.uvf.address
     # Registry state
     reqHashes[id] = NULL_HASH
-    assert asc.r.getHashedIpfsReqsEth() == reqHashes
-    assert asc.r.getHashedIpfsReqsEthLen() == 5
-    assert asc.r.getHashedIpfsReqEth(id) == NULL_HASH
+    assert asc.r.getHashedReqs() == reqHashes
+    assert asc.r.getHashedReqsLen() == 5
+    assert asc.r.getHashedReq(id) == NULL_HASH
     assert asc.r.getCumulRewardsOf(asc.BOB) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.DENICE) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.ALICE) == INIT_EXECUTOR_REWARD
-    assert tx.events["HashedReqEthRemoved"][0].values() == [id, True]
+    assert tx.events["HashedReqRemoved"][0].values() == [id, True]
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
@@ -128,7 +128,7 @@ def test_executeHashReqEth_no_ethForCall(asc, stakedMin, mockTarget, reqsHashEth
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
 
 
-def test_executeHashReqEth_with_ethForCall(asc, stakedMin, mockTarget, reqsHashEth):
+def test_executeHashedReq_with_ethForCall(asc, stakedMin, mockTarget, reqsHashEth):
     _, staker, __ = stakedMin
     reqs, reqHashes, msgValue, ethForCall = reqsHashEth
     # reqHashes will modify the original even after this test has finished otherwise since it's a reference
@@ -142,7 +142,7 @@ def test_executeHashReqEth_with_ethForCall(asc, stakedMin, mockTarget, reqsHashE
     assert asc.ASC.balanceOf(asc.DENICE) == 0
     assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
 
-    tx = asc.r.executeHashReqEth(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    tx = asc.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
     
     # Should've changed
     # Eth bals
@@ -161,13 +161,13 @@ def test_executeHashReqEth_with_ethForCall(asc, stakedMin, mockTarget, reqsHashE
     assert mockTarget.msgSender() == asc.uvf.address
     # Registry state
     reqHashes[id] = NULL_HASH
-    assert asc.r.getHashedIpfsReqsEth() == reqHashes
-    assert asc.r.getHashedIpfsReqsEthLen() == 5
-    assert asc.r.getHashedIpfsReqEth(id) == NULL_HASH
+    assert asc.r.getHashedReqs() == reqHashes
+    assert asc.r.getHashedReqsLen() == 5
+    assert asc.r.getHashedReq(id) == NULL_HASH
     assert asc.r.getCumulRewardsOf(asc.BOB) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.DENICE) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.ALICE) == INIT_EXECUTOR_REWARD
-    assert tx.events["HashedReqEthRemoved"][0].values() == [id, True]
+    assert tx.events["HashedReqRemoved"][0].values() == [id, True]
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
@@ -176,7 +176,7 @@ def test_executeHashReqEth_with_ethForCall(asc, stakedMin, mockTarget, reqsHashE
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
 
 
-def test_executeHashReqEth_pay_ASC(asc, stakedMin, mockTarget, reqsHashEth):
+def test_executeHashedReq_pay_ASC(asc, stakedMin, mockTarget, reqsHashEth):
     _, staker, __ = stakedMin
     reqs, reqHashes, msgValue, ethForCall = reqsHashEth
     # reqHashes will modify the original even after this test has finished otherwise since it's a reference
@@ -190,7 +190,7 @@ def test_executeHashReqEth_pay_ASC(asc, stakedMin, mockTarget, reqsHashEth):
     assert asc.ASC.balanceOf(asc.DENICE) == 0
     assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
 
-    tx = asc.r.executeHashReqEth(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    tx = asc.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
     
     # Should've changed
     # Eth bals
@@ -211,13 +211,13 @@ def test_executeHashReqEth_pay_ASC(asc, stakedMin, mockTarget, reqsHashEth):
     assert mockTarget.msgSender() == asc.uvf.address
     # Registry state
     reqHashes[id] = NULL_HASH
-    assert asc.r.getHashedIpfsReqsEth() == reqHashes
-    assert asc.r.getHashedIpfsReqsEthLen() == 5
-    assert asc.r.getHashedIpfsReqEth(id) == NULL_HASH
+    assert asc.r.getHashedReqs() == reqHashes
+    assert asc.r.getHashedReqsLen() == 5
+    assert asc.r.getHashedReq(id) == NULL_HASH
     assert asc.r.getCumulRewardsOf(asc.BOB) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.DENICE) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.ALICE) == INIT_EXECUTOR_REWARD
-    assert tx.events["HashedReqEthRemoved"][0].values() == [id, True]
+    assert tx.events["HashedReqRemoved"][0].values() == [id, True]
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
@@ -226,7 +226,7 @@ def test_executeHashReqEth_pay_ASC(asc, stakedMin, mockTarget, reqsHashEth):
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
 
 
-def test_executeHashReqEth_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsHashEth):
+def test_executeHashedReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsHashEth):
     _, staker, __ = stakedMin
     reqs, reqHashes, msgValue, ethForCall = reqsHashEth
     # reqHashes will modify the original even after this test has finished otherwise since it's a reference
@@ -240,7 +240,7 @@ def test_executeHashReqEth_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, r
     assert asc.ASC.balanceOf(asc.DENICE) == 0
     assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
 
-    tx = asc.r.executeHashReqEth(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    tx = asc.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
     
     # Should've changed
     # Eth bals
@@ -261,13 +261,13 @@ def test_executeHashReqEth_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, r
     assert mockTarget.msgSender() == asc.uvf.address
     # Registry state
     reqHashes[id] = NULL_HASH
-    assert asc.r.getHashedIpfsReqsEth() == reqHashes
-    assert asc.r.getHashedIpfsReqsEthLen() == 5
-    assert asc.r.getHashedIpfsReqEth(id) == NULL_HASH
+    assert asc.r.getHashedReqs() == reqHashes
+    assert asc.r.getHashedReqsLen() == 5
+    assert asc.r.getHashedReq(id) == NULL_HASH
     assert asc.r.getCumulRewardsOf(asc.BOB) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.DENICE) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.ALICE) == INIT_EXECUTOR_REWARD
-    assert tx.events["HashedReqEthRemoved"][0].values() == [id, True]
+    assert tx.events["HashedReqRemoved"][0].values() == [id, True]
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
@@ -276,7 +276,7 @@ def test_executeHashReqEth_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, r
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
 
 
-def test_executeHashReqEth_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, mockTarget, reqsHashEth):
+def test_executeHashedReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, mockTarget, reqsHashEth):
     _, staker, __ = stakedMin
     reqs, reqHashes, msgValue, ethForCall = reqsHashEth
     # reqHashes will modify the original even after this test has finished otherwise since it's a reference
@@ -290,7 +290,7 @@ def test_executeHashReqEth_pay_ASC_with_ethForCall_and_verifySender(asc, stakedM
     assert asc.ASC.balanceOf(asc.DENICE) == 0
     assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
 
-    tx = asc.r.executeHashReqEth(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    tx = asc.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
     
     # Should've changed
     # Eth bals
@@ -311,13 +311,13 @@ def test_executeHashReqEth_pay_ASC_with_ethForCall_and_verifySender(asc, stakedM
     assert mockTarget.msgSender() == asc.vf.address
     # Registry state
     reqHashes[id] = NULL_HASH
-    assert asc.r.getHashedIpfsReqsEth() == reqHashes
-    assert asc.r.getHashedIpfsReqsEthLen() == 5
-    assert asc.r.getHashedIpfsReqEth(id) == NULL_HASH
+    assert asc.r.getHashedReqs() == reqHashes
+    assert asc.r.getHashedReqsLen() == 5
+    assert asc.r.getHashedReq(id) == NULL_HASH
     assert asc.r.getCumulRewardsOf(asc.BOB) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.DENICE) == INIT_REQUESTER_REWARD
     assert asc.r.getCumulRewardsOf(asc.ALICE) == INIT_EXECUTOR_REWARD
-    assert tx.events["HashedReqEthRemoved"][0].values() == [id, True]
+    assert tx.events["HashedReqRemoved"][0].values() == [id, True]
 
     # Shouldn't've changed
     assert mockTarget.x() == 0
@@ -326,26 +326,26 @@ def test_executeHashReqEth_pay_ASC_with_ethForCall_and_verifySender(asc, stakedM
     assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
 
 
-def test_executeHashReqEth_rev_not_executor(asc, stakedMin, reqsHashEth):
+def test_executeHashedReq_rev_not_executor(asc, stakedMin, reqsHashEth):
     reqs, reqHashes, msgValue, ethForCall = reqsHashEth
     with reverts(REV_MSG_NOT_EXEC):
-        asc.r.executeHashReqEth(0, reqs[0], *getIpfsMetaData(asc, reqs[0]), {'from': asc.DENICE, 'gasPrice': TEST_GAS_PRICE})
+        asc.r.executeHashedReq(0, reqs[0], *getIpfsMetaData(asc, reqs[0]), {'from': asc.DENICE, 'gasPrice': TEST_GAS_PRICE})
 
 
-def test_executeHashReqEth_rev_req_not_the_same(asc, stakedMin, reqsHashEth):
+def test_executeHashedReq_rev_req_not_the_same(asc, stakedMin, reqsHashEth):
     _, staker, __ = stakedMin
     reqs, reqHashes, msgValue, ethForCall = reqsHashEth
     invalidReq = list(reqs[0])
     invalidReq[6] = 1
     with reverts(REV_MSG_NOT_SAME):
-        asc.r.executeHashReqEth(0, invalidReq, *getIpfsMetaData(asc, invalidReq), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+        asc.r.executeHashedReq(0, invalidReq, *getIpfsMetaData(asc, invalidReq), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
 
 
-def test_executeHashReqEth_rev_already_executeHashReqEthd(asc, stakedMin, reqsHashEth):
+def test_executeHashedReq_rev_already_executeHashedReqd(asc, stakedMin, reqsHashEth):
     _, staker, __ = stakedMin
     reqs, reqHashes, msgValue, ethForCall = reqsHashEth
 
-    asc.r.executeHashReqEth(0, reqs[0], *getIpfsMetaData(asc, reqs[0]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    asc.r.executeHashedReq(0, reqs[0], *getIpfsMetaData(asc, reqs[0]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
 
     with reverts(REV_MSG_NOT_SAME):
-        asc.r.executeHashReqEth(0, reqs[0], *getIpfsMetaData(asc, reqs[0]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+        asc.r.executeHashedReq(0, reqs[0], *getIpfsMetaData(asc, reqs[0]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
