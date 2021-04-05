@@ -1,7 +1,6 @@
 hypothesis:
-    max_examples: 50
-    
-# Path remapping to support OpenZepplin imports with NPM-style path
+    max_examples: 25
+
 compiler:
   solc:
     version: 0.8.2

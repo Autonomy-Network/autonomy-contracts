@@ -301,7 +301,6 @@ contract Registry is Shared, Ownable, ReentrancyGuard {
         external
         validExec
         nonReentrant
-        validCalldata(r)
         targetNotThis(r.target)
         verReq(id, r, dataPrefix, dataSuffix, _hashedIpfsReqsNoEth)
         returns (uint gasUsed)
@@ -309,8 +308,9 @@ contract Registry is Shared, Ownable, ReentrancyGuard {
         require(
             r.initEthSent == 0 &&
             r.ethForCall == 0 &&
-            r.payWithASC == true, 
-            "Reg: no eth. Nice try ;)"
+            r.payWithASC == true &&
+            r.verifySender == false,
+            "Reg: cannot verify. Nice try ;)"
         );
 
         gasUsed = _execute(r);
