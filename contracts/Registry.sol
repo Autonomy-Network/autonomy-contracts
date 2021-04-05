@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "../interfaces/IStakeManager.sol";
 import "../interfaces/IOracle.sol";
-import "./Forwarder.sol";
+import "../interfaces/IForwarder.sol";
 import "./abstract/Shared.sol";
 
 
@@ -27,8 +27,8 @@ contract Registry is Shared, Ownable, ReentrancyGuard {
     IERC20 private _ASCoin;
     IStakeManager private _stakeMan;
     IOracle private _oracle;
-    Forwarder private _veriForwarder;
-    Forwarder private _unveriForwarder;
+    IForwarder private _veriForwarder;
+    IForwarder private _unveriForwarder;
     // uint private _numRequests;
     // mapping(uint => Request) private _idToRequest;
     Request[] private _rawRequests;
@@ -81,6 +81,8 @@ contract Registry is Shared, Ownable, ReentrancyGuard {
         IERC20 ASCoin,
         IStakeManager staker,
         IOracle oracle,
+        IForwarder veriForwarder,
+        IForwarder unveriForwarder,
         uint baseBountyAsEth,
         uint requesterReward,
         uint executorReward,
@@ -89,11 +91,11 @@ contract Registry is Shared, Ownable, ReentrancyGuard {
         _ASCoin = ASCoin;
         _stakeMan = staker;
         _oracle = oracle;
+        _veriForwarder = veriForwarder;
+        _unveriForwarder = unveriForwarder;
         _baseBountyAsEth = baseBountyAsEth;
         _requesterReward = requesterReward;
         _executorReward = executorReward;
-        _veriForwarder = new Forwarder(address(this));
-        _unveriForwarder = new Forwarder(address(this));
     }
 
 

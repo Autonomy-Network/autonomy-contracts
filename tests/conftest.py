@@ -37,18 +37,22 @@ def deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Registry, Forward
     asc.ASC = asc.DEPLOYER.deploy(ASCoin, "Active Smart Contract Protocol", "ASC")
     asc.o = asc.DEPLOYER.deploy(Oracle, INIT_ETH_TO_ASCOIN_RATE)
     asc.sm = asc.DEPLOYER.deploy(StakeManager, asc.o, asc.ASC)
+    asc.vf = asc.DEPLOYER.deploy(Forwarder)
+    asc.uvf = asc.DEPLOYER.deploy(Forwarder)
     asc.r = asc.DEPLOYER.deploy(
         Registry,
         asc.ASC,
         asc.sm,
         asc.o,
+        asc.vf,
+        asc.uvf,
         INIT_BASE_BOUNTY,
         INIT_REQUESTER_REWARD,
         INIT_EXECUTOR_REWARD,
         INIT_ETH_TO_ASCOIN_RATE
     )
-    asc.vf = Forwarder.at(asc.r.getVerifiedForwarder())
-    asc.uvf = Forwarder.at(asc.r.getUnverifiedForwarder())
+    asc.vf.setReg(asc.r, asc.FR_DEPLOYER)
+    asc.uvf.setReg(asc.r, asc.FR_DEPLOYER)
 
     # For enabling rewards
     asc.ASC.transfer(asc.r, INIT_ASC_REW_POOL, asc.FR_DEPLOYER)
