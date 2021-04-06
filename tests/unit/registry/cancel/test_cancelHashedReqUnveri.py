@@ -31,12 +31,6 @@ def test_cancelHashedReqUnveri_no_ethForCall(asc, stakedMin, mockTarget, reqHash
     assert asc.ASC.balanceOf(mockTarget) == 0
 
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
-    assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
-    assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
-
-    assert asc.r.getCumulRewardsOf(asc.ALICE) == 0
-    assert asc.r.getCumulRewardsOf(asc.BOB) == 0
-    assert asc.r.getCumulRewardsOf(asc.DENICE) == 0
 
 
 def test_cancelHashedReqUnveri_rev_req_not_the_same(asc, stakedMin, mockTarget, reqHashNoEth):

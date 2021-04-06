@@ -27,6 +27,3 @@ def test_constructor(asc):
         asc.r.getHashedReqUnveri(0)
     
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
-    assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
-    assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
-    assert asc.r.getCumulRewardsOf(asc.DEPLOYER) == 0

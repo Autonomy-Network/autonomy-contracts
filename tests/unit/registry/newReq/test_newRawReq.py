@@ -20,8 +20,6 @@ def test_newRawReq_no_eth(asc, mockTarget):
     assert mockTarget.x() == 0
     assert mockTarget.userAddr() == ADDR_0
     assert mockTarget.msgSender() == ADDR_0
-    assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
-    assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
 
     assert asc.r.getHashedReqs() == []
     assert asc.r.getHashedReqsLen() == 0
@@ -58,8 +56,6 @@ def test_newRawReq_pay_with_ASCoin(asc, mockTarget):
     assert mockTarget.x() == 0
     assert mockTarget.userAddr() == ADDR_0
     assert mockTarget.msgSender() == ADDR_0
-    assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
-    assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
 
     assert asc.r.getHashedReqs() == []
     assert asc.r.getHashedReqsLen() == 0
@@ -101,8 +97,6 @@ def test_newRawReq_with_eth_and_pay_ASCoin(asc, mockTarget, ethForCall, payWithA
     assert mockTarget.x() == 0
     assert mockTarget.userAddr() == ADDR_0
     assert mockTarget.msgSender() == ADDR_0
-    assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
-    assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
 
     assert asc.r.getHashedReqs() == []
     assert asc.r.getHashedReqsLen() == 0
@@ -155,9 +149,7 @@ def test_newRawReq_verifySender(asc, mockTarget, ethForCall, payWithASC, userAdd
         assert mockTarget.x() == 0
         assert mockTarget.userAddr() == ADDR_0
         assert mockTarget.msgSender() == ADDR_0
-        assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
-        assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
-
+        
         assert asc.r.getHashedReqs() == []
         assert asc.r.getHashedReqsLen() == 0
         with reverts():

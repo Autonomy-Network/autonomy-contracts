@@ -89,16 +89,11 @@ def test_executeHashedReqUnveri_pay_ASC(asc, stakedMin, mockTarget, reqHashNoEth
     assert asc.r.getHashedReqsUnveri() == [NULL_HASH]
     assert asc.r.getHashedReqsUnveriLen() == 1
     assert asc.r.getHashedReqUnveri(id) == NULL_HASH
-    assert asc.r.getCumulRewardsOf(asc.BOB) == INIT_REQUESTER_REWARD
-    assert asc.r.getCumulRewardsOf(asc.DENICE) == INIT_REQUESTER_REWARD
-    assert asc.r.getCumulRewardsOf(asc.ALICE) == INIT_EXECUTOR_REWARD
     assert tx.events["HashedReqUnveriRemoved"][0].values() == [id, True]
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
-    assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
-    assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
 
 
 def test_executeHashedReqUnveri_rev_target_is_registry(asc, mockTarget, stakedMin, reqHashNoEth):

@@ -44,10 +44,7 @@ def deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Registry, Forward
         asc.sm,
         asc.o,
         asc.vf,
-        INIT_BASE_BOUNTY,
-        INIT_REQUESTER_REWARD,
-        INIT_EXECUTOR_REWARD,
-        INIT_ETH_TO_ASCOIN_RATE
+        INIT_BASE_BOUNTY
     )
     asc.vf.setReg(asc.r, asc.FR_DEPLOYER)
 

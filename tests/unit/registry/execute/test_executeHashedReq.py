@@ -67,18 +67,13 @@ def test_executeHashedReq_validCalldata(asc, stakedMin, mockTarget, ethForCall, 
             assert asc.r.getHashedReqs() == [NULL_HASH]
             assert asc.r.getHashedReqsLen() == 1
             assert asc.r.getHashedReq(id) == NULL_HASH
-            assert asc.r.getCumulRewardsOf(sender) == INIT_REQUESTER_REWARD
-            assert asc.r.getCumulRewardsOf(asc.DENICE) == INIT_REQUESTER_REWARD
-            assert asc.r.getCumulRewardsOf(asc.ALICE) == INIT_EXECUTOR_REWARD
             assert tx.events["HashedReqRemoved"][0].values() == [id, True]
 
             # Shouldn't've changed
             assert mockTarget.x() == 0
             assert asc.r.balance() == 0
             assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
-            assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
-            assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
-
+                
 
 def test_executeHashedReq_no_ethForCall(asc, stakedMin, mockTarget, reqsHashEth):
     _, staker, __ = stakedMin
@@ -116,16 +111,11 @@ def test_executeHashedReq_no_ethForCall(asc, stakedMin, mockTarget, reqsHashEth)
     assert asc.r.getHashedReqs() == reqHashes
     assert asc.r.getHashedReqsLen() == 5
     assert asc.r.getHashedReq(id) == NULL_HASH
-    assert asc.r.getCumulRewardsOf(asc.BOB) == INIT_REQUESTER_REWARD
-    assert asc.r.getCumulRewardsOf(asc.DENICE) == INIT_REQUESTER_REWARD
-    assert asc.r.getCumulRewardsOf(asc.ALICE) == INIT_EXECUTOR_REWARD
     assert tx.events["HashedReqRemoved"][0].values() == [id, True]
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
-    assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
-    assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
 
 
 def test_executeHashedReq_with_ethForCall(asc, stakedMin, mockTarget, reqsHashEth):
@@ -164,16 +154,11 @@ def test_executeHashedReq_with_ethForCall(asc, stakedMin, mockTarget, reqsHashEt
     assert asc.r.getHashedReqs() == reqHashes
     assert asc.r.getHashedReqsLen() == 5
     assert asc.r.getHashedReq(id) == NULL_HASH
-    assert asc.r.getCumulRewardsOf(asc.BOB) == INIT_REQUESTER_REWARD
-    assert asc.r.getCumulRewardsOf(asc.DENICE) == INIT_REQUESTER_REWARD
-    assert asc.r.getCumulRewardsOf(asc.ALICE) == INIT_EXECUTOR_REWARD
     assert tx.events["HashedReqRemoved"][0].values() == [id, True]
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
-    assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
-    assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
 
 
 def test_executeHashedReq_pay_ASC(asc, stakedMin, mockTarget, reqsHashEth):
@@ -214,16 +199,11 @@ def test_executeHashedReq_pay_ASC(asc, stakedMin, mockTarget, reqsHashEth):
     assert asc.r.getHashedReqs() == reqHashes
     assert asc.r.getHashedReqsLen() == 5
     assert asc.r.getHashedReq(id) == NULL_HASH
-    assert asc.r.getCumulRewardsOf(asc.BOB) == INIT_REQUESTER_REWARD
-    assert asc.r.getCumulRewardsOf(asc.DENICE) == INIT_REQUESTER_REWARD
-    assert asc.r.getCumulRewardsOf(asc.ALICE) == INIT_EXECUTOR_REWARD
     assert tx.events["HashedReqRemoved"][0].values() == [id, True]
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
-    assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
-    assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
 
 
 def test_executeHashedReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsHashEth):
@@ -264,16 +244,11 @@ def test_executeHashedReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, re
     assert asc.r.getHashedReqs() == reqHashes
     assert asc.r.getHashedReqsLen() == 5
     assert asc.r.getHashedReq(id) == NULL_HASH
-    assert asc.r.getCumulRewardsOf(asc.BOB) == INIT_REQUESTER_REWARD
-    assert asc.r.getCumulRewardsOf(asc.DENICE) == INIT_REQUESTER_REWARD
-    assert asc.r.getCumulRewardsOf(asc.ALICE) == INIT_EXECUTOR_REWARD
     assert tx.events["HashedReqRemoved"][0].values() == [id, True]
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
-    assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
-    assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
 
 
 def test_executeHashedReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, mockTarget, reqsHashEth):
@@ -314,16 +289,11 @@ def test_executeHashedReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMi
     assert asc.r.getHashedReqs() == reqHashes
     assert asc.r.getHashedReqsLen() == 5
     assert asc.r.getHashedReq(id) == NULL_HASH
-    assert asc.r.getCumulRewardsOf(asc.BOB) == INIT_REQUESTER_REWARD
-    assert asc.r.getCumulRewardsOf(asc.DENICE) == INIT_REQUESTER_REWARD
-    assert asc.r.getCumulRewardsOf(asc.ALICE) == INIT_EXECUTOR_REWARD
     assert tx.events["HashedReqRemoved"][0].values() == [id, True]
 
     # Shouldn't've changed
     assert mockTarget.x() == 0
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
-    assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
-    assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
 
 
 def test_executeHashedReq_rev_not_executor(asc, stakedMin, reqsHashEth):

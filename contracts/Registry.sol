@@ -44,9 +44,13 @@ contract Registry is Shared, ReentrancyGuard {
     // directly to the equivalent value in ASCoin if the requester wants
     // to pay with ASCoin, and is doubled if they want to pay in Eth
     uint private _baseBountyAsEth;
-    uint private _requesterReward;
-    uint private _executorReward;
-    mapping(address => uint) private _cumulRewards;
+    // This counts the number of times each requester has had a request executed
+    mapping(address => uint) private _reqCounts;
+    // This counts the number of times each staker has executed a request
+    mapping(address => uint) private _execCounts;
+    // This counts the number of times each referer has been identified in an
+    // executed tx
+    mapping(address => uint) private _referalCounts;
     
     
     struct Request {
@@ -73,18 +77,13 @@ contract Registry is Shared, ReentrancyGuard {
         IStakeManager staker,
         IOracle oracle,
         IForwarder veriForwarder,
-        uint baseBountyAsEth,
-        uint requesterReward,
-        uint executorReward,
-        uint ethToASCoinRate
+        uint baseBountyAsEth
     ) ReentrancyGuard() {
         _ASCoin = ASCoin;
         _stakeMan = staker;
         _oracle = oracle;
         _veriForwarder = veriForwarder;
         _baseBountyAsEth = baseBountyAsEth;
-        _requesterReward = requesterReward;
-        _executorReward = executorReward;
     }
 
 
@@ -335,10 +334,10 @@ contract Registry is Shared, ReentrancyGuard {
         // Need to include these storages in the gas cost that the user pays since
         // they benefit from part of it and the costs can vary depending on whether
         // the amounts changed from were 0 or non-0
-        _cumulRewards[r.requester] += _requesterReward;
-        _cumulRewards[msg.sender] += _executorReward;
+        _reqCounts[r.requester] += 1;
+        _execCounts[msg.sender] += 1;
         if (r.referer != _ADDR_0) {
-            _cumulRewards[r.referer] += _requesterReward;
+            _referalCounts[r.referer] += 1;
         }
 
         // +1 since it never divides exactly because of the 4 bytes of methodID
@@ -452,21 +451,6 @@ contract Registry is Shared, ReentrancyGuard {
     }
     
     
-    // // ----------- Setters -----------
-
-    // function setBaseBountyAsEth(uint newBaseBountyAsEth) external nonReentrant returns (uint) {
-    //     _baseBountyAsEth = newBaseBountyAsEth;
-    // }
-    
-    // function setRequesterReward(uint newRequesterReward) external nonReentrant returns (uint) {
-    //     _requesterReward = newRequesterReward;
-    // }
-    
-    // function setExecutorReward(uint newEexecutorReward) external nonReentrant returns (uint) {
-    //     _executorReward = newEexecutorReward;
-    // }
-    
-
     // ----------- Getters -----------
     
     function getASCoin() external view returns (IERC20) {
@@ -485,16 +469,16 @@ contract Registry is Shared, ReentrancyGuard {
         return _baseBountyAsEth;
     }
     
-    function getRequesterReward() external view returns (uint) {
-        return _requesterReward;
+    function getReqCountOf(address addr) external view returns (uint) {
+        return _reqCounts[addr];
     }
     
-    function getExecutorReward() external view returns (uint) {
-        return _executorReward;
+    function getExecCountOf(address addr) external view returns (uint) {
+        return _execCounts[addr];
     }
     
-    function getCumulRewardsOf(address addr) external view returns (uint) {
-        return _cumulRewards[addr];
+    function getReferalCountOf(address addr) external view returns (uint) {
+        return _referalCounts[addr];
     }
 
     function divAOverB(uint a, uint b) external view returns (uint) {

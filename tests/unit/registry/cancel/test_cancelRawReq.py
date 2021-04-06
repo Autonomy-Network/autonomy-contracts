@@ -33,12 +33,6 @@ def test_cancelRawReq_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.ASC.balanceOf(mockTarget) == 0
 
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
-    assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
-    assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
-
-    assert asc.r.getCumulRewardsOf(asc.ALICE) == 0
-    assert asc.r.getCumulRewardsOf(asc.BOB) == 0
-    assert asc.r.getCumulRewardsOf(asc.DENICE) == 0
 
 
 def test_cancelRawReq_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
@@ -71,12 +65,6 @@ def test_cancelRawReq_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.ASC.balanceOf(mockTarget) == 0
 
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
-    assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
-    assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
-
-    assert asc.r.getCumulRewardsOf(asc.ALICE) == 0
-    assert asc.r.getCumulRewardsOf(asc.BOB) == 0
-    assert asc.r.getCumulRewardsOf(asc.DENICE) == 0
 
 
 
@@ -110,12 +98,6 @@ def test_cancelRawReq_payASC(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.ASC.balanceOf(mockTarget) == 0
 
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
-    assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
-    assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
-
-    assert asc.r.getCumulRewardsOf(asc.ALICE) == 0
-    assert asc.r.getCumulRewardsOf(asc.BOB) == 0
-    assert asc.r.getCumulRewardsOf(asc.DENICE) == 0
 
 
 def test_cancelRawReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
@@ -148,12 +130,6 @@ def test_cancelRawReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsRa
     assert asc.ASC.balanceOf(mockTarget) == 0
 
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
-    assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
-    assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
-
-    assert asc.r.getCumulRewardsOf(asc.ALICE) == 0
-    assert asc.r.getCumulRewardsOf(asc.BOB) == 0
-    assert asc.r.getCumulRewardsOf(asc.DENICE) == 0
 
 
 def test_cancelRawReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, mockTarget, reqsRaw):
@@ -186,12 +162,6 @@ def test_cancelRawReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, m
     assert asc.ASC.balanceOf(mockTarget) == 0
 
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
-    assert asc.r.getRequesterReward() == INIT_REQUESTER_REWARD
-    assert asc.r.getExecutorReward() == INIT_EXECUTOR_REWARD
-
-    assert asc.r.getCumulRewardsOf(asc.ALICE) == 0
-    assert asc.r.getCumulRewardsOf(asc.BOB) == 0
-    assert asc.r.getCumulRewardsOf(asc.DENICE) == 0
 
 
 def test_cancelRawReq_rev_not_requester(asc, stakedMin, reqsRaw):
