@@ -3,13 +3,14 @@ pragma solidity ^0.8;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "../interfaces/IRegistry.sol";
 import "../interfaces/IStakeManager.sol";
 import "../interfaces/IOracle.sol";
 import "../interfaces/IForwarder.sol";
 import "./abstract/Shared.sol";
 
 
-contract Registry is Shared, ReentrancyGuard {
+contract Registry is IRegistry, Shared, ReentrancyGuard {
     
     // Constant public
     // uint public constant EXEC_GAS_OVERHEAD_NO_REF = 40000;
@@ -53,16 +54,17 @@ contract Registry is Shared, ReentrancyGuard {
     mapping(address => uint) private _referalCounts;
     
     
-    struct Request {
-        address payable requester;
-        address target;
-        bytes callData;
-        bool verifySender;
-        bool payWithASC;
-        uint initEthSent;
-        uint ethForCall;
-        address payable referer;
-    }
+    // This is defined in IRegistry. Here for convenience
+    // struct Request {
+    //     address payable requester;
+    //     address target;
+    //     bytes callData;
+    //     bool verifySender;
+    //     bool payWithASC;
+    //     uint initEthSent;
+    //     uint ethForCall;
+    //     address payable referer;
+    // }
 
     event RawReqAdded(uint indexed id);
     event RawReqRemoved(uint indexed id, bool wasExecuted);
@@ -103,6 +105,7 @@ contract Registry is Shared, ReentrancyGuard {
     )
         external
         payable
+        override
         // validCalldata(verifySender, msg.sender, callData)
         nzAddr(target)
         targetNotThis(target)
@@ -120,15 +123,15 @@ contract Registry is Shared, ReentrancyGuard {
         _rawReqs.push(Request(payable(msg.sender), target, callData, verifySender, payWithASC, msg.value, ethForCall, referer));
     }
 
-    function getRawReqs() external view returns (Request[] memory) {
+    function getRawReqs() external view override returns (Request[] memory) {
         return _rawReqs;
     }
 
-    function getRawReqLen() external view returns (uint) {
+    function getRawReqLen() external view override returns (uint) {
         return _rawReqs.length;
     }
     
-    function getRawReq(uint id) external view returns (Request memory) {
+    function getRawReq(uint id) external view override returns (Request memory) {
         return _rawReqs[id];
     }
 
@@ -153,6 +156,7 @@ contract Registry is Shared, ReentrancyGuard {
     )
         external
         payable
+        override
         targetNotThis(target)
         validEth(payWithASC, ethForCall)
         returns (uint id)
@@ -165,15 +169,15 @@ contract Registry is Shared, ReentrancyGuard {
         _hashedReqs.push(hashedIpfsReq);
     }
 
-    function getHashedReqs() external view returns (bytes32[] memory) {
+    function getHashedReqs() external view override returns (bytes32[] memory) {
         return _hashedReqs;
     }
 
-    function getHashedReqsLen() external view returns (uint) {
+    function getHashedReqsLen() external view override returns (uint) {
         return _hashedReqs.length;
     }
     
-    function getHashedReq(uint id) external view returns (bytes32) {
+    function getHashedReq(uint id) external view override returns (bytes32) {
         return _hashedReqs[id];
     }
 
@@ -184,21 +188,26 @@ contract Registry is Shared, ReentrancyGuard {
     //                                                          //
     //////////////////////////////////////////////////////////////
 
-    function newHashedReqUnveri(bytes32 hashedIpfsReq) external nzBytes32(hashedIpfsReq) returns (uint id) {
+    function newHashedReqUnveri(bytes32 hashedIpfsReq)
+        external
+        override
+        nzBytes32(hashedIpfsReq)
+        returns (uint id)
+    {
         id = _hashedReqsUnveri.length;
         _hashedReqsUnveri.push(hashedIpfsReq);
         emit HashedReqUnveriAdded(id);
     }
     
-    function getHashedReqsUnveri() external view returns (bytes32[] memory) {
+    function getHashedReqsUnveri() external view override returns (bytes32[] memory) {
         return _hashedReqsUnveri;
     }
 
-    function getHashedReqsUnveriLen() external view returns (uint) {
+    function getHashedReqsUnveriLen() external view override returns (uint) {
         return _hashedReqsUnveri.length;
     }
     
-    function getHashedReqUnveri(uint id) external view returns (bytes32) {
+    function getHashedReqUnveri(uint id) external view override returns (bytes32) {
         return _hashedReqsUnveri[id];
     }
 
@@ -209,11 +218,15 @@ contract Registry is Shared, ReentrancyGuard {
     //                                                          //
     //////////////////////////////////////////////////////////////
 
-    function getReqBytes(Request memory r) public pure returns (bytes memory) {
+    function getReqBytes(Request memory r) public pure override returns (bytes memory) {
         return abi.encode(r);
     }
 
-    function getIpfsReqBytes(bytes memory dataPrefix, bytes memory r, bytes memory dataPostfix) public pure returns (bytes memory) {
+    function getIpfsReqBytes(
+        bytes memory dataPrefix,
+        bytes memory r,
+        bytes memory dataPostfix
+    ) public pure override returns (bytes memory) {
         return abi.encodePacked(
             dataPrefix,
             r,
@@ -221,11 +234,15 @@ contract Registry is Shared, ReentrancyGuard {
         );
     }
 
-    function getHashedIpfsReq(bytes memory dataPrefix, bytes memory r, bytes memory dataPostfix) public pure returns (bytes32) {
+    function getHashedIpfsReq(
+        bytes memory dataPrefix,
+        bytes memory r,
+        bytes memory dataPostfix
+    ) public pure override returns (bytes32) {
         return sha256(getIpfsReqBytes(dataPrefix, r, dataPostfix));
     }
 
-    function getReqFromBytes(bytes memory rBytes) public pure returns (Request memory r) {
+    function getReqFromBytes(bytes memory rBytes) public pure override returns (Request memory r) {
         (r) = abi.decode(rBytes, (Request));
     }
     
@@ -236,7 +253,7 @@ contract Registry is Shared, ReentrancyGuard {
     //                                                          //
     //////////////////////////////////////////////////////////////
 
-    function executeRawReq(uint id) external validExec nonReentrant returns (uint gasUsed) {
+    function executeRawReq(uint id) external override validExec nonReentrant returns (uint gasUsed) {
         Request memory r = _rawReqs[id];
         require(r.requester != _ADDR_0, "Reg: already executed");
         
@@ -261,6 +278,7 @@ contract Registry is Shared, ReentrancyGuard {
         bytes memory dataSuffix
     )
         external
+        override
         validExec
         nonReentrant
         validCalldata(r)
@@ -285,6 +303,7 @@ contract Registry is Shared, ReentrancyGuard {
         bytes memory dataSuffix
     )
         external
+        override
         validExec
         nonReentrant
         targetNotThis(r.target)
@@ -397,7 +416,7 @@ contract Registry is Shared, ReentrancyGuard {
     //                                                          //
     //////////////////////////////////////////////////////////////
     
-    function cancelRawReq(uint id) external nonReentrant {
+    function cancelRawReq(uint id) external override nonReentrant {
         Request memory r = _rawReqs[id];
         require(msg.sender == r.requester, "Reg: not the requester");
         
@@ -418,6 +437,7 @@ contract Registry is Shared, ReentrancyGuard {
         bytes memory dataSuffix
     )
         external
+        override
         nonReentrant
         verReq(id, r, dataPrefix, dataSuffix, _hashedReqs)
     {
@@ -440,6 +460,7 @@ contract Registry is Shared, ReentrancyGuard {
         bytes memory dataSuffix
     )
         external
+        override
         nonReentrant
         verReq(id, r, dataPrefix, dataSuffix, _hashedReqsUnveri)
     {
@@ -451,37 +472,41 @@ contract Registry is Shared, ReentrancyGuard {
     }
     
     
-    // ----------- Getters -----------
+    //////////////////////////////////////////////////////////////
+    //                                                          //
+    //                          Getters                         //
+    //                                                          //
+    //////////////////////////////////////////////////////////////
     
-    function getASCoin() external view returns (IERC20) {
+    function getASCoin() external view override returns (IERC20) {
         return _ASCoin;
     }
     
-    function getStakeManager() external view returns (address) {
+    function getStakeManager() external view override returns (address) {
         return address(_stakeMan);
     }
     
-    function getVerifiedForwarder() external view returns (address) {
+    function getVerifiedForwarder() external view override returns (address) {
         return address(_veriForwarder);
     }
     
-    function getBaseBountyAsEth() external view returns (uint) {
+    function getBaseBountyAsEth() external view override returns (uint) {
         return _baseBountyAsEth;
     }
     
-    function getReqCountOf(address addr) external view returns (uint) {
+    function getReqCountOf(address addr) external view override returns (uint) {
         return _reqCounts[addr];
     }
     
-    function getExecCountOf(address addr) external view returns (uint) {
+    function getExecCountOf(address addr) external view override returns (uint) {
         return _execCounts[addr];
     }
     
-    function getReferalCountOf(address addr) external view returns (uint) {
+    function getReferalCountOf(address addr) external view override returns (uint) {
         return _referalCounts[addr];
     }
 
-    function divAOverB(uint a, uint b) external view returns (uint) {
+    function divAOverB(uint a, uint b) external view override returns (uint) {
         return a / b;
     }
 
