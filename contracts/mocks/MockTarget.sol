@@ -4,23 +4,21 @@ pragma solidity ^0.8;
 contract MockTarget {
 
     address public veriForwarderAddr;
-    address public unveriForwarderAddr;
     uint public x;
     address public userAddr;
     address public msgSender;
 
 
-    constructor(address newVeriForwarderAddr, address newUnveriForwarderAddr) {
+    constructor(address newVeriForwarderAddr) {
         veriForwarderAddr = newVeriForwarderAddr;
-        unveriForwarderAddr = newUnveriForwarderAddr;
     }
 
 
-    function setX(uint newX) public onlyUnverifiedSender updateMsgSender {
+    function setX(uint newX) public updateMsgSender {
         x = newX;
     }
 
-    function setXPay(uint newX) public payable onlyUnverifiedSender updateMsgSender {
+    function setXPay(uint newX) public payable updateMsgSender {
         x = newX;
     }
     
@@ -29,11 +27,6 @@ contract MockTarget {
         userAddr = newUserAddr;
     }
 
-
-    modifier onlyUnverifiedSender() {
-        require(msg.sender == unveriForwarderAddr, "Not sent from unveriForwarder");
-        _;
-    }
 
     modifier updateMsgSender() {
         _;

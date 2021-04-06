@@ -110,7 +110,7 @@ def test_executeHashedReq_no_ethForCall(asc, stakedMin, mockTarget, reqsHashEth)
     assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
     # Target state
     assert mockTarget.x() == 5
-    assert mockTarget.msgSender() == asc.uvf.address
+    assert mockTarget.msgSender() == asc.r
     # Registry state
     reqHashes[id] = NULL_HASH
     assert asc.r.getHashedReqs() == reqHashes
@@ -158,7 +158,7 @@ def test_executeHashedReq_with_ethForCall(asc, stakedMin, mockTarget, reqsHashEt
     assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
     # Target state
     assert mockTarget.x() == 5
-    assert mockTarget.msgSender() == asc.uvf.address
+    assert mockTarget.msgSender() == asc.r
     # Registry state
     reqHashes[id] = NULL_HASH
     assert asc.r.getHashedReqs() == reqHashes
@@ -208,7 +208,7 @@ def test_executeHashedReq_pay_ASC(asc, stakedMin, mockTarget, reqsHashEth):
     assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
     # Target state
     assert mockTarget.x() == 5
-    assert mockTarget.msgSender() == asc.uvf.address
+    assert mockTarget.msgSender() == asc.r
     # Registry state
     reqHashes[id] = NULL_HASH
     assert asc.r.getHashedReqs() == reqHashes
@@ -258,7 +258,7 @@ def test_executeHashedReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, re
     assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
     # Target state
     assert mockTarget.x() == 5
-    assert mockTarget.msgSender() == asc.uvf.address
+    assert mockTarget.msgSender() == asc.r
     # Registry state
     reqHashes[id] = NULL_HASH
     assert asc.r.getHashedReqs() == reqHashes

@@ -38,21 +38,18 @@ def deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Registry, Forward
     asc.o = asc.DEPLOYER.deploy(Oracle, INIT_ETH_TO_ASCOIN_RATE)
     asc.sm = asc.DEPLOYER.deploy(StakeManager, asc.o, asc.ASC)
     asc.vf = asc.DEPLOYER.deploy(Forwarder)
-    asc.uvf = asc.DEPLOYER.deploy(Forwarder)
     asc.r = asc.DEPLOYER.deploy(
         Registry,
         asc.ASC,
         asc.sm,
         asc.o,
         asc.vf,
-        asc.uvf,
         INIT_BASE_BOUNTY,
         INIT_REQUESTER_REWARD,
         INIT_EXECUTOR_REWARD,
         INIT_ETH_TO_ASCOIN_RATE
     )
     asc.vf.setReg(asc.r, asc.FR_DEPLOYER)
-    asc.uvf.setReg(asc.r, asc.FR_DEPLOYER)
 
     # For enabling rewards
     asc.ASC.transfer(asc.r, INIT_ASC_REW_POOL, asc.FR_DEPLOYER)
@@ -176,7 +173,7 @@ def vulnerableStaked(asc, vulnerableStaker):
 # to use ASC
 @pytest.fixture(scope="module")
 def mockTarget(asc, MockTarget):
-    return asc.DEPLOYER.deploy(MockTarget, asc.vf, asc.uvf)
+    return asc.DEPLOYER.deploy(MockTarget, asc.vf)
 
 
 # Need to test nonReentrant modifier

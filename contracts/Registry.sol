@@ -27,7 +27,6 @@ contract Registry is Shared, ReentrancyGuard {
     IStakeManager private _stakeMan;
     IOracle private _oracle;
     IForwarder private _veriForwarder;
-    IForwarder private _unveriForwarder;
     // uint private _numRequests;
     // mapping(uint => Request) private _idToRequest;
     Request[] private _rawReqs;
@@ -74,7 +73,6 @@ contract Registry is Shared, ReentrancyGuard {
         IStakeManager staker,
         IOracle oracle,
         IForwarder veriForwarder,
-        IForwarder unveriForwarder,
         uint baseBountyAsEth,
         uint requesterReward,
         uint executorReward,
@@ -84,7 +82,6 @@ contract Registry is Shared, ReentrancyGuard {
         _stakeMan = staker;
         _oracle = oracle;
         _veriForwarder = veriForwarder;
-        _unveriForwarder = unveriForwarder;
         _baseBountyAsEth = baseBountyAsEth;
         _requesterReward = requesterReward;
         _executorReward = executorReward;
@@ -318,7 +315,7 @@ contract Registry is Shared, ReentrancyGuard {
         if (r.verifySender) {
             (success, returnData) = _veriForwarder.forward{value: r.ethForCall}(r.target, r.callData);
         } else {
-            (success, returnData) = _unveriForwarder.forward{value: r.ethForCall}(r.target, r.callData);
+            (success, returnData) = r.target.call{value: r.ethForCall}(r.callData);
         }
         // Need this if statement because if the call succeeds, the tx will revert
         // with an EVM error because it can't decode 0x00
@@ -482,10 +479,6 @@ contract Registry is Shared, ReentrancyGuard {
     
     function getVerifiedForwarder() external view returns (address) {
         return address(_veriForwarder);
-    }
-    
-    function getUnverifiedForwarder() external view returns (address) {
-        return address(_unveriForwarder);
     }
     
     function getBaseBountyAsEth() external view returns (uint) {

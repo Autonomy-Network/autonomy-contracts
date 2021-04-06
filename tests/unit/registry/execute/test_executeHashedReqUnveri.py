@@ -84,7 +84,7 @@ def test_executeHashedReqUnveri_pay_ASC(asc, stakedMin, mockTarget, reqHashNoEth
     assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
     # Target state
     assert mockTarget.x() == 5
-    assert mockTarget.msgSender() == asc.uvf.address
+    assert mockTarget.msgSender() == asc.r
     # Registry state
     assert asc.r.getHashedReqsUnveri() == [NULL_HASH]
     assert asc.r.getHashedReqsUnveriLen() == 1

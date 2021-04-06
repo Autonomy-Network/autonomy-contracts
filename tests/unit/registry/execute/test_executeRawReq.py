@@ -31,7 +31,7 @@ def test_executeRawReq_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
     # Target state
     assert mockTarget.x() == 5
-    assert mockTarget.msgSender() == asc.uvf.address
+    assert mockTarget.msgSender() == asc.r
     # Registry state
     assert asc.r.getRawReqs() == [NULL_REQ, reqEthForCall, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender]
     assert asc.r.getRawReqLen() == 5
@@ -76,7 +76,7 @@ def test_executeRawReq_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
     # Target state
     assert mockTarget.x() == 5
-    assert mockTarget.msgSender() == asc.uvf.address
+    assert mockTarget.msgSender() == asc.r
     # Registry state
     assert asc.r.getRawReqs() == [reqNoEthForCall, NULL_REQ, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender]
     assert asc.r.getRawReqLen() == 5
@@ -123,7 +123,7 @@ def test_executeRawReq_pay_ASC(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
     # Target state
     assert mockTarget.x() == 5
-    assert mockTarget.msgSender() == asc.uvf.address
+    assert mockTarget.msgSender() == asc.r
     # Registry state
     assert asc.r.getRawReqs() == [reqNoEthForCall, reqEthForCall, NULL_REQ, reqPayASCEthForCall, reqPayASCEthForCallVerifySender]
     assert asc.r.getRawReqLen() == 5
@@ -170,7 +170,7 @@ def test_executeRawReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsR
     assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
     # Target state
     assert mockTarget.x() == 5
-    assert mockTarget.msgSender() == asc.uvf.address
+    assert mockTarget.msgSender() == asc.r
     # Registry state
     assert asc.r.getRawReqs() == [reqNoEthForCall, reqEthForCall, reqPayASC, NULL_REQ, reqPayASCEthForCallVerifySender]
     assert asc.r.getRawReqLen() == 5
