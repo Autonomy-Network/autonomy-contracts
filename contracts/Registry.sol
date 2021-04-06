@@ -3,14 +3,13 @@ pragma solidity ^0.8;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "../interfaces/IStakeManager.sol";
 import "../interfaces/IOracle.sol";
 import "../interfaces/IForwarder.sol";
 import "./abstract/Shared.sol";
 
 
-contract Registry is Shared, Ownable, ReentrancyGuard {
+contract Registry is Shared, ReentrancyGuard {
     
     // Constant public
     // uint public constant EXEC_GAS_OVERHEAD_NO_REF = 40000;
@@ -62,13 +61,6 @@ contract Registry is Shared, Ownable, ReentrancyGuard {
         address payable referer;
     }
 
-    enum ReqType {
-        Raw,
-        HashEth,
-        HashNoEth
-    }
-
-    
     event RawReqAdded(uint indexed id);
     event RawReqRemoved(uint indexed id, bool wasExecuted);
     event HashedReqAdded(uint indexed id);
@@ -87,7 +79,7 @@ contract Registry is Shared, Ownable, ReentrancyGuard {
         uint requesterReward,
         uint executorReward,
         uint ethToASCoinRate
-    ) Ownable() ReentrancyGuard() {
+    ) ReentrancyGuard() {
         _ASCoin = ASCoin;
         _stakeMan = staker;
         _oracle = oracle;

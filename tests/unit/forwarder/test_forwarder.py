@@ -29,3 +29,13 @@ def test_setReg_rev_owner(asc, addr, sender):
             asc.vf.setReg(addr, {'from': sender})
         with reverts(REV_MSG_OWNER):
             asc.uvf.setReg(addr, {'from': sender})
+
+
+@given(
+    target=strategy('address'),
+    callData=strategy('bytes'),
+    sender=strategy('address')
+)
+def test_forward_rev_not_reg(asc, target, callData, sender):
+    with reverts(REV_MSG_NOT_REG):
+        asc.vf.forward(target, callData, {'from': sender})

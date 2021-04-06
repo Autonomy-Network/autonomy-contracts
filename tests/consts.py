@@ -24,6 +24,10 @@ REV_MSG_NZ_BYTES32 = "Shared: bytes32 input is empty"
 REV_MSG_NZ_UINT_ARR = "Shared: uint arr input is empty"
 
 
+# Forwarder
+REV_MSG_NOT_REG = "Forw: caller not the Registry"
+
+
 # Owner
 REV_MSG_OWNER = "Ownable: caller is not the owner"
 
