@@ -13,23 +13,17 @@ import "./abstract/Shared.sol";
 contract Registry is IRegistry, Shared, ReentrancyGuard {
     
     // Constant public
-    // uint public constant EXEC_GAS_OVERHEAD_NO_REF = 40000;
-    // uint public constant EXEC_GAS_OVERHEAD_REF = 60000;
     uint public constant GAS_OVERHEAD_ETH = 10000;
     uint public constant GAS_OVERHEAD_ASCOIN = 20000;
     uint private constant _NET_GAS_REFUND = 10000;
 
     // Constant private
     bytes private constant _EMPTY_BYTES = "";
-    // uint private constant _ETH_REF_BOUNTY = ETH_BOUNTY * 7 / 10;
-    // uint private constant _ETH_REF_REWARD = ETH_BOUNTY - _ETH_REF_BOUNTY;
     
     IERC20 private _ASCoin;
     IStakeManager private _stakeMan;
     IOracle private _oracle;
     IForwarder private _veriForwarder;
-    // uint private _numRequests;
-    // mapping(uint => Request) private _idToRequest;
     Request[] private _rawReqs;
     // We need to have 2 separete arrays for adding requests with and without
     // eth because, when comparing the hash of a request to be executed to the
@@ -39,8 +33,6 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     // that can be known implicitly by having 2 separate arrays.
     bytes32[] private _hashedReqs;
     bytes32[] private _hashedReqsUnveri;
-    // bytes32[] private _hashReqsPayEth;
-    // bytes32[] private _hashReqsPayASC;
     // The minimum bounty priced in Eth. This amount is converted
     // directly to the equivalent value in ASCoin if the requester wants
     // to pay with ASCoin, and is doubled if they want to pay in Eth
@@ -106,7 +98,6 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         external
         payable
         override
-        // validCalldata(verifySender, msg.sender, callData)
         nzAddr(target)
         targetNotThis(target)
         validEth(payWithASC, ethForCall)
@@ -390,10 +381,8 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
             } else {
                 gasUsed -= gasRefunded;
             }
-            // gasUsed = gasUsed * 11 / 10;
 
             ethNeeded = (gasUsed * tx.gasprice) + (2 * _baseBountyAsEth);
-            // uint ethReceived = _vault.withdrawEth() + r.initEthSent - r.ethForCall;
             uint ethReceived = r.initEthSent - r.ethForCall;
 
             // Send the executor their bounty
