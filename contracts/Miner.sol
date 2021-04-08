@@ -12,12 +12,12 @@ contract Miner is Shared {
     uint private _ASCPerReq;
     uint private _ASCPerExec;
     uint private _ASCPerReferal;
-    // 1000 ASC
-    uint public constant MAX_UPDATE_BAL = (10**3) * _E_18;
+    // 1k ASC
+    uint public constant MAX_UPDATE_BAL = 1000 * _E_18;
     // 1 ASC
     uint public constant MIN_REWARD = _E_18;
-    // 10000 ASC
-    uint public constant MIN_FUND = (10**4) * _E_18;
+    // 10k ASC
+    uint public constant MIN_FUND = 10000 * _E_18;
     // This counts the number of executed requests that the requester
     // has mined rewards for
     mapping(address => uint) private _minedReqCounts;
@@ -27,6 +27,9 @@ contract Miner is Shared {
     // This counts the number of executed requests that the requester
     // has mined rewards for
     mapping(address => uint) private _minedReferalCounts;
+
+
+    event RatesUpdated(uint newASCPerReq, uint newASCPerExec, uint newASCPerReferal);
 
 
     constructor(
@@ -105,8 +108,8 @@ contract Miner is Shared {
         // So that nobody updates with a small amount of ASC and makes the rates
         // 1 wei, effectively bricking the contract
         require(
+            newASCPerReq >= MIN_REWARD &&
             newASCPerExec >= MIN_REWARD &&
-            newASCPerReferal >= MIN_REWARD &&
             newASCPerReferal >= MIN_REWARD,
             "Miner: new rates too low"
         );
@@ -117,6 +120,7 @@ contract Miner is Shared {
         _ASCPerExec = newASCPerExec;
         _ASCPerReferal = newASCPerReferal;
         _ASCoin.transferFrom(msg.sender, address(this), amountToFund);
+        emit RatesUpdated(newASCPerReq, newASCPerExec, newASCPerReferal);
     }
 
 

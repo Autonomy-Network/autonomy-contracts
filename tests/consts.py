@@ -32,11 +32,15 @@ REV_MSG_NOT_REG = "Forw: caller not the Registry"
 INIT_REQUESTER_REWARD = 10**20
 INIT_EXECUTOR_REWARD = 10**21
 INIT_REFERAL_REWARD = 10**20
+MAX_UPDATE_BAL = 1000 * E_18
+MIN_REWARD = E_18
+MIN_FUND = 10000 * E_18
 
 REV_MSG_NO_PEND_REW = "Miner: no pending rewards"
 REV_MSG_CLAIM_TOO_LARGE = "Miner: claim too large"
 REV_MSG_BAL_TOO_HIGH = "Miner: ASC bal too high"
 REV_MSG_RATES_TOO_LOW = "Miner: new rates too low"
+REV_MSG_FUND_TOO_LOW = "Miner: funding too low, peasant"
 
 
 # Owner
@@ -83,4 +87,6 @@ REV_MSG_CALLDATA_NOT_VER = "Reg: calldata not verified"
 
 # ASCoin
 ASCOIN_ADDR = "0x31E31e3703D367014BA5802B7C5E41d96E331723"
+
 REV_MSG_EXCEED_BAL = "ERC20: transfer amount exceeds balance"
+REV_MSG_EXCEED_ALLOWANCE = "ERC20: transfer amount exceeds allowance"

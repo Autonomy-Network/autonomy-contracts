@@ -10,7 +10,7 @@ from brownie.test import given, strategy
 
 
 # Unstake 3 from the 4th staker in stakedMultiSmall
-# For some reason, having this test elow the others in this file causes some to fail
+# For some reason, having this test below the others in this file causes some to fail
 def test_unstake_3_of_4th_staker_from_stakedMultiSmall(asc, stakedMultiSmall):
     nums, stakers, startStakes, _ = stakedMultiSmall
     assert len(startStakes) == 7

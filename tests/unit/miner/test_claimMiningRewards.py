@@ -47,6 +47,7 @@ def test_claimMiningRewards_requester(asc, mockTarget, ethForCall, requester, ex
         (referalCount[requester] * INIT_REFERAL_REWARD))
     assert asc.ASC.balanceOf(asc.m) == INIT_ASC_REW_POOL - rewardAmount
     for addr in addrs:
+        print(addr)
         assert asc.m.getAvailableMiningRewards(addr) == (0, 0, 0, 0) if addr == requester else (
             reqCount[addr],
             execCount[addr],
@@ -55,6 +56,9 @@ def test_claimMiningRewards_requester(asc, mockTarget, ethForCall, requester, ex
                 (execCount[addr] * INIT_EXECUTOR_REWARD) +
                 (referalCount[addr] * INIT_REFERAL_REWARD)
         )
+        assert asc.m.getMinedReqCountOf(addr) == (1 if addr == requester else 0)
+        assert asc.m.getMinedExecCountOf(addr) == (1 if addr == requester and requester == executor else 0)
+        assert asc.m.getMinedReferalCountOf(addr) == (1 if addr == requester and requester == referer else 0)
         assert asc.ASC.balanceOf(addr) - startBals[addr] == (rewardAmount if addr == requester else 0)
     
     # Shouldn't've changed
@@ -115,6 +119,9 @@ def test_claimMiningRewards_executor(asc, mockTarget, ethForCall, requester, exe
                 (execCount[addr] * INIT_EXECUTOR_REWARD) +
                 (referalCount[addr] * INIT_REFERAL_REWARD)
         )
+        assert asc.m.getMinedReqCountOf(addr) == (1 if addr == executor and executor == requester else 0)
+        assert asc.m.getMinedExecCountOf(addr) == (1 if addr == executor else 0)
+        assert asc.m.getMinedReferalCountOf(addr) == (1 if addr == executor and executor == referer else 0)
         assert asc.ASC.balanceOf(addr) - startBals[addr] == (rewardAmount if addr == executor else 0)
     
     # Shouldn't've changed
@@ -175,6 +182,9 @@ def test_claimMiningRewards_referer(asc, mockTarget, ethForCall, requester, exec
                 (execCount[addr] * INIT_EXECUTOR_REWARD) +
                 (referalCount[addr] * INIT_REFERAL_REWARD)
         )
+        assert asc.m.getMinedReqCountOf(addr) == (1 if addr == referer and referer == requester else 0)
+        assert asc.m.getMinedExecCountOf(addr) == (1 if addr == referer and referer == executor else 0)
+        assert asc.m.getMinedReferalCountOf(addr) == (1 if addr == referer else 0)
         assert asc.ASC.balanceOf(addr) - startBals[addr] == (rewardAmount if addr == referer else 0)
     
     # Shouldn't've changed

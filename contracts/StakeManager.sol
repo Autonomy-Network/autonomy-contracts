@@ -8,18 +8,18 @@ import "./abstract/Shared.sol";
 
 
 contract StakeManager is IStakeManager, Shared {
-    
+
     uint public constant STAN_STAKE = 10000 * _E_18;
     uint public constant BLOCKS_IN_EPOCH = 100;
-    
+
     IOracle private _oracle;
     IERC20 private _ASCoin;
     uint private _totalStaked = 0;
     mapping(address => uint) private _stakerToStakedAmount;
     address[] private _stakes;
     Executor private _executor;
-    
-    
+
+
     struct Executor{
         address addr;
         uint forEpoch;
@@ -28,15 +28,19 @@ contract StakeManager is IStakeManager, Shared {
 
     event Staked(address staker, uint amount);
     event Unstaked(address staker, uint amount);
-    
-    
+
+
     constructor(IOracle oracle, IERC20 ASCoin) {
         _oracle = oracle;
         _ASCoin = ASCoin;
     }
-    
-    
-    // ----------- Getters -----------
+
+
+    //////////////////////////////////////////////////////////////
+    //                                                          //
+    //                          Getters                         //
+    //                                                          //
+    //////////////////////////////////////////////////////////////
 
     function getOracle() external view returns (IOracle) {
         return _oracle;
@@ -45,27 +49,27 @@ contract StakeManager is IStakeManager, Shared {
     function getASCoin() external view returns (address) {
         return address(_ASCoin);
     }
-    
+
     function getTotalStaked() external view returns (uint) {
         return _totalStaked;
     }
-    
+
     function getStake(address staker) external view returns (uint) {
         return _stakerToStakedAmount[staker];
     }
-    
+
     function getStakes() external view returns (address[] memory) {
         return _stakes;
     }
-    
+
     function getCurEpoch() public view returns (uint) {
         return (block.number / BLOCKS_IN_EPOCH) * BLOCKS_IN_EPOCH;
     }
-    
+
     function getExecutor() external view returns (Executor memory) {
         return _executor;
     }
-    
+
     function isCurExec(address addr) external view override returns (bool) {
         // TODO: Maybe do executor ex = _executor so that the storage is only loaded once?
         // If there's no stakes, allow anyone to be the executor so that a random
@@ -82,27 +86,31 @@ contract StakeManager is IStakeManager, Shared {
     function getRemainder(uint a, uint b) public pure returns (uint) {
         return a % b;
     }
-    
-    
-    // ----------- Staking -----------
-    
+
+
+    //////////////////////////////////////////////////////////////
+    //                                                          //
+    //                          Staking                         //
+    //                                                          //
+    //////////////////////////////////////////////////////////////
+
     // Calls updateExec()
     // function updateExecutor() public updateExec noFish returns(uint, uint, address) {}
     function updateExecutor() public noFish returns(uint, uint, address) {
         return _updateExecutor();
     }
-    
+
     function stake(uint numStakes) external nzUint(numStakes) updateExec noFish override returns(uint, uint, address) {
         uint amount = numStakes * STAN_STAKE;
         // Deposit the coins
         uint balBefore = _ASCoin.balanceOf(address(this));
         _ASCoin.transferFrom(msg.sender, address(this), amount);
         require(_ASCoin.balanceOf(address(this)) - balBefore == amount, "SM: transfer failed");
-        
+
         for (uint i; i < numStakes; i++) {
             _stakes.push(msg.sender);
         }
-        
+
         _stakerToStakedAmount[msg.sender] += amount;
         _totalStaked += amount;
         emit Staked(msg.sender, amount);
@@ -111,7 +119,7 @@ contract StakeManager is IStakeManager, Shared {
     function unstake(uint[] calldata idxs) external nzUintArr(idxs) updateExec noFish override {
         uint amount = idxs.length * STAN_STAKE;
         require(amount <= _stakerToStakedAmount[msg.sender], "SM: not enough stake, peasant");
-        
+
         for (uint i = 0; i < idxs.length; i++) {
             require(_stakes[idxs[i]] == msg.sender, "SM: idx is not you");
             // Update stakes by moving the last element to the
@@ -125,7 +133,7 @@ contract StakeManager is IStakeManager, Shared {
         _ASCoin.transfer(msg.sender, amount);
         emit Unstaked(msg.sender, amount);
     }
-    
+
     function _updateExecutor() private returns(uint, uint, address) {
         uint epoch = getCurEpoch();
         uint randNum;
@@ -144,7 +152,7 @@ contract StakeManager is IStakeManager, Shared {
 
         return (randNum, idxOfExecutor, exec);
     }
-    
+
     modifier updateExec() {
         // Need to update executor at the start of stake/unstake as opposed to the
         // end of the fcns because otherwise, for the 1st stake/unstake tx in an 

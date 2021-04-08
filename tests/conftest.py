@@ -270,6 +270,14 @@ def reqHashNoEth(asc, mockTarget):
     return req, reqHashBytes
 
 
-# # For testing Miner
-# @pytest.fixture(scope="module")
-# def executedReqsRaw
+# For testing Miner
+@pytest.fixture(scope="module")
+def freshMiner(a, asc, Miner):
+    return a[0].deploy(
+        Miner,
+        asc.ASC,
+        asc.r,
+        INIT_REQUESTER_REWARD,
+        INIT_EXECUTOR_REWARD,
+        INIT_REFERAL_REWARD
+    )
