@@ -31,10 +31,13 @@ def test_cancelHashedReq_no_ethForCall(asc, stakedMin, mockTarget, reqsHashEth):
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
     assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.r) == 0
     assert asc.ASC.balanceOf(mockTarget) == 0
 
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
+    assert asc.r.getReqCountOf(asc.BOB) == 0
+    assert asc.r.getExecCountOf(asc.ALICE) == 0
+    assert asc.r.getReferalCountOf(asc.DENICE) == 0
 
 
 def test_cancelHashedReq_with_ethForCall(asc, stakedMin, mockTarget, reqsHashEth):
@@ -65,10 +68,13 @@ def test_cancelHashedReq_with_ethForCall(asc, stakedMin, mockTarget, reqsHashEth
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
     assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.r) == 0
     assert asc.ASC.balanceOf(mockTarget) == 0
 
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
+    assert asc.r.getReqCountOf(asc.BOB) == 0
+    assert asc.r.getExecCountOf(asc.ALICE) == 0
+    assert asc.r.getReferalCountOf(asc.DENICE) == 0
 
 
 def test_cancelHashedReq_payASC(asc, stakedMin, mockTarget, reqsHashEth):
@@ -99,10 +105,13 @@ def test_cancelHashedReq_payASC(asc, stakedMin, mockTarget, reqsHashEth):
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
     assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.r) == 0
     assert asc.ASC.balanceOf(mockTarget) == 0
 
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
+    assert asc.r.getReqCountOf(asc.BOB) == 0
+    assert asc.r.getExecCountOf(asc.ALICE) == 0
+    assert asc.r.getReferalCountOf(asc.DENICE) == 0
 
 
 def test_cancelHashedReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsHashEth):
@@ -133,10 +142,13 @@ def test_cancelHashedReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, req
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
     assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.r) == 0
     assert asc.ASC.balanceOf(mockTarget) == 0
 
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
+    assert asc.r.getReqCountOf(asc.BOB) == 0
+    assert asc.r.getExecCountOf(asc.ALICE) == 0
+    assert asc.r.getReferalCountOf(asc.DENICE) == 0
 
 
 def test_cancelHashedReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, mockTarget, reqsHashEth):
@@ -167,10 +179,13 @@ def test_cancelHashedReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
     assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.r) == 0
     assert asc.ASC.balanceOf(mockTarget) == 0
 
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
+    assert asc.r.getReqCountOf(asc.BOB) == 0
+    assert asc.r.getExecCountOf(asc.ALICE) == 0
+    assert asc.r.getReferalCountOf(asc.DENICE) == 0
 
 
 def test_cancelHashedReq_rev_req_not_the_same(asc, stakedMin, mockTarget, reqsHashEth):

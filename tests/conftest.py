@@ -12,7 +12,7 @@ def isolation(fn_isolation):
 
 # Deploy the contracts for repeated tests without having to redeploy each time
 
-def deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Registry, Forwarder):
+def deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Registry, Forwarder, Miner):
     class Context:
         pass
 
@@ -47,9 +47,17 @@ def deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Registry, Forward
         INIT_BASE_BOUNTY
     )
     asc.vf.setReg(asc.r, asc.FR_DEPLOYER)
+    asc.m = asc.DEPLOYER.deploy(
+        Miner,
+        asc.ASC,
+        asc.r,
+        INIT_REQUESTER_REWARD,
+        INIT_EXECUTOR_REWARD,
+        INIT_REFERAL_REWARD
+    )
 
     # For enabling rewards
-    asc.ASC.transfer(asc.r, INIT_ASC_REW_POOL, asc.FR_DEPLOYER)
+    asc.ASC.transfer(asc.m, INIT_ASC_REW_POOL, asc.FR_DEPLOYER)
     # For being able to test staking with
     asc.ASC.transfer(asc.ALICE, MAX_TEST_STAKE, asc.FR_DEPLOYER)
     asc.ASC.approve(asc.sm, MAX_TEST_STAKE, asc.FR_ALICE)
@@ -62,8 +70,8 @@ def deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Registry, Forward
 
 
 @pytest.fixture(scope="module")
-def asc(ASCoin, Oracle, StakeManager, Registry, Forwarder):
-    return deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Registry, Forwarder)
+def asc(ASCoin, Oracle, StakeManager, Registry, Forwarder, Miner):
+    return deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Registry, Forwarder, Miner)
 
 
 @pytest.fixture(scope="module")
@@ -260,3 +268,8 @@ def reqHashNoEth(asc, mockTarget):
     tx = asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
     return req, reqHashBytes
+
+
+# # For testing Miner
+# @pytest.fixture(scope="module")
+# def executedReqsRaw

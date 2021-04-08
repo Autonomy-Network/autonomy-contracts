@@ -2,17 +2,22 @@ pragma solidity ^0.8;
 
 
 import "../interfaces/IRegistry.sol";
+import "./abstract/Shared.sol";
 
 
-contract Miner {
+contract Miner is Shared {
 
     IERC20 private _ASCoin;
     IRegistry private _reg;
     uint private _ASCPerReq;
     uint private _ASCPerExec;
     uint private _ASCPerReferal;
-    uint public constant MAX_UPDATE_BAL = 10**21;
-    uint public constant MIN_REWARD = 10**18;
+    // 1000 ASC
+    uint public constant MAX_UPDATE_BAL = (10**3) * _E_18;
+    // 1 ASC
+    uint public constant MIN_REWARD = _E_18;
+    // 10000 ASC
+    uint public constant MIN_FUND = (10**4) * _E_18;
     // This counts the number of executed requests that the requester
     // has mined rewards for
     mapping(address => uint) private _minedReqCounts;
@@ -38,22 +43,17 @@ contract Miner {
         _ASCPerReferal = ASCPerReferal;
     }
 
-    function getMiningRewards(address addr) public view returns (uint, uint, uint, uint) {
-        uint reqRewardCount = _reg.getReqCountOf(addr) - _minedReqCounts[addr];
-        uint execRewardCount = _reg.getExecCountOf(addr) - _minedExecCounts[addr];
-        uint referalRewardCount = _reg.getReferalCountOf(addr) - _minedReferalCounts[addr];
 
-        uint rewards = 
-            (reqRewardCount * _ASCPerReq) +
-            (execRewardCount * _ASCPerExec) +
-            (referalRewardCount * _ASCPerReferal);
-        
-        return (reqRewardCount, execRewardCount, referalRewardCount, rewards);
-    }
+    //////////////////////////////////////////////////////////////
+    //                                                          //
+    //                          Claiming                        //
+    //                                                          //
+    //////////////////////////////////////////////////////////////
 
     function claimMiningRewards() external {
         (uint reqRewardCount, uint execRewardCount, uint referalRewardCount, uint rewards) = 
-            getMiningRewards(msg.sender);
+            getAvailableMiningRewards(msg.sender);
+        require(rewards > 0, "Miner: no pending rewards");
         
         _minedReqCounts[msg.sender] += reqRewardCount;
         _minedExecCounts[msg.sender] += execRewardCount;
@@ -61,15 +61,15 @@ contract Miner {
         _ASCoin.transfer(msg.sender, rewards);
     }
 
-    function claimReqMiningReward(uint claimCount) external {
+    function claimReqMiningReward(uint claimCount) external nzUint(claimCount) {
         _claimSpecificMiningReward(_minedReqCounts, _reg.getReqCountOf(msg.sender), claimCount, _ASCPerReq);
     }
 
-    function claimExecMiningReward(uint claimCount) external {
+    function claimExecMiningReward(uint claimCount) external nzUint(claimCount) {
         _claimSpecificMiningReward(_minedExecCounts, _reg.getExecCountOf(msg.sender), claimCount, _ASCPerExec);
     }
 
-    function claimReferalMiningReward(uint claimCount) external {
+    function claimReferalMiningReward(uint claimCount) external nzUint(claimCount) {
         _claimSpecificMiningReward(_minedReferalCounts, _reg.getReferalCountOf(msg.sender), claimCount, _ASCPerReferal);
     }
 
@@ -81,24 +81,19 @@ contract Miner {
     ) private {
         require(
             claimCount <= regCount - counter[msg.sender],
-            "Miner: not enough"
+            "Miner: claim too large"
         );
 
         counter[msg.sender] += claimCount;
         _ASCoin.transfer(msg.sender, claimCount * rate);
     }
 
-    function getMinedReqCountOf(address addr) external view returns (uint) {
-        return _minedReqCounts[addr];
-    }
 
-    function getMinedExecCountOf(address addr) external view returns (uint) {
-        return _minedExecCounts[addr];
-    }
-
-    function getMinedReferalCountOf(address addr) external view returns (uint) {
-        return _minedReferalCounts[addr];
-    }
+    //////////////////////////////////////////////////////////////
+    //                                                          //
+    //                      Updating params                     //
+    //                                                          //
+    //////////////////////////////////////////////////////////////
 
     function updateAndFund(
         uint newASCPerReq,
@@ -113,13 +108,58 @@ contract Miner {
             newASCPerExec >= MIN_REWARD &&
             newASCPerReferal >= MIN_REWARD &&
             newASCPerReferal >= MIN_REWARD,
-            "Miner: new rates not high enough"
+            "Miner: new rates too low"
         );
+        require(amountToFund >= MIN_FUND, "Miner: funding too low, peasant");
 
         // Update rates and fund the Miner
         _ASCPerReq = newASCPerReq;
         _ASCPerExec = newASCPerExec;
         _ASCPerReferal = newASCPerReferal;
         _ASCoin.transferFrom(msg.sender, address(this), amountToFund);
+    }
+
+
+    //////////////////////////////////////////////////////////////
+    //                                                          //
+    //                          Getters                         //
+    //                                                          //
+    //////////////////////////////////////////////////////////////
+
+    function getASCPerReq() external view returns (uint) {
+        return _ASCPerReq;
+    }
+
+    function getASCPerExec() external view returns (uint) {
+        return _ASCPerExec;
+    }
+
+    function getASCPerReferal() external view returns (uint) {
+        return _ASCPerReferal;
+    }
+
+    function getMinedReqCountOf(address addr) external view returns (uint) {
+        return _minedReqCounts[addr];
+    }
+
+    function getMinedExecCountOf(address addr) external view returns (uint) {
+        return _minedExecCounts[addr];
+    }
+
+    function getMinedReferalCountOf(address addr) external view returns (uint) {
+        return _minedReferalCounts[addr];
+    }
+
+    function getAvailableMiningRewards(address addr) public view returns (uint, uint, uint, uint) {
+        uint reqRewardCount = _reg.getReqCountOf(addr) - _minedReqCounts[addr];
+        uint execRewardCount = _reg.getExecCountOf(addr) - _minedExecCounts[addr];
+        uint referalRewardCount = _reg.getReferalCountOf(addr) - _minedReferalCounts[addr];
+
+        uint rewards = 
+            (reqRewardCount * _ASCPerReq) +
+            (execRewardCount * _ASCPerExec) +
+            (referalRewardCount * _ASCPerReferal);
+        
+        return (reqRewardCount, execRewardCount, referalRewardCount, rewards);
     }
 }

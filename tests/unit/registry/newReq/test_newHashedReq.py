@@ -33,7 +33,7 @@ def test_newHashedReq(asc, mockTarget, user, target, callData, verifySender, pay
         refererASCStartBal = asc.ASC.balanceOf(referer)
         # assert asc.ASC.balanceOf(target) == 0
         targetASCStartBal = asc.ASC.balanceOf(target)
-        assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+        assert asc.ASC.balanceOf(asc.r) == 0
 
         if payWithASC:
             msgValue = ethForCall
@@ -78,7 +78,11 @@ def test_newHashedReq(asc, mockTarget, user, target, callData, verifySender, pay
         assert asc.ASC.balanceOf(user) - userASCStartBal == 0
         assert asc.ASC.balanceOf(referer) - refererASCStartBal == 0
         assert asc.ASC.balanceOf(target) - targetASCStartBal == 0
-        assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+        assert asc.ASC.balanceOf(asc.r) == 0
+
+        assert asc.r.getReqCountOf(asc.BOB) == 0
+        assert asc.r.getExecCountOf(asc.ALICE) == 0
+        assert asc.r.getReferalCountOf(asc.DENICE) == 0
 
 
 def test_newHashedReq_rev_target_is_registry(asc, mockTarget):

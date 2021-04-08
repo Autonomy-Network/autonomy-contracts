@@ -39,7 +39,11 @@ def test_newRawReq_no_eth(asc, mockTarget):
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
     assert asc.ASC.balanceOf(asc.DENICE) == 0
     assert asc.ASC.balanceOf(mockTarget) == 0
-    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.r) == 0
+
+    assert asc.r.getReqCountOf(asc.BOB) == 0
+    assert asc.r.getExecCountOf(asc.ALICE) == 0
+    assert asc.r.getReferalCountOf(asc.DENICE) == 0
 
 
 def test_newRawReq_pay_with_ASCoin(asc, mockTarget):
@@ -75,7 +79,11 @@ def test_newRawReq_pay_with_ASCoin(asc, mockTarget):
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
     assert asc.ASC.balanceOf(asc.DENICE) == 0
     assert asc.ASC.balanceOf(mockTarget) == 0
-    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.r) == 0
+
+    assert asc.r.getReqCountOf(asc.BOB) == 0
+    assert asc.r.getExecCountOf(asc.ALICE) == 0
+    assert asc.r.getReferalCountOf(asc.DENICE) == 0
 
 
 @given(
@@ -116,7 +124,11 @@ def test_newRawReq_with_eth_and_pay_ASCoin(asc, mockTarget, ethForCall, payWithA
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
     assert asc.ASC.balanceOf(asc.DENICE) == 0
     assert asc.ASC.balanceOf(mockTarget) == 0
-    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.r) == 0
+
+    assert asc.r.getReqCountOf(asc.BOB) == 0
+    assert asc.r.getExecCountOf(asc.ALICE) == 0
+    assert asc.r.getReferalCountOf(asc.DENICE) == 0
 
 
 @given(
@@ -132,11 +144,11 @@ def test_newRawReq_verifySender(asc, mockTarget, ethForCall, payWithASC, userAdd
 
     if userAddr != sender:
         with reverts(REV_MSG_CALLDATA_NOT_VER):
-            asc.r.newRawReq(mockTarget, callData, True, False, ethForCall, asc.DENICE, {'from': sender, 'value': msgValue})
+            asc.r.newRawReq(mockTarget, callData, True, payWithASC, ethForCall, asc.DENICE, {'from': sender, 'value': msgValue})
     else:
-        tx = asc.r.newRawReq(mockTarget, callData, True, True, ethForCall, asc.DENICE, {'from': sender, 'value': msgValue})
+        tx = asc.r.newRawReq(mockTarget, callData, True, payWithASC, ethForCall, asc.DENICE, {'from': sender, 'value': msgValue})
 
-        request = (sender.address, mockTarget.address, callData, True, True, ethForCall, ethForCall, asc.DENICE.address)
+        request = (sender.address, mockTarget.address, callData, True, payWithASC, ethForCall, ethForCall, asc.DENICE.address)
         # Should've changed
         assert asc.r.getRawReqs() == [request]
         assert asc.r.getRawReqLen() == 1
@@ -165,7 +177,11 @@ def test_newRawReq_verifySender(asc, mockTarget, ethForCall, payWithASC, userAdd
         assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
         assert asc.ASC.balanceOf(asc.DENICE) == 0
         assert asc.ASC.balanceOf(mockTarget) == 0
-        assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+        assert asc.ASC.balanceOf(asc.r) == 0
+
+        assert asc.r.getReqCountOf(asc.BOB) == 0
+        assert asc.r.getExecCountOf(asc.ALICE) == 0
+        assert asc.r.getReferalCountOf(asc.DENICE) == 0
 
 
 def test_newRawReq_rev_target_empty(asc, mockTarget):

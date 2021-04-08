@@ -29,7 +29,7 @@ def test_cancelRawReq_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
     assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.r) == 0
     assert asc.ASC.balanceOf(mockTarget) == 0
 
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
@@ -61,7 +61,7 @@ def test_cancelRawReq_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
     assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.r) == 0
     assert asc.ASC.balanceOf(mockTarget) == 0
 
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
@@ -94,7 +94,7 @@ def test_cancelRawReq_payASC(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
     assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.r) == 0
     assert asc.ASC.balanceOf(mockTarget) == 0
 
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
@@ -126,7 +126,7 @@ def test_cancelRawReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsRa
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
     assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.r) == 0
     assert asc.ASC.balanceOf(mockTarget) == 0
 
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
@@ -158,7 +158,7 @@ def test_cancelRawReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, m
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
     assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.r) == 0
     assert asc.ASC.balanceOf(mockTarget) == 0
 
     assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY

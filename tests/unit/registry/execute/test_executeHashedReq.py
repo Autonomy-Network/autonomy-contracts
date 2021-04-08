@@ -49,7 +49,7 @@ def test_executeHashedReq_validCalldata(asc, stakedMin, mockTarget, ethForCall, 
                 assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
                 assert asc.ASC.balanceOf(sender) - senderASCStartBal == -ASCForExec
                 assert asc.ASC.balanceOf(asc.DENICE) == 0
-                assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+                assert asc.ASC.balanceOf(asc.r) == 0
             else:
                 # Eth bals
                 assert asc.ALICE.balance() == INIT_ETH_BAL + ethForExec - (tx.gas_used * tx.gas_price)
@@ -58,7 +58,7 @@ def test_executeHashedReq_validCalldata(asc, stakedMin, mockTarget, ethForCall, 
                 assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
                 assert asc.ASC.balanceOf(sender) - senderASCStartBal == 0
                 assert asc.ASC.balanceOf(asc.DENICE) == 0
-                assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+                assert asc.ASC.balanceOf(asc.r) == 0
 
             # Target state
             assert mockTarget.userAddr() == sender.address
@@ -68,6 +68,9 @@ def test_executeHashedReq_validCalldata(asc, stakedMin, mockTarget, ethForCall, 
             assert asc.r.getHashedReqsLen() == 1
             assert asc.r.getHashedReq(id) == NULL_HASH
             assert tx.events["HashedReqRemoved"][0].values() == [id, True]
+            assert asc.r.getReqCountOf(sender) == 1
+            assert asc.r.getExecCountOf(asc.ALICE) == 1
+            assert asc.r.getReferalCountOf(asc.DENICE) == 1
 
             # Shouldn't've changed
             assert mockTarget.x() == 0
@@ -87,7 +90,7 @@ def test_executeHashedReq_no_ethForCall(asc, stakedMin, mockTarget, reqsHashEth)
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
     assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.r) == 0
 
     tx = asc.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
     
@@ -102,7 +105,7 @@ def test_executeHashedReq_no_ethForCall(asc, stakedMin, mockTarget, reqsHashEth)
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
     assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.r) == 0
     # Target state
     assert mockTarget.x() == 5
     assert mockTarget.msgSender() == asc.r
@@ -112,6 +115,9 @@ def test_executeHashedReq_no_ethForCall(asc, stakedMin, mockTarget, reqsHashEth)
     assert asc.r.getHashedReqsLen() == 5
     assert asc.r.getHashedReq(id) == NULL_HASH
     assert tx.events["HashedReqRemoved"][0].values() == [id, True]
+    assert asc.r.getReqCountOf(asc.BOB) == 1
+    assert asc.r.getExecCountOf(asc.ALICE) == 1
+    assert asc.r.getReferalCountOf(asc.DENICE) == 1
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
@@ -130,7 +136,7 @@ def test_executeHashedReq_with_ethForCall(asc, stakedMin, mockTarget, reqsHashEt
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
     assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.r) == 0
 
     tx = asc.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
     
@@ -145,7 +151,7 @@ def test_executeHashedReq_with_ethForCall(asc, stakedMin, mockTarget, reqsHashEt
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
     assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.r) == 0
     # Target state
     assert mockTarget.x() == 5
     assert mockTarget.msgSender() == asc.r
@@ -155,6 +161,9 @@ def test_executeHashedReq_with_ethForCall(asc, stakedMin, mockTarget, reqsHashEt
     assert asc.r.getHashedReqsLen() == 5
     assert asc.r.getHashedReq(id) == NULL_HASH
     assert tx.events["HashedReqRemoved"][0].values() == [id, True]
+    assert asc.r.getReqCountOf(asc.BOB) == 1
+    assert asc.r.getExecCountOf(asc.ALICE) == 1
+    assert asc.r.getReferalCountOf(asc.DENICE) == 1
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
@@ -173,7 +182,7 @@ def test_executeHashedReq_pay_ASC(asc, stakedMin, mockTarget, reqsHashEth):
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
     assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.r) == 0
 
     tx = asc.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
     
@@ -190,7 +199,7 @@ def test_executeHashedReq_pay_ASC(asc, stakedMin, mockTarget, reqsHashEth):
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
     assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.r) == 0
     # Target state
     assert mockTarget.x() == 5
     assert mockTarget.msgSender() == asc.r
@@ -200,6 +209,9 @@ def test_executeHashedReq_pay_ASC(asc, stakedMin, mockTarget, reqsHashEth):
     assert asc.r.getHashedReqsLen() == 5
     assert asc.r.getHashedReq(id) == NULL_HASH
     assert tx.events["HashedReqRemoved"][0].values() == [id, True]
+    assert asc.r.getReqCountOf(asc.BOB) == 1
+    assert asc.r.getExecCountOf(asc.ALICE) == 1
+    assert asc.r.getReferalCountOf(asc.DENICE) == 1
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
@@ -218,7 +230,7 @@ def test_executeHashedReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, re
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
     assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.r) == 0
 
     tx = asc.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
     
@@ -235,7 +247,7 @@ def test_executeHashedReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, re
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
     assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.r) == 0
     # Target state
     assert mockTarget.x() == 5
     assert mockTarget.msgSender() == asc.r
@@ -245,6 +257,9 @@ def test_executeHashedReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, re
     assert asc.r.getHashedReqsLen() == 5
     assert asc.r.getHashedReq(id) == NULL_HASH
     assert tx.events["HashedReqRemoved"][0].values() == [id, True]
+    assert asc.r.getReqCountOf(asc.BOB) == 1
+    assert asc.r.getExecCountOf(asc.ALICE) == 1
+    assert asc.r.getReferalCountOf(asc.DENICE) == 1
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
@@ -263,7 +278,7 @@ def test_executeHashedReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMi
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
     assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.r) == 0
 
     tx = asc.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
     
@@ -280,7 +295,7 @@ def test_executeHashedReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMi
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
     assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.r) == 0
     # Target state
     assert mockTarget.userAddr() == asc.BOB.address
     assert mockTarget.msgSender() == asc.vf.address
@@ -290,6 +305,9 @@ def test_executeHashedReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMi
     assert asc.r.getHashedReqsLen() == 5
     assert asc.r.getHashedReq(id) == NULL_HASH
     assert tx.events["HashedReqRemoved"][0].values() == [id, True]
+    assert asc.r.getReqCountOf(asc.BOB) == 1
+    assert asc.r.getExecCountOf(asc.ALICE) == 1
+    assert asc.r.getReferalCountOf(asc.DENICE) == 1
 
     # Shouldn't've changed
     assert mockTarget.x() == 0

@@ -64,7 +64,7 @@ def test_executeHashedReqUnveri_pay_ASC(asc, stakedMin, mockTarget, reqHashNoEth
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
     assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.r) == 0
 
     tx = asc.r.executeHashedReqUnveri(id, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
     
@@ -81,7 +81,7 @@ def test_executeHashedReqUnveri_pay_ASC(asc, stakedMin, mockTarget, reqHashNoEth
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
     assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.r) == 0
     # Target state
     assert mockTarget.x() == 5
     assert mockTarget.msgSender() == asc.r

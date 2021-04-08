@@ -28,6 +28,17 @@ REV_MSG_NZ_UINT_ARR = "Shared: uint arr input is empty"
 REV_MSG_NOT_REG = "Forw: caller not the Registry"
 
 
+# Miner
+INIT_REQUESTER_REWARD = 10**20
+INIT_EXECUTOR_REWARD = 10**21
+INIT_REFERAL_REWARD = 10**20
+
+REV_MSG_NO_PEND_REW = "Miner: no pending rewards"
+REV_MSG_CLAIM_TOO_LARGE = "Miner: claim too large"
+REV_MSG_BAL_TOO_HIGH = "Miner: ASC bal too high"
+REV_MSG_RATES_TOO_LOW = "Miner: new rates too low"
+
+
 # Owner
 REV_MSG_OWNER = "Ownable: caller is not the owner"
 
@@ -50,9 +61,6 @@ REV_MSG_NOT_STAKER = "SM: idx is not you"
 GAS_OVERHEAD_ETH = 10000
 GAS_OVERHEAD_ASCOIN = 20000
 INIT_BASE_BOUNTY = 10**15
-INIT_REQUESTER_REWARD = 10**20
-INIT_EXECUTOR_REWARD = 10**21
-INIT_REFERAL_REWARD = 10**20
 NULL_REQ = (ADDR_0, ADDR_0, NULL_BYTES, False, False, 0, 0, ADDR_0)
 # NULL_REQ_BYTES = b'\x80\x03O%\xfc\xea\xbf-\x0e\xdfP5\xb2"\xe6\x93$\x9f\x1b\xd3\x0bq\xe2\xc8\xfb\x07\x8a\xad9\x83\xd4j'
 # NULL_REQ_HEX = '0x' + NULL_REQ_BYTES.hex()

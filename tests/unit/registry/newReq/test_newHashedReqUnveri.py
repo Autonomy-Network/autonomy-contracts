@@ -39,7 +39,11 @@ def test_newHashedReqUnveri(asc, mockTarget, hashedIpfsReq, sender):
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
     assert asc.ASC.balanceOf(asc.DENICE) == 0
     assert asc.ASC.balanceOf(mockTarget) == 0
-    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.r) == 0
+
+    assert asc.r.getReqCountOf(asc.BOB) == 0
+    assert asc.r.getExecCountOf(asc.ALICE) == 0
+    assert asc.r.getReferalCountOf(asc.DENICE) == 0
 
 def test_newHashedReqUnveri_real(asc, mockTarget):
     callData = mockTarget.setX.encode_input(5)
@@ -78,7 +82,11 @@ def test_newHashedReqUnveri_real(asc, mockTarget):
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
     assert asc.ASC.balanceOf(asc.DENICE) == 0
     assert asc.ASC.balanceOf(mockTarget) == 0
-    assert asc.ASC.balanceOf(asc.r) == INIT_ASC_REW_POOL
+    assert asc.ASC.balanceOf(asc.r) == 0
+
+    assert asc.r.getReqCountOf(asc.BOB) == 0
+    assert asc.r.getExecCountOf(asc.ALICE) == 0
+    assert asc.r.getReferalCountOf(asc.DENICE) == 0
 
 
     # Ensure that the hash used with newHashedReqUnveri is the same as 
