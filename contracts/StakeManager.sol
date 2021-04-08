@@ -62,6 +62,14 @@ contract StakeManager is IStakeManager, Shared {
         return _stakes;
     }
 
+    function getStakesSlice(uint startIdx, uint endIdx) external view returns (address[] memory) {
+        address[] memory slice = new address[](endIdx - startIdx);
+        uint sliceIdx = 0;
+        for (uint stakeIdx = startIdx; stakeIdx < endIdx; stakeIdx++) {
+            slice[sliceIdx] = _stakes[stakeIdx];
+        }
+    }
+
     function getCurEpoch() public view returns (uint) {
         return (block.number / BLOCKS_IN_EPOCH) * BLOCKS_IN_EPOCH;
     }
