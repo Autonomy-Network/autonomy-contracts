@@ -90,6 +90,9 @@ def test_executeHashedReqUnveri_pay_ASC(asc, stakedMin, mockTarget, reqHashNoEth
     assert asc.r.getHashedReqsUnveriLen() == 1
     assert asc.r.getHashedReqUnveri(id) == NULL_HASH
     assert tx.events["HashedReqUnveriRemoved"][0].values() == [id, True]
+    assert asc.r.getReqCountOf(asc.BOB) == 1
+    assert asc.r.getExecCountOf(asc.ALICE) == 1
+    assert asc.r.getReferalCountOf(asc.DENICE) == 1
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0

@@ -37,6 +37,9 @@ def test_executeRawReq_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.r.getRawReqLen() == 5
     assert asc.r.getRawReq(id) == NULL_REQ
     assert tx.events["RawReqRemoved"][0].values() == [id, True]
+    assert asc.r.getReqCountOf(asc.BOB) == 1
+    assert asc.r.getExecCountOf(asc.ALICE) == 1
+    assert asc.r.getReferalCountOf(asc.DENICE) == 1
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
@@ -77,6 +80,9 @@ def test_executeRawReq_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.r.getRawReqLen() == 5
     assert asc.r.getRawReq(id) == NULL_REQ
     assert tx.events["RawReqRemoved"][0].values() == [id, True]
+    assert asc.r.getReqCountOf(asc.BOB) == 1
+    assert asc.r.getExecCountOf(asc.ALICE) == 1
+    assert asc.r.getReferalCountOf(asc.DENICE) == 1
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
@@ -119,6 +125,9 @@ def test_executeRawReq_pay_ASC(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.r.getRawReqLen() == 5
     assert asc.r.getRawReq(id) == NULL_REQ
     assert tx.events["RawReqRemoved"][0].values() == [id, True]
+    assert asc.r.getReqCountOf(asc.BOB) == 1
+    assert asc.r.getExecCountOf(asc.ALICE) == 1
+    assert asc.r.getReferalCountOf(asc.DENICE) == 1
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
@@ -161,6 +170,9 @@ def test_executeRawReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsR
     assert asc.r.getRawReqLen() == 5
     assert asc.r.getRawReq(id) == NULL_REQ
     assert tx.events["RawReqRemoved"][0].values() == [id, True]
+    assert asc.r.getReqCountOf(asc.BOB) == 1
+    assert asc.r.getExecCountOf(asc.ALICE) == 1
+    assert asc.r.getReferalCountOf(asc.DENICE) == 1
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
@@ -205,6 +217,9 @@ def test_executeRawReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, 
     assert asc.r.getRawReqLen() == 5
     assert asc.r.getRawReq(id) == NULL_REQ
     assert tx.events["RawReqRemoved"][0].values() == [id, True]
+    assert asc.r.getReqCountOf(asc.BOB) == 1
+    assert asc.r.getExecCountOf(asc.ALICE) == 1
+    assert asc.r.getReferalCountOf(asc.DENICE) == 1
 
     # Shouldn't've changed
     assert mockTarget.x() == 0
