@@ -15,10 +15,12 @@ def getRandNum(seed):
 
 def getExecutor(asc, blockNum, stakers):
     epoch = getEpoch(blockNum)
-    randNum = getRandNum(epoch)
+    # -1 because blockhash(seed) in Oracle will return 0x00 if the
+    # seed == this block's height
+    randNum = getRandNum(epoch - 1)
     # i = randNum % len(stakers)
     i = asc.sm.getRemainder(randNum, len(stakers))
-    print(randNum, epoch, i, stakers[i], stakers)
+    # print(randNum, epoch, i, stakers[i], stakers)
     return stakers[i], epoch
 
 

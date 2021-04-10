@@ -315,7 +315,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         delete _hashedReqsUnveri[id];
     }
 
-    function _execute(Request memory r) private returns (uint) {
+    function _execute(Request memory r) private returns (uint gasUsed) {
         uint startGas = gasleft();
 
         // Make the call that the user requested
@@ -354,7 +354,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         uint numStorageRefunds = (r.callData.length / 32) + 1;
         numStorageRefunds += r.referer == _ADDR_0 ? 5 : 6;
         
-        uint gasUsed = 21512 + (numStorageRefunds * 5000) + startGas - gasleft();
+        gasUsed = 21512 + (numStorageRefunds * 5000) + startGas - gasleft();
 
         uint gasRefunded = numStorageRefunds * 15000;
 
@@ -395,8 +395,6 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
                 r.requester.transfer(excess);
             }
         }
-
-        return gasUsed;
     }
 
     //////////////////////////////////////////////////////////////

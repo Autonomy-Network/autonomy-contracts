@@ -62,12 +62,19 @@ contract StakeManager is IStakeManager, Shared {
         return _stakes;
     }
 
-    function getStakesSlice(uint startIdx, uint endIdx) external view returns (address[] memory) {
-        address[] memory slice = new address[](endIdx - startIdx);
+    function getStakesLength() external view returns (uint) {
+        return _stakes.length;
+    }
+
+    function getStakesSlice(uint startIdx, uint len) external view returns (address[] memory) {
+        address[] memory slice = new address[](len);
         uint sliceIdx = 0;
-        for (uint stakeIdx = startIdx; stakeIdx < endIdx; stakeIdx++) {
+        for (uint stakeIdx = startIdx; stakeIdx < startIdx + len; stakeIdx++) {
             slice[sliceIdx] = _stakes[stakeIdx];
+            sliceIdx++;
         }
+
+        return slice;
     }
 
     function getCurEpoch() public view returns (uint) {
@@ -79,15 +86,12 @@ contract StakeManager is IStakeManager, Shared {
     }
 
     function isCurExec(address addr) external view override returns (bool) {
-        // TODO: Maybe do executor ex = _executor so that the storage is only loaded once?
+        // So that the storage is only loaded once
+        Executor memory ex = _executor;
         // If there's no stakes, allow anyone to be the executor so that a random
         // person can bootstrap the network and nobody needs to be sent any coins
-        if (
-            _stakes.length == 0 ||
-            (_executor.addr == addr && _executor.forEpoch == getCurEpoch())
-        ) {
-            return true;
-        }
+        if (ex.addr == addr && ex.forEpoch == getCurEpoch()) { return true; }
+        if (_stakes.length == 0) { return true; }
         return false;
     }
 
@@ -104,15 +108,19 @@ contract StakeManager is IStakeManager, Shared {
 
     // Calls updateExec()
     // function updateExecutor() public updateExec noFish returns(uint, uint, address) {}
-    function updateExecutor() public noFish returns(uint, uint, address) {
+    function updateExecutor() public noFish returns(uint, uint, uint, address) {
         return _updateExecutor();
     }
 
+    // The 1st stake/unstake of an epoch shouldn't change the executor, otherwise
+    // a staker could precalculate the effect of how much they stake in order to
+    // game the staker selection algo
     function stake(uint numStakes) external nzUint(numStakes) updateExec noFish override returns(uint, uint, address) {
         uint amount = numStakes * STAN_STAKE;
         // Deposit the coins
         uint balBefore = _ASCoin.balanceOf(address(this));
         _ASCoin.transferFrom(msg.sender, address(this), amount);
+        // This check is a bit unnecessary, but better to be paranoid than r3kt
         require(_ASCoin.balanceOf(address(this)) - balBefore == amount, "SM: transfer failed");
 
         for (uint i; i < numStakes; i++) {
@@ -131,7 +139,8 @@ contract StakeManager is IStakeManager, Shared {
         for (uint i = 0; i < idxs.length; i++) {
             require(_stakes[idxs[i]] == msg.sender, "SM: idx is not you");
             // Update stakes by moving the last element to the
-            // element we're wanting to delete (so it doesn't leave gaps)
+            // element we're wanting to delete (so it doesn't leave gaps, which is
+            // necessary for the _updateExecutor algo)
             _stakes[idxs[i]] = _stakes[_stakes.length-1];
             _stakes.pop();
         }
@@ -142,7 +151,7 @@ contract StakeManager is IStakeManager, Shared {
         emit Unstaked(msg.sender, amount);
     }
 
-    function _updateExecutor() private returns(uint, uint, address) {
+    function _updateExecutor() private returns(uint, uint, uint, address) {
         uint epoch = getCurEpoch();
         uint randNum;
         uint idxOfExecutor;
@@ -151,14 +160,16 @@ contract StakeManager is IStakeManager, Shared {
         // choose a new executor. This will do nothing if the system is starting
         // and allow someone to stake without needing there to already be existing stakes
         if (_executor.forEpoch != epoch && _totalStaked > 0) {
-            randNum = _oracle.getRandNum(epoch);
+            // -1 because blockhash(seed) in Oracle will return 0x00 if the
+            // seed == this block's height
+            randNum = _oracle.getRandNum(epoch - 1);
             // idxOfExecutor = randNum % _stakes.length;
             idxOfExecutor = getRemainder(randNum, _stakes.length);
             exec = _stakes[idxOfExecutor];
             _executor = Executor(exec, epoch);
         }
 
-        return (randNum, idxOfExecutor, exec);
+        return (epoch, randNum, idxOfExecutor, exec);
     }
 
     modifier updateExec() {

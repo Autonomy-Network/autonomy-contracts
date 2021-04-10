@@ -57,7 +57,13 @@ def test_updateExecutor_same_epoch(a, asc, stakedMin):
     for addr in a:
         assert asc.sm.isCurExec(addr) == (addr == staker)
 
-    assert asc.sm.getStakes() == [staker2] * INIT_NUM_STAKES
+    stakes = [staker2] * INIT_NUM_STAKES
+    assert asc.sm.getStakes() == stakes
+    assert asc.sm.getStakesLength() == len(stakes)
+    # Should revert if requesting an index that is above the max
+    with reverts():
+        asc.sm.getStakesSlice(0, len(stakes) + 1)
+    assert asc.sm.getStakesSlice(0, len(stakes)) == stakes
 
     # Make sure that updateExecutor doesn't change the executor for every remaining block in the epoch
     while web3.eth.blockNumber % BLOCKS_IN_EPOCH != 99:
@@ -75,12 +81,9 @@ def test_updateExecutor_same_epoch(a, asc, stakedMin):
         assert asc.sm.isCurExec(addr) == (addr == staker2)
 
 
-
 def test_updateExecutor_stakedMulti(asc, stakedMulti):
     stakers = asc.sm.getStakes()
-    for i in range(10):
-        asc.sm.updateExecutor(asc.FR_ALICE)
-
+    for i in range(BLOCKS_IN_EPOCH * 2):
         exec, epoch = getExecutor(asc, web3.eth.blockNumber, stakers)
         assert asc.sm.getExecutor() == (exec, epoch)
         for addr in a:

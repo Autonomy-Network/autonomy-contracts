@@ -16,6 +16,11 @@ def test_unstake_3_of_4th_staker_from_stakedMultiSmall(asc, stakedMultiSmall):
     assert len(startStakes) == 7
     assert asc.sm.getStakes() == [asc.ALICE, asc.BOB, asc.BOB, asc.CHARLIE, asc.CHARLIE, asc.BOB, asc.BOB]
     assert asc.sm.getStakes() == startStakes
+    assert asc.sm.getStakesLength() == len(startStakes)
+    # Should revert if requesting an index that is above the max
+    with reverts():
+        asc.sm.getStakesSlice(0, len(startStakes) + 1)
+    assert asc.sm.getStakesSlice(0, len(startStakes)) == startStakes
     staker = stakers[3]
     assert staker == asc.BOB
     idxs = [1, 1, 1]
@@ -29,6 +34,11 @@ def test_unstake_3_of_4th_staker_from_stakedMultiSmall(asc, stakedMultiSmall):
     assert asc.sm.getStake(staker) == curNumStakes * STAN_STAKE
     assert asc.sm.getStakes() == [asc.ALICE, asc.CHARLIE, asc.BOB, asc.CHARLIE]
     assert asc.sm.getStakes() == newStakes
+    assert asc.sm.getStakesLength() == len(newStakes)
+    # Should revert if requesting an index that is above the max
+    with reverts():
+        asc.sm.getStakesSlice(0, len(newStakes) + 1)
+    assert asc.sm.getStakesSlice(0, len(newStakes)) == newStakes
     assert asc.sm.getCurEpoch() == getEpoch(web3.eth.blockNumber)
     newExec, epoch = getExecutor(asc, web3.eth.blockNumber, startStakes)
     assert asc.sm.getExecutor() == (newExec, epoch)
@@ -43,6 +53,11 @@ def test_unstake_1_of_2nd_staker_from_stakedMultiSmall(asc, stakedMultiSmall):
     assert len(startStakes) == 7
     assert asc.sm.getStakes() == startStakes
     assert asc.sm.getStakes() == [asc.ALICE, asc.BOB, asc.BOB, asc.CHARLIE, asc.CHARLIE, asc.BOB, asc.BOB]
+    assert asc.sm.getStakesLength() == len(startStakes)
+    # Should revert if requesting an index that is above the max
+    with reverts():
+        asc.sm.getStakesSlice(0, len(startStakes) + 1)
+    assert asc.sm.getStakesSlice(0, len(startStakes)) == startStakes
     staker  = stakers[1]
     idxs = [1]
     calcIdxs, newStakes = getModStakes(startStakes, staker, 1, False)
@@ -55,6 +70,11 @@ def test_unstake_1_of_2nd_staker_from_stakedMultiSmall(asc, stakedMultiSmall):
     assert asc.sm.getStake(staker) == curNumStakes * STAN_STAKE
     assert asc.sm.getStakes() == [asc.ALICE, asc.BOB, asc.BOB, asc.CHARLIE, asc.CHARLIE, asc.BOB]
     assert asc.sm.getStakes() == newStakes
+    assert asc.sm.getStakesLength() == len(newStakes)
+    # Should revert if requesting an index that is above the max
+    with reverts():
+        asc.sm.getStakesSlice(0, len(newStakes) + 1)
+    assert asc.sm.getStakesSlice(0, len(newStakes)) == newStakes
     assert asc.sm.getCurEpoch() == getEpoch(web3.eth.blockNumber)
     newExec, epoch = getExecutor(asc, web3.eth.blockNumber, startStakes)
     assert asc.sm.getExecutor() == (newExec, epoch)
@@ -69,6 +89,11 @@ def test_unstake_2_of_3rd_staker_from_stakedMultiSmall(asc, stakedMultiSmall):
     assert len(startStakes) == 7
     assert asc.sm.getStakes() == [asc.ALICE, asc.BOB, asc.BOB, asc.CHARLIE, asc.CHARLIE, asc.BOB, asc.BOB]
     assert asc.sm.getStakes() == startStakes
+    assert asc.sm.getStakesLength() == len(startStakes)
+    # Should revert if requesting an index that is above the max
+    with reverts():
+        asc.sm.getStakesSlice(0, len(startStakes) + 1)
+    assert asc.sm.getStakesSlice(0, len(startStakes)) == startStakes
     staker = stakers[2]
     idxs = [3, 4]
     calcIdxs, newStakes = getModStakes(startStakes, staker, 2, False)
@@ -82,6 +107,11 @@ def test_unstake_2_of_3rd_staker_from_stakedMultiSmall(asc, stakedMultiSmall):
     assert asc.sm.getStake(staker) == 0
     assert asc.sm.getStakes() == [asc.ALICE, asc.BOB, asc.BOB, asc.BOB, asc.BOB]
     assert asc.sm.getStakes() == newStakes
+    assert asc.sm.getStakesLength() == len(newStakes)
+    # Should revert if requesting an index that is above the max
+    with reverts():
+        asc.sm.getStakesSlice(0, len(newStakes) + 1)
+    assert asc.sm.getStakesSlice(0, len(newStakes)) == newStakes
     assert asc.sm.getCurEpoch() == getEpoch(web3.eth.blockNumber)
     newExec, epoch = getExecutor(asc, web3.eth.blockNumber, startStakes)
     assert asc.sm.getExecutor() == (newExec, epoch)

@@ -8,6 +8,7 @@ from brownie.test import given, strategy
 def setupStake(asc, num):
     staker = asc.BOB
     tx = asc.sm.stake(num, {'from': staker})
+
     return num, staker, tx
 
 
@@ -17,7 +18,13 @@ def stakeTest(asc, num, staker, tx):
     # even though they've been reverted, which adversely affects this test by changing
     # the epoch, so we have to call updateExecutor
     asc.sm.updateExecutor()
-    assert asc.sm.getStakes() == [staker] * num
+    stakes = [staker] * num
+    assert asc.sm.getStakes() == stakes
+    assert asc.sm.getStakesLength() == num
+    # Should revert if requesting an index that is above the max
+    with reverts():
+        asc.sm.getStakesSlice(0, num + 1)
+    assert asc.sm.getStakesSlice(0, num) == stakes
     assert asc.sm.getStake(staker) == amount
     assert asc.sm.getTotalStaked() == amount
     assert asc.sm.isCurExec(staker) == True
@@ -30,8 +37,6 @@ def test_stake(asc, num):
     stakeTest(asc, *setupStake(asc, num))
 
 
-# For some reason having test_stake_high after test_stake_min makes
-# the former fail, not sure why, seems like a bug in the way Brownie reverts after?
 def test_stake_high(a, asc):
     stakeTest(asc, *setupStake(asc, INIT_NUM_STAKES))
 
@@ -59,50 +64,19 @@ def test_stake_1st_stake_of_epoch_no_exec_change(asc, stakedMin):
     newNumStakes = INIT_NUM_STAKES
     tx = asc.sm.stake(newNumStakes, {'from': newStaker})
 
-    assert asc.sm.getStakes() == [staker] + ([newStaker] * newNumStakes)
+    stakes = [staker] + ([newStaker] * newNumStakes)
+    assert asc.sm.getStakes() == stakes
+    assert asc.sm.getStakesLength() == len(stakes)
+    # Should revert if requesting an index that is above the max
+    with reverts():
+        asc.sm.getStakesSlice(0, len(stakes) + 1)
+    assert asc.sm.getStakesSlice(0, len(stakes)) == stakes
     assert asc.sm.getStake(newStaker) == newNumStakes * STAN_STAKE
     assert asc.sm.getTotalStaked() == (numStakes + newNumStakes) * STAN_STAKE
     # Old staker but new epoch
     assert asc.sm.getExecutor() == (staker, getEpoch(web3.eth.blockNumber))
     assert asc.sm.isCurExec(staker) == True
     assert tx.events["Staked"][0].values() == [newStaker, newNumStakes * STAN_STAKE]
-
-
-
-# Should probably be an integration test instead
-def test_stake_multi(asc, stakedMulti):
-    nums, stakers, txs = stakedMulti
-    stakes = []
-    cumNumStanStakes = 0
-    stakerToNum = {}
-    stakerToIdxs = {}
-    
-    for (n, s, tx) in zip(nums, stakers, txs):
-        stakes += [s] * n
-
-        if s in stakerToNum:
-            stakerToNum[s] += n
-        else:
-            stakerToNum[s] = n
-        
-        idxs = [i for i in range(cumNumStanStakes, cumNumStanStakes + n)]
-        if s in stakerToIdxs:
-            stakerToIdxs[s] += idxs
-        else:
-            stakerToIdxs[s] = idxs
-        
-        cumNumStanStakes += n
-        assert tx.events["Staked"][0].values() == [s, n * STAN_STAKE]
-    
-    for s in stakerToNum:
-        assert asc.sm.getStake(s) == stakerToNum[s] * STAN_STAKE
-        exec, epoch = getExecutor(asc, web3.eth.blockNumber, stakes)
-        isExec = exec == s
-        assert asc.sm.isCurExec(s) == isExec
-
-    assert asc.sm.getTotalStaked() == cumNumStanStakes * STAN_STAKE
-    assert asc.sm.getStakes() == stakes
-    assert asc.sm.getExecutor() == (exec, epoch)
 
 
 def test_stake_rev_numStanStakes(asc):

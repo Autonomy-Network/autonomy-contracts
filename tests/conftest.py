@@ -56,6 +56,17 @@ def deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Registry, Forward
         INIT_REFERAL_REWARD
     )
 
+    return asc
+
+
+@pytest.fixture(scope="module")
+def cleanASC(ASCoin, Oracle, StakeManager, Registry, Forwarder, Miner):
+    return deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Registry, Forwarder, Miner)
+
+
+@pytest.fixture(scope="module")
+def asc(cleanASC, ASCoin, Oracle, StakeManager, Registry, Forwarder, Miner):
+    asc = cleanASC
     # For enabling rewards
     asc.ASC.transfer(asc.m, INIT_ASC_REW_POOL, asc.FR_DEPLOYER)
     # For being able to test staking with
@@ -68,10 +79,6 @@ def deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Registry, Forward
 
     return asc
 
-
-@pytest.fixture(scope="module")
-def asc(ASCoin, Oracle, StakeManager, Registry, Forwarder, Miner):
-    return deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Registry, Forwarder, Miner)
 
 
 @pytest.fixture(scope="module")
