@@ -107,15 +107,15 @@ contract StakeManager is IStakeManager, Shared {
     //////////////////////////////////////////////////////////////
 
     // Calls updateExec()
-    // function updateExecutor() public updateExec noFish returns(uint, uint, address) {}
-    function updateExecutor() public noFish returns(uint, uint, uint, address) {
+    // function updateExecutor() public updateExec noFish returns (uint, uint, address) {}
+    function updateExecutor() external noFish returns (uint, uint, uint, address) {
         return _updateExecutor();
     }
 
     // The 1st stake/unstake of an epoch shouldn't change the executor, otherwise
     // a staker could precalculate the effect of how much they stake in order to
     // game the staker selection algo
-    function stake(uint numStakes) external nzUint(numStakes) updateExec noFish override returns(uint, uint, address) {
+    function stake(uint numStakes) external nzUint(numStakes) updateExec noFish override {
         uint amount = numStakes * STAN_STAKE;
         // Deposit the coins
         uint balBefore = _ASCoin.balanceOf(address(this));
@@ -151,11 +151,8 @@ contract StakeManager is IStakeManager, Shared {
         emit Unstaked(msg.sender, amount);
     }
 
-    function _updateExecutor() private returns(uint, uint, uint, address) {
-        uint epoch = getCurEpoch();
-        uint randNum;
-        uint idxOfExecutor;
-        address exec;
+    function _updateExecutor() private returns (uint epoch, uint randNum, uint idxOfExecutor, address exec) {
+        epoch = getCurEpoch();
         // If the executor is out of date and the system already has stake,
         // choose a new executor. This will do nothing if the system is starting
         // and allow someone to stake without needing there to already be existing stakes
@@ -168,8 +165,6 @@ contract StakeManager is IStakeManager, Shared {
             exec = _stakes[idxOfExecutor];
             _executor = Executor(exec, epoch);
         }
-
-        return (epoch, randNum, idxOfExecutor, exec);
     }
 
     modifier updateExec() {
