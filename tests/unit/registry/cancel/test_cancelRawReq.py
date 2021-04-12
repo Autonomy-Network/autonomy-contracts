@@ -11,6 +11,7 @@ def test_cancelRawReq_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     # Should've changed
     reqs = [NULL_REQ, reqEthForCall, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender]
     assert asc.r.getRawReqs() == reqs
+    assert asc.r.getRawReqsSlice(0, len(reqs)) == reqs
     assert asc.r.getRawReqLen() == 5
     for i, req in enumerate(reqs):
         assert asc.r.getRawReq(i) == req
@@ -47,6 +48,7 @@ def test_cancelRawReq_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     # Should've changed
     reqs = [reqNoEthForCall, NULL_REQ, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender]
     assert asc.r.getRawReqs() == reqs
+    assert asc.r.getRawReqsSlice(0, len(reqs)) == reqs
     assert asc.r.getRawReqLen() == 5
     for i, req in enumerate(reqs):
         assert asc.r.getRawReq(i) == req
@@ -83,6 +85,7 @@ def test_cancelRawReq_payASC(asc, stakedMin, mockTarget, reqsRaw):
     # Should've changed
     reqs = [reqNoEthForCall, reqEthForCall, NULL_REQ, reqPayASCEthForCall, reqPayASCEthForCallVerifySender]
     assert asc.r.getRawReqs() == reqs
+    assert asc.r.getRawReqsSlice(0, len(reqs)) == reqs
     assert asc.r.getRawReqLen() == 5
     for i, req in enumerate(reqs):
         assert asc.r.getRawReq(i) == req
@@ -118,6 +121,7 @@ def test_cancelRawReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsRa
     # Should've changed
     reqs = [reqNoEthForCall, reqEthForCall, reqPayASC, NULL_REQ, reqPayASCEthForCallVerifySender]
     assert asc.r.getRawReqs() == reqs
+    assert asc.r.getRawReqsSlice(0, len(reqs)) == reqs
     assert asc.r.getRawReqLen() == 5
     for i, req in enumerate(reqs):
         assert asc.r.getRawReq(i) == req
@@ -153,6 +157,7 @@ def test_cancelRawReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, m
     # Should've changed
     reqs = [reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, NULL_REQ]
     assert asc.r.getRawReqs() == reqs
+    assert asc.r.getRawReqsSlice(0, len(reqs)) == reqs
     assert asc.r.getRawReqLen() == 5
     for i, req in enumerate(reqs):
         assert asc.r.getRawReq(i) == req

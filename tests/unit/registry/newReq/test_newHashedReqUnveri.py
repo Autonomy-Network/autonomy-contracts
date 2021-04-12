@@ -22,6 +22,7 @@ def test_newHashedReqUnveri(asc, mockTarget, hashedIpfsReq, sender):
     assert asc.r.getHashedReqUnveri(0) == bytesToHex(hashedIpfsReq)
 
     assert asc.r.getRawReqs() == []
+    assert asc.r.getRawReqsSlice(0, 0) == []
     assert asc.r.getRawReqLen() == 0
     with reverts():
         asc.r.getRawReq(0)
@@ -65,6 +66,7 @@ def test_newHashedReqUnveri_real(asc, mockTarget):
     assert asc.r.getHashedReqUnveri(0) == getHashFromCID(ipfsCID)
 
     assert asc.r.getRawReqs() == []
+    assert asc.r.getRawReqsSlice(0, 0) == []
     assert asc.r.getRawReqLen() == 0
     with reverts():
         asc.r.getRawReq(0)

@@ -61,6 +61,7 @@ def test_newHashedReq(asc, mockTarget, user, target, callData, verifySender, pay
         assert asc.r.getHashedReq(0) == getHashFromCID(ipfsCID)
 
         assert asc.r.getRawReqs() == []
+        assert asc.r.getRawReqsSlice(0, 0) == []
         assert asc.r.getRawReqLen() == 0
         with reverts():
             asc.r.getRawReq(0)

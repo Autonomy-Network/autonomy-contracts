@@ -12,7 +12,9 @@ def test_newRawReq_no_eth(asc, mockTarget):
 
     request = (asc.BOB.address, mockTarget.address, callData, False, False, 0, 0, asc.DENICE.address)
     # Should've changed
-    assert asc.r.getRawReqs() == [request]
+    reqs = [request]
+    assert asc.r.getRawReqs() == reqs
+    assert asc.r.getRawReqsSlice(0, len(reqs)) == reqs
     assert asc.r.getRawReqLen() == 1
     assert asc.r.getRawReq(0) == request
     assert tx.events["RawReqAdded"][0].values() == [0]
@@ -52,7 +54,9 @@ def test_newRawReq_pay_with_ASCoin(asc, mockTarget):
 
     request = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
     # Should've changed
-    assert asc.r.getRawReqs() == [request]
+    reqs = [request]
+    assert asc.r.getRawReqs() == reqs
+    assert asc.r.getRawReqsSlice(0, len(reqs)) == reqs
     assert asc.r.getRawReqLen() == 1
     assert asc.r.getRawReq(0) == request
     assert tx.events["RawReqAdded"][0].values() == [0]
@@ -97,7 +101,9 @@ def test_newRawReq_with_eth_and_pay_ASCoin(asc, mockTarget, ethForCall, payWithA
 
     request = (asc.BOB.address, mockTarget.address, callData, False, payWithASC, msgValue, ethForCall, asc.DENICE.address)
     # Should've changed
-    assert asc.r.getRawReqs() == [request]
+    reqs = [request]
+    assert asc.r.getRawReqs() == reqs
+    assert asc.r.getRawReqsSlice(0, len(reqs)) == reqs
     assert asc.r.getRawReqLen() == 1
     assert asc.r.getRawReq(0) == request
     assert tx.events["RawReqAdded"][0].values() == [0]
@@ -150,7 +156,9 @@ def test_newRawReq_verifySender(asc, mockTarget, ethForCall, payWithASC, userAdd
 
         request = (sender.address, mockTarget.address, callData, True, payWithASC, ethForCall, ethForCall, asc.DENICE.address)
         # Should've changed
-        assert asc.r.getRawReqs() == [request]
+        reqs = [request]
+        assert asc.r.getRawReqs() == reqs
+        assert asc.r.getRawReqsSlice(0, len(reqs)) == reqs
         assert asc.r.getRawReqLen() == 1
         assert asc.r.getRawReq(0) == request
         assert tx.events["RawReqAdded"][0].values() == [0]

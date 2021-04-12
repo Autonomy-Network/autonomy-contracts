@@ -16,7 +16,7 @@ MAX_SLICE_LEN = 1000
     sliceLen=strategy('uint', max_value=MAX_SLICE_LEN)
 )
 # This test takes forever
-@settings(max_examples=5)
+@settings(max_examples=10)
 def test_getStakesSlice(cleanASC, stakeChunks, startIdx, sliceLen):
     counts = Counter(stakeChunks)
     for addr, count in counts.items():
@@ -30,9 +30,10 @@ def test_getStakesSlice(cleanASC, stakeChunks, startIdx, sliceLen):
     for staker in stakeChunks:
         cleanASC.sm.stake(numInChunk, {'from': staker})
         stakes += [staker] * numInChunk
-        
+    
+    endIdx = startIdx + sliceLen
     assert cleanASC.sm.getStakesLength() == numStakes
-    assert cleanASC.sm.getStakesSlice(startIdx, sliceLen) == stakes[startIdx:startIdx+sliceLen]
+    assert cleanASC.sm.getStakesSlice(startIdx, endIdx) == stakes[startIdx:endIdx]
 
 
 # # This test will fail and timeout because it takes too long to gather the

@@ -118,6 +118,17 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         return _rawReqs;
     }
 
+    function getRawReqsSlice(uint startIdx, uint endIdx) external view returns (Request[] memory) {
+        Request[] memory slice = new Request[](endIdx - startIdx);
+        uint sliceIdx = 0;
+        for (uint arrIdx = startIdx; arrIdx < endIdx; arrIdx++) {
+            slice[sliceIdx] = _rawReqs[arrIdx];
+            sliceIdx++;
+        }
+
+        return slice;
+    }
+
     function getRawReqLen() external view override returns (uint) {
         return _rawReqs.length;
     }
@@ -164,6 +175,10 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         return _hashedReqs;
     }
 
+    function getHashedReqsSlice(uint startIdx, uint endIdx) external view returns (bytes32[] memory) {
+        return _getBytes32Slice(_hashedReqs, startIdx, endIdx);
+    }
+
     function getHashedReqsLen() external view override returns (uint) {
         return _hashedReqs.length;
     }
@@ -192,6 +207,10 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     
     function getHashedReqsUnveri() external view override returns (bytes32[] memory) {
         return _hashedReqsUnveri;
+    }
+
+    function getHashedReqsUnveriSlice(uint startIdx, uint endIdx) external view returns (bytes32[] memory) {
+        return _getBytes32Slice(_hashedReqsUnveri, startIdx, endIdx);
     }
 
     function getHashedReqsUnveriLen() external view override returns (uint) {
@@ -495,6 +514,17 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
 
     function divAOverB(uint a, uint b) external view override returns (uint) {
         return a / b;
+    }
+
+    function _getBytes32Slice(bytes32[] memory arr, uint startIdx, uint endIdx) private view returns (bytes32[] memory) {
+        bytes32[] memory slice = new bytes32[](endIdx - startIdx);
+        uint sliceIdx = 0;
+        for (uint arrIdx = startIdx; arrIdx < endIdx; arrIdx++) {
+            slice[sliceIdx] = arr[arrIdx];
+            sliceIdx++;
+        }
+
+        return slice;
     }
 
 

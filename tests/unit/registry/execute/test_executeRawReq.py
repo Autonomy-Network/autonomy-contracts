@@ -33,7 +33,9 @@ def test_executeRawReq_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert mockTarget.x() == 5
     assert mockTarget.msgSender() == asc.r
     # Registry state
-    assert asc.r.getRawReqs() == [NULL_REQ, reqEthForCall, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender]
+    reqs = [NULL_REQ, reqEthForCall, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender]
+    assert asc.r.getRawReqsSlice(0, len(reqs)) == reqs
+    assert asc.r.getRawReqs() == reqs
     assert asc.r.getRawReqLen() == 5
     assert asc.r.getRawReq(id) == NULL_REQ
     assert tx.events["RawReqRemoved"][0].values() == [id, True]
@@ -76,7 +78,9 @@ def test_executeRawReq_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert mockTarget.x() == 5
     assert mockTarget.msgSender() == asc.r
     # Registry state
-    assert asc.r.getRawReqs() == [reqNoEthForCall, NULL_REQ, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender]
+    reqs = [reqNoEthForCall, NULL_REQ, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender]
+    assert asc.r.getRawReqs() == reqs
+    assert asc.r.getRawReqsSlice(0, len(reqs)) == reqs
     assert asc.r.getRawReqLen() == 5
     assert asc.r.getRawReq(id) == NULL_REQ
     assert tx.events["RawReqRemoved"][0].values() == [id, True]
@@ -121,7 +125,9 @@ def test_executeRawReq_pay_ASC(asc, stakedMin, mockTarget, reqsRaw):
     assert mockTarget.x() == 5
     assert mockTarget.msgSender() == asc.r
     # Registry state
-    assert asc.r.getRawReqs() == [reqNoEthForCall, reqEthForCall, NULL_REQ, reqPayASCEthForCall, reqPayASCEthForCallVerifySender]
+    reqs = [reqNoEthForCall, reqEthForCall, NULL_REQ, reqPayASCEthForCall, reqPayASCEthForCallVerifySender]
+    assert asc.r.getRawReqs() == reqs
+    assert asc.r.getRawReqsSlice(0, len(reqs)) == reqs
     assert asc.r.getRawReqLen() == 5
     assert asc.r.getRawReq(id) == NULL_REQ
     assert tx.events["RawReqRemoved"][0].values() == [id, True]
@@ -166,7 +172,9 @@ def test_executeRawReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsR
     assert mockTarget.x() == 5
     assert mockTarget.msgSender() == asc.r
     # Registry state
-    assert asc.r.getRawReqs() == [reqNoEthForCall, reqEthForCall, reqPayASC, NULL_REQ, reqPayASCEthForCallVerifySender]
+    reqs = [reqNoEthForCall, reqEthForCall, reqPayASC, NULL_REQ, reqPayASCEthForCallVerifySender]
+    assert asc.r.getRawReqs() == reqs
+    assert asc.r.getRawReqsSlice(0, len(reqs)) == reqs
     assert asc.r.getRawReqLen() == 5
     assert asc.r.getRawReq(id) == NULL_REQ
     assert tx.events["RawReqRemoved"][0].values() == [id, True]
@@ -213,7 +221,9 @@ def test_executeRawReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, 
     assert mockTarget.userAddr() == asc.BOB.address
     assert mockTarget.msgSender() == asc.vf.address
     # Registry state
-    assert asc.r.getRawReqs() == [reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, NULL_REQ]
+    reqs = [reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, NULL_REQ]
+    assert asc.r.getRawReqs() == reqs
+    assert asc.r.getRawReqsSlice(0, len(reqs)) == reqs
     assert asc.r.getRawReqLen() == 5
     assert asc.r.getRawReq(id) == NULL_REQ
     assert tx.events["RawReqRemoved"][0].values() == [id, True]

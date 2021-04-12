@@ -66,10 +66,10 @@ contract StakeManager is IStakeManager, Shared {
         return _stakes.length;
     }
 
-    function getStakesSlice(uint startIdx, uint len) external view returns (address[] memory) {
-        address[] memory slice = new address[](len);
+    function getStakesSlice(uint startIdx, uint endIdx) external view returns (address[] memory) {
+        address[] memory slice = new address[](endIdx - startIdx);
         uint sliceIdx = 0;
-        for (uint stakeIdx = startIdx; stakeIdx < startIdx + len; stakeIdx++) {
+        for (uint stakeIdx = startIdx; stakeIdx < endIdx; stakeIdx++) {
             slice[sliceIdx] = _stakes[stakeIdx];
             sliceIdx++;
         }
