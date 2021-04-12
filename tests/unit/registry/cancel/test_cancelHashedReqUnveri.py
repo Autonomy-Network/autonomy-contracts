@@ -10,7 +10,12 @@ def test_cancelHashedReqUnveri_no_ethForCall(asc, stakedMin, mockTarget, reqHash
     tx = asc.r.cancelHashedReqUnveri(id, req, *getIpfsMetaData(asc, req), asc.FR_BOB)
 
     # Should've changed
-    assert asc.r.getHashedReqsUnveri() == [NULL_HASH]
+    reqHashesUnveri = [NULL_HASH]
+    assert asc.r.getHashedReqsUnveri() == reqHashesUnveri
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getHashedReqsUnveriSlice(0, len(reqHashesUnveri) + 1)
+    assert asc.r.getHashedReqsUnveriSlice(0, len(reqHashesUnveri)) == reqHashesUnveri
     assert asc.r.getHashedReqsUnveriLen() == 1
     assert asc.r.getHashedReqUnveri(0) == NULL_HASH
     assert tx.events["HashedReqUnveriRemoved"][0].values() == [id, False]

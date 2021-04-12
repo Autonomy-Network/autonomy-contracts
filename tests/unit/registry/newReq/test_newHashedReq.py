@@ -55,18 +55,29 @@ def test_newHashedReq(asc, mockTarget, user, target, callData, verifySender, pay
 
         assert tx.return_value == 0
         assert tx.events["HashedReqAdded"][0].values() == [0]
-        b58HashedIpfsReqs = [getCID(hash) for hash in asc.r.getHashedReqs()]
-        assert b58HashedIpfsReqs == [ipfsCID]
+        CIDs = [getCID(hash) for hash in asc.r.getHashedReqs()]
+        assert CIDs == [ipfsCID]
+        # Should revert when using indexes above the length
+        with reverts():
+            asc.r.getHashedReqsSlice(0, len(CIDs) + 1)
+        assert [getCID(hash) for hash in asc.r.getHashedReqsSlice(0, len(CIDs))] == CIDs
         assert asc.r.getHashedReqsLen() == 1
         assert asc.r.getHashedReq(0) == getHashFromCID(ipfsCID)
 
         assert asc.r.getRawReqs() == []
+        # Should revert when using indexes above the lengthgetHashedReqs
+        with reverts():
+            asc.r.getRawReqsSlice(0, 1)
         assert asc.r.getRawReqsSlice(0, 0) == []
         assert asc.r.getRawReqLen() == 0
         with reverts():
             asc.r.getRawReq(0)
         
         assert asc.r.getHashedReqsUnveri() == []
+        # Should revert when using indexes above the length
+        with reverts():
+            asc.r.getHashedReqsUnveriSlice(0, 1)
+        assert asc.r.getHashedReqsUnveriSlice(0, 0) == []
         assert asc.r.getHashedReqsUnveriLen() == 0
         with reverts():
             asc.r.getHashedReqUnveri(0)

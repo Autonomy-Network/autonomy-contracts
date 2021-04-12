@@ -64,7 +64,12 @@ def test_executeHashedReq_validCalldata(asc, stakedMin, mockTarget, ethForCall, 
             assert mockTarget.userAddr() == sender.address
             assert mockTarget.msgSender() == asc.vf.address
             # Registry state
-            assert asc.r.getHashedReqs() == [NULL_HASH]
+            reqHashes = [NULL_HASH]
+            assert asc.r.getHashedReqs() == reqHashes
+            # Should revert when using indexes above the length
+            with reverts():
+                asc.r.getHashedReqsSlice(0, len(reqHashes) + 1)
+            assert asc.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
             assert asc.r.getHashedReqsLen() == 1
             assert asc.r.getHashedReq(id) == NULL_HASH
             assert tx.events["HashedReqRemoved"][0].values() == [id, True]
@@ -112,6 +117,10 @@ def test_executeHashedReq_no_ethForCall(asc, stakedMin, mockTarget, reqsHashEth)
     # Registry state
     reqHashes[id] = NULL_HASH
     assert asc.r.getHashedReqs() == reqHashes
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getHashedReqsSlice(0, len(reqHashes) + 1)
+    assert asc.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
     assert asc.r.getHashedReqsLen() == 5
     assert asc.r.getHashedReq(id) == NULL_HASH
     assert tx.events["HashedReqRemoved"][0].values() == [id, True]
@@ -157,7 +166,15 @@ def test_executeHashedReq_with_ethForCall(asc, stakedMin, mockTarget, reqsHashEt
     assert mockTarget.msgSender() == asc.r
     # Registry state
     reqHashes[id] = NULL_HASH
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getHashedReqsSlice(0, len(reqHashes) + 1)
+    assert asc.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
     assert asc.r.getHashedReqs() == reqHashes
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getHashedReqsSlice(0, len(reqHashes) + 1)
+    assert asc.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
     assert asc.r.getHashedReqsLen() == 5
     assert asc.r.getHashedReq(id) == NULL_HASH
     assert tx.events["HashedReqRemoved"][0].values() == [id, True]
@@ -206,6 +223,10 @@ def test_executeHashedReq_pay_ASC(asc, stakedMin, mockTarget, reqsHashEth):
     # Registry state
     reqHashes[id] = NULL_HASH
     assert asc.r.getHashedReqs() == reqHashes
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getHashedReqsSlice(0, len(reqHashes) + 1)
+    assert asc.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
     assert asc.r.getHashedReqsLen() == 5
     assert asc.r.getHashedReq(id) == NULL_HASH
     assert tx.events["HashedReqRemoved"][0].values() == [id, True]
@@ -254,6 +275,10 @@ def test_executeHashedReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, re
     # Registry state
     reqHashes[id] = NULL_HASH
     assert asc.r.getHashedReqs() == reqHashes
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getHashedReqsSlice(0, len(reqHashes) + 1)
+    assert asc.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
     assert asc.r.getHashedReqsLen() == 5
     assert asc.r.getHashedReq(id) == NULL_HASH
     assert tx.events["HashedReqRemoved"][0].values() == [id, True]
@@ -302,6 +327,10 @@ def test_executeHashedReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMi
     # Registry state
     reqHashes[id] = NULL_HASH
     assert asc.r.getHashedReqs() == reqHashes
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getHashedReqsSlice(0, len(reqHashes) + 1)
+    assert asc.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
     assert asc.r.getHashedReqsLen() == 5
     assert asc.r.getHashedReq(id) == NULL_HASH
     assert tx.events["HashedReqRemoved"][0].values() == [id, True]

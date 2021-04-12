@@ -14,6 +14,10 @@ def test_cancelHashedReq_no_ethForCall(asc, stakedMin, mockTarget, reqsHashEth):
     # Should've changed
     reqHashes[id] = NULL_HASH
     assert asc.r.getHashedReqs() == reqHashes
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getHashedReqsSlice(0, len(reqHashes) + 1)
+    assert asc.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
     assert asc.r.getHashedReqsLen() == 5
     for i, reqHash in enumerate(reqHashes):
         assert asc.r.getHashedReq(i) == reqHash
@@ -51,6 +55,10 @@ def test_cancelHashedReq_with_ethForCall(asc, stakedMin, mockTarget, reqsHashEth
     # Should've changed
     reqHashes[id] = NULL_HASH
     assert asc.r.getHashedReqs() == reqHashes
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getHashedReqsSlice(0, len(reqHashes) + 1)
+    assert asc.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
     assert asc.r.getHashedReqsLen() == 5
     for i, reqHash in enumerate(reqHashes):
         assert asc.r.getHashedReq(i) == reqHash
@@ -88,6 +96,10 @@ def test_cancelHashedReq_payASC(asc, stakedMin, mockTarget, reqsHashEth):
     # Should've changed
     reqHashes[id] = NULL_HASH
     assert asc.r.getHashedReqs() == reqHashes
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getHashedReqsSlice(0, len(reqHashes) + 1)
+    assert asc.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
     assert asc.r.getHashedReqsLen() == 5
     for i, reqHash in enumerate(reqHashes):
         assert asc.r.getHashedReq(i) == reqHash
@@ -125,6 +137,10 @@ def test_cancelHashedReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, req
     # Should've changed
     reqHashes[id] = NULL_HASH
     assert asc.r.getHashedReqs() == reqHashes
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getHashedReqsSlice(0, len(reqHashes) + 1)
+    assert asc.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
     assert asc.r.getHashedReqsLen() == 5
     for i, reqHash in enumerate(reqHashes):
         assert asc.r.getHashedReq(i) == reqHash
@@ -162,6 +178,10 @@ def test_cancelHashedReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin
     # Should've changed
     reqHashes[id] = NULL_HASH
     assert asc.r.getHashedReqs() == reqHashes
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getHashedReqsSlice(0, len(reqHashes) + 1)
+    assert asc.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
     assert asc.r.getHashedReqsLen() == 5
     for i, reqHash in enumerate(reqHashes):
         assert asc.r.getHashedReq(i) == reqHash

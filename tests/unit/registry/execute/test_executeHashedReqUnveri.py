@@ -86,7 +86,12 @@ def test_executeHashedReqUnveri_pay_ASC(asc, stakedMin, mockTarget, reqHashNoEth
     assert mockTarget.x() == 5
     assert mockTarget.msgSender() == asc.r
     # Registry state
-    assert asc.r.getHashedReqsUnveri() == [NULL_HASH]
+    reqHashesUnveri = [NULL_HASH]
+    assert asc.r.getHashedReqsUnveri() == reqHashesUnveri
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getHashedReqsUnveriSlice(0, len(reqHashesUnveri) + 1)
+    assert asc.r.getHashedReqsUnveriSlice(0, len(reqHashesUnveri)) == reqHashesUnveri
     assert asc.r.getHashedReqsUnveriLen() == 1
     assert asc.r.getHashedReqUnveri(id) == NULL_HASH
     assert tx.events["HashedReqUnveriRemoved"][0].values() == [id, True]

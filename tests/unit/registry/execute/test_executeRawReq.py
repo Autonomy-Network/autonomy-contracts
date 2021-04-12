@@ -34,8 +34,11 @@ def test_executeRawReq_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert mockTarget.msgSender() == asc.r
     # Registry state
     reqs = [NULL_REQ, reqEthForCall, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender]
-    assert asc.r.getRawReqsSlice(0, len(reqs)) == reqs
     assert asc.r.getRawReqs() == reqs
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getRawReqsSlice(0, len(reqs) + 1)
+    assert asc.r.getRawReqsSlice(0, len(reqs)) == reqs
     assert asc.r.getRawReqLen() == 5
     assert asc.r.getRawReq(id) == NULL_REQ
     assert tx.events["RawReqRemoved"][0].values() == [id, True]
@@ -80,6 +83,9 @@ def test_executeRawReq_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     # Registry state
     reqs = [reqNoEthForCall, NULL_REQ, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender]
     assert asc.r.getRawReqs() == reqs
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getRawReqsSlice(0, len(reqs) + 1)
     assert asc.r.getRawReqsSlice(0, len(reqs)) == reqs
     assert asc.r.getRawReqLen() == 5
     assert asc.r.getRawReq(id) == NULL_REQ
@@ -127,6 +133,9 @@ def test_executeRawReq_pay_ASC(asc, stakedMin, mockTarget, reqsRaw):
     # Registry state
     reqs = [reqNoEthForCall, reqEthForCall, NULL_REQ, reqPayASCEthForCall, reqPayASCEthForCallVerifySender]
     assert asc.r.getRawReqs() == reqs
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getRawReqsSlice(0, len(reqs) + 1)
     assert asc.r.getRawReqsSlice(0, len(reqs)) == reqs
     assert asc.r.getRawReqLen() == 5
     assert asc.r.getRawReq(id) == NULL_REQ
@@ -174,6 +183,9 @@ def test_executeRawReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsR
     # Registry state
     reqs = [reqNoEthForCall, reqEthForCall, reqPayASC, NULL_REQ, reqPayASCEthForCallVerifySender]
     assert asc.r.getRawReqs() == reqs
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getRawReqsSlice(0, len(reqs) + 1)
     assert asc.r.getRawReqsSlice(0, len(reqs)) == reqs
     assert asc.r.getRawReqLen() == 5
     assert asc.r.getRawReq(id) == NULL_REQ
@@ -223,6 +235,9 @@ def test_executeRawReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, 
     # Registry state
     reqs = [reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, NULL_REQ]
     assert asc.r.getRawReqs() == reqs
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getRawReqsSlice(0, len(reqs) + 1)
     assert asc.r.getRawReqsSlice(0, len(reqs)) == reqs
     assert asc.r.getRawReqLen() == 5
     assert asc.r.getRawReq(id) == NULL_REQ

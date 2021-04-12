@@ -14,6 +14,9 @@ def test_newRawReq_no_eth(asc, mockTarget):
     # Should've changed
     reqs = [request]
     assert asc.r.getRawReqs() == reqs
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getRawReqsSlice(0, len(reqs) + 1)
     assert asc.r.getRawReqsSlice(0, len(reqs)) == reqs
     assert asc.r.getRawReqLen() == 1
     assert asc.r.getRawReq(0) == request
@@ -24,11 +27,19 @@ def test_newRawReq_no_eth(asc, mockTarget):
     assert mockTarget.msgSender() == ADDR_0
 
     assert asc.r.getHashedReqs() == []
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getHashedReqsSlice(0, 1)
+    assert asc.r.getHashedReqsSlice(0, 0) == []
     assert asc.r.getHashedReqsLen() == 0
     with reverts():
         asc.r.getHashedReq(0)
     
     assert asc.r.getHashedReqsUnveri() == []
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getHashedReqsUnveriSlice(0, 1)
+    assert asc.r.getHashedReqsUnveriSlice(0, 0) == []
     assert asc.r.getHashedReqsUnveriLen() == 0
     with reverts():
         asc.r.getHashedReqUnveri(0)
@@ -56,6 +67,9 @@ def test_newRawReq_pay_with_ASCoin(asc, mockTarget):
     # Should've changed
     reqs = [request]
     assert asc.r.getRawReqs() == reqs
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getRawReqsSlice(0, len(reqs) + 1)
     assert asc.r.getRawReqsSlice(0, len(reqs)) == reqs
     assert asc.r.getRawReqLen() == 1
     assert asc.r.getRawReq(0) == request
@@ -66,11 +80,19 @@ def test_newRawReq_pay_with_ASCoin(asc, mockTarget):
     assert mockTarget.msgSender() == ADDR_0
 
     assert asc.r.getHashedReqs() == []
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getHashedReqsSlice(0, 1)
+    assert asc.r.getHashedReqsSlice(0, 0) == []
     assert asc.r.getHashedReqsLen() == 0
     with reverts():
         asc.r.getHashedReq(0)
     
     assert asc.r.getHashedReqsUnveri() == []
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getHashedReqsUnveriSlice(0, 1)
+    assert asc.r.getHashedReqsUnveriSlice(0, 0) == []
     assert asc.r.getHashedReqsUnveriLen() == 0
     with reverts():
         asc.r.getHashedReqUnveri(0)
@@ -103,6 +125,9 @@ def test_newRawReq_with_eth_and_pay_ASCoin(asc, mockTarget, ethForCall, payWithA
     # Should've changed
     reqs = [request]
     assert asc.r.getRawReqs() == reqs
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getRawReqsSlice(0, len(reqs) + 1)
     assert asc.r.getRawReqsSlice(0, len(reqs)) == reqs
     assert asc.r.getRawReqLen() == 1
     assert asc.r.getRawReq(0) == request
@@ -113,11 +138,19 @@ def test_newRawReq_with_eth_and_pay_ASCoin(asc, mockTarget, ethForCall, payWithA
     assert mockTarget.msgSender() == ADDR_0
 
     assert asc.r.getHashedReqs() == []
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getHashedReqsSlice(0, 1)
+    assert asc.r.getHashedReqsSlice(0, 0) == []
     assert asc.r.getHashedReqsLen() == 0
     with reverts():
         asc.r.getHashedReq(0)
     
     assert asc.r.getHashedReqsUnveri() == []
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getHashedReqsUnveriSlice(0, 1)
+    assert asc.r.getHashedReqsUnveriSlice(0, 0) == []
     assert asc.r.getHashedReqsUnveriLen() == 0
     with reverts():
         asc.r.getHashedReqUnveri(0)
@@ -158,6 +191,9 @@ def test_newRawReq_verifySender(asc, mockTarget, ethForCall, payWithASC, userAdd
         # Should've changed
         reqs = [request]
         assert asc.r.getRawReqs() == reqs
+        # Should revert when using indexes above the length
+        with reverts():
+            asc.r.getRawReqsSlice(0, len(reqs) + 1)
         assert asc.r.getRawReqsSlice(0, len(reqs)) == reqs
         assert asc.r.getRawReqLen() == 1
         assert asc.r.getRawReq(0) == request
@@ -171,11 +207,19 @@ def test_newRawReq_verifySender(asc, mockTarget, ethForCall, payWithASC, userAdd
         assert mockTarget.msgSender() == ADDR_0
         
         assert asc.r.getHashedReqs() == []
+        # Should revert when using indexes above the length
+        with reverts():
+            asc.r.getHashedReqsSlice(0, 1)
+        assert asc.r.getHashedReqsSlice(0, 0) == []
         assert asc.r.getHashedReqsLen() == 0
         with reverts():
             asc.r.getHashedReq(0)
         
         assert asc.r.getHashedReqsUnveri() == []
+        # Should revert when using indexes above the length
+        with reverts():
+            asc.r.getHashedReqsUnveriSlice(0, 1)
+        assert asc.r.getHashedReqsUnveriSlice(0, 0) == []
         assert asc.r.getHashedReqsUnveriLen() == 0
         with reverts():
             asc.r.getHashedReqUnveri(0)

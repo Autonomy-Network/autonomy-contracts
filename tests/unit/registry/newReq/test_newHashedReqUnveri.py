@@ -17,17 +17,28 @@ def test_newHashedReqUnveri(asc, mockTarget, hashedIpfsReq, sender):
     assert tx.events["HashedReqUnveriAdded"][0].values() == [0]
     assert tx.return_value == 0
     hashedIpfsReqs = [convert.to_bytes(hash, 'bytes') for hash in asc.r.getHashedReqsUnveri()]
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getHashedReqsUnveriSlice(0, len(hashedIpfsReqs) + 1)
+    assert [convert.to_bytes(hash, 'bytes') for hash in asc.r.getHashedReqsUnveriSlice(0, len(hashedIpfsReqs))] == hashedIpfsReqs
     assert hashedIpfsReqs == [hashedIpfsReq]
     assert asc.r.getHashedReqsUnveriLen() == 1
     assert asc.r.getHashedReqUnveri(0) == bytesToHex(hashedIpfsReq)
 
     assert asc.r.getRawReqs() == []
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getRawReqsSlice(0, 1)
     assert asc.r.getRawReqsSlice(0, 0) == []
     assert asc.r.getRawReqLen() == 0
     with reverts():
         asc.r.getRawReq(0)
     
     assert asc.r.getHashedReqs() == []
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getHashedReqsSlice(0, 1)
+    assert asc.r.getHashedReqsSlice(0, 0) == []
     assert asc.r.getHashedReqsLen() == 0
     with reverts():
         asc.r.getHashedReq(0)
@@ -61,17 +72,29 @@ def test_newHashedReqUnveri_real(asc, mockTarget):
 
     assert tx.events["HashedReqUnveriAdded"][0].values() == [0]
     assert tx.return_value == 0
-    assert asc.r.getHashedReqsUnveri() == [hash]
+    reqHashesUnveri = [hash]
+    assert asc.r.getHashedReqsUnveri() == reqHashesUnveri
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getHashedReqsUnveriSlice(0, len(reqHashesUnveri) + 1)
+    assert asc.r.getHashedReqsUnveriSlice(0, len(reqHashesUnveri)) == reqHashesUnveri
     assert asc.r.getHashedReqsUnveriLen() == 1
     assert asc.r.getHashedReqUnveri(0) == getHashFromCID(ipfsCID)
 
     assert asc.r.getRawReqs() == []
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getRawReqsSlice(0, 1)
     assert asc.r.getRawReqsSlice(0, 0) == []
     assert asc.r.getRawReqLen() == 0
     with reverts():
         asc.r.getRawReq(0)
     
     assert asc.r.getHashedReqs() == []
+    # Should revert when using indexes above the length
+    with reverts():
+        asc.r.getHashedReqsSlice(0, 1)
+    assert asc.r.getHashedReqsSlice(0, 0) == []
     assert asc.r.getHashedReqsLen() == 0
     with reverts():
         asc.r.getHashedReq(0)
