@@ -25,9 +25,7 @@ def test_getRawReqsSlice(asc, mockTarget, requesters, startIdxs, endIdxs):
     assert asc.r.getRawReqsSlice(0, len(requesters)) == asc.r.getRawReqs()
     for si, ei in zip(startIdxs, endIdxs):
         if ei < si or (ei > len(requesters) and si != ei):
-            print(si, ei, True)
             with reverts():
                 asc.r.getRawReqsSlice(si, ei)
         else:
-            print(si, ei, False)
             assert asc.r.getRawReqsSlice(si, ei) == reqs[si:ei]

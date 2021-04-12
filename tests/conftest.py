@@ -12,7 +12,7 @@ def isolation(fn_isolation):
 
 # Deploy the contracts for repeated tests without having to redeploy each time
 
-def deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Registry, Forwarder, Miner):
+def deploy_initial_ASC_contracts(ASCoin, PriceOracle, Oracle, StakeManager, Registry, Forwarder, Miner):
     class Context:
         pass
 
@@ -35,7 +35,8 @@ def deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Registry, Forward
     chain.mine(BLOCKS_IN_EPOCH)
 
     asc.ASC = asc.DEPLOYER.deploy(ASCoin, "Active Smart Contract Protocol", "ASC")
-    asc.o = asc.DEPLOYER.deploy(Oracle, INIT_ETH_TO_ASCOIN_RATE)
+    asc.po = asc.DEPLOYER.deploy(PriceOracle, INIT_ETH_TO_ASCOIN_RATE)
+    asc.o = asc.DEPLOYER.deploy(Oracle, asc.po)
     asc.sm = asc.DEPLOYER.deploy(StakeManager, asc.o, asc.ASC)
     asc.vf = asc.DEPLOYER.deploy(Forwarder)
     asc.r = asc.DEPLOYER.deploy(
@@ -60,12 +61,12 @@ def deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Registry, Forward
 
 
 @pytest.fixture(scope="module")
-def cleanASC(ASCoin, Oracle, StakeManager, Registry, Forwarder, Miner):
-    return deploy_initial_ASC_contracts(ASCoin, Oracle, StakeManager, Registry, Forwarder, Miner)
+def cleanASC(ASCoin, PriceOracle, Oracle, StakeManager, Registry, Forwarder, Miner):
+    return deploy_initial_ASC_contracts(ASCoin, PriceOracle, Oracle, StakeManager, Registry, Forwarder, Miner)
 
 
 @pytest.fixture(scope="module")
-def asc(cleanASC, ASCoin, Oracle, StakeManager, Registry, Forwarder, Miner):
+def asc(cleanASC):
     asc = cleanASC
     # For enabling rewards
     asc.ASC.transfer(asc.m, INIT_ASC_REW_POOL, asc.FR_DEPLOYER)

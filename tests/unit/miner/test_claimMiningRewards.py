@@ -47,7 +47,6 @@ def test_claimMiningRewards_requester(asc, mockTarget, ethForCall, requester, ex
         (referalCount[requester] * INIT_REFERAL_REWARD))
     assert asc.ASC.balanceOf(asc.m) == INIT_ASC_REW_POOL - rewardAmount
     for addr in addrs:
-        print(addr)
         assert asc.m.getAvailableMiningRewards(addr) == (0, 0, 0, 0) if addr == requester else (
             reqCount[addr],
             execCount[addr],

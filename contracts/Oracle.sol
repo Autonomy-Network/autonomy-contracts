@@ -3,15 +3,16 @@ pragma solidity ^0.8;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "../interfaces/IOracle.sol";
+import "../interfaces/IPriceOracle.sol";
 
 
 contract Oracle is IOracle, Ownable {
 
-    uint private _ASCPerETH;
+    IPriceOracle private _priceOracle;
 
 
-    constructor(uint ASCPerETH) Ownable() {
-        _ASCPerETH = ASCPerETH;
+    constructor(IPriceOracle priceOracle) Ownable() {
+        _priceOracle = priceOracle;
     }
 
 
@@ -19,11 +20,15 @@ contract Oracle is IOracle, Ownable {
         return uint(blockhash(seed));
     }
 
-    function getASCPerETH() external override view returns (uint) {
-        return _ASCPerETH;
+    function getPriceOracle() external override view returns (IPriceOracle) {
+        return _priceOracle;
     }
 
-    function updateASCPerETH(uint ASCPerETH) external onlyOwner override {
-        _ASCPerETH = ASCPerETH;
+    function getASCPerETH() external override view returns (uint) {
+        return _priceOracle.getASCPerETH();
+    }
+
+    function setPriceOracle(IPriceOracle newPriceOracle) external override onlyOwner {
+        _priceOracle = newPriceOracle;
     }
 }
