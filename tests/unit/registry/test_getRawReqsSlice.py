@@ -1,8 +1,6 @@
 from consts import *
 from brownie import reverts
 from brownie.test import given, strategy
-from hypothesis import settings
-from collections import Counter
 
 
 MAX_ARR_LEN = 100

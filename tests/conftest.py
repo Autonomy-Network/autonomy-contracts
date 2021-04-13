@@ -139,7 +139,8 @@ def stakedMultiSmall(asc, stakedMin):
     assert asc.sm.getTotalStaked() == totalNumStakes * STAN_STAKE
     assert asc.sm.getStakes() == stakes
     assert asc.sm.getCurEpoch() == getEpoch(web3.eth.blockNumber)
-    newExec, epoch = getExecutor(asc, web3.eth.blockNumber, stakes)
+    newExec, epoch = getExecutor(asc, web3.eth.blockNumber + 1, stakes)
+    assert asc.sm.isUpdatedExec(newExec).return_value
     assert asc.sm.getExecutor() == (newExec, epoch)
     for addr in a:
         assert asc.sm.isCurExec(addr) == (addr == newExec)

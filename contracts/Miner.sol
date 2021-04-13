@@ -61,7 +61,7 @@ contract Miner is Shared {
         _minedReqCounts[msg.sender] += reqRewardCount;
         _minedExecCounts[msg.sender] += execRewardCount;
         _minedReferalCounts[msg.sender] += referalRewardCount;
-        _ASCoin.transfer(msg.sender, rewards);
+        require(_ASCoin.transfer(msg.sender, rewards));
     }
 
     function claimReqMiningReward(uint claimCount) external nzUint(claimCount) {
@@ -88,7 +88,7 @@ contract Miner is Shared {
         );
 
         counter[msg.sender] += claimCount;
-        _ASCoin.transfer(msg.sender, claimCount * rate);
+        require(_ASCoin.transfer(msg.sender, claimCount * rate));
     }
 
 
@@ -119,7 +119,7 @@ contract Miner is Shared {
         _ASCPerReq = newASCPerReq;
         _ASCPerExec = newASCPerExec;
         _ASCPerReferal = newASCPerReferal;
-        _ASCoin.transferFrom(msg.sender, address(this), amountToFund);
+        require(_ASCoin.transferFrom(msg.sender, address(this), amountToFund));
         emit RatesUpdated(newASCPerReq, newASCPerExec, newASCPerReferal);
     }
 

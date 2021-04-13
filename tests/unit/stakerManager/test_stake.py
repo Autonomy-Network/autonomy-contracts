@@ -17,7 +17,7 @@ def stakeTest(asc, num, staker, tx):
     # Brownie/Ganache still retains the increase in block height from other tests,
     # even though they've been reverted, which adversely affects this test by changing
     # the epoch, so we have to call updateExecutor
-    asc.sm.updateExecutor()
+    assert asc.sm.isUpdatedExec(staker).return_value
     stakes = [staker] * num
     assert asc.sm.getStakes() == stakes
     assert asc.sm.getStakesLength() == num
@@ -27,7 +27,7 @@ def stakeTest(asc, num, staker, tx):
     assert asc.sm.getStakesSlice(0, num) == stakes
     assert asc.sm.getStake(staker) == amount
     assert asc.sm.getTotalStaked() == amount
-    assert asc.sm.isCurExec(staker) == True
+    assert asc.sm.isCurExec(staker)
     assert asc.sm.getExecutor() == (staker, getEpoch(web3.eth.blockNumber))
     assert tx.events["Staked"][0].values() == [staker, amount]
 
@@ -45,7 +45,7 @@ def test_stake_min(asc, stakedMin):
     stakeTest(asc, *stakedMin)
 
 
-# The 1st stake/unstake of an epoch shouldn't change the executor, otherwise
+# The 1st stake/unstake of an epoch should change the executor before the stake change, otherwise
 # a staker could precalculate the effect of how much they stake in order to
 # game the staker selection algo
 def test_stake_1st_stake_of_epoch_no_exec_change(asc, stakedMin):
@@ -75,7 +75,8 @@ def test_stake_1st_stake_of_epoch_no_exec_change(asc, stakedMin):
     assert asc.sm.getTotalStaked() == (numStakes + newNumStakes) * STAN_STAKE
     # Old staker but new epoch
     assert asc.sm.getExecutor() == (staker, getEpoch(web3.eth.blockNumber))
-    assert asc.sm.isCurExec(staker) == True
+    assert asc.sm.isCurExec(staker)
+    assert asc.sm.isUpdatedExec(staker).return_value
     assert tx.events["Staked"][0].values() == [newStaker, newNumStakes * STAN_STAKE]
 
 

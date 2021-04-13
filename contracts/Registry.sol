@@ -392,7 +392,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
             uint ASCoinNeeded = ethNeeded * _oracle.getASCPerETH() / _E_18;
 
             // Send the executor their bounty
-            _ASCoin.transferFrom(r.requester, msg.sender, ASCoinNeeded);
+            require(_ASCoin.transferFrom(r.requester, msg.sender, ASCoinNeeded));
         } else {
             gasUsed += GAS_OVERHEAD_ETH;
             if (gasRefunded > gasUsed / 2) {
@@ -512,11 +512,11 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         return _referalCounts[addr];
     }
 
-    function divAOverB(uint a, uint b) external view override returns (uint) {
+    function divAOverB(uint a, uint b) external pure override returns (uint) {
         return a / b;
     }
 
-    function _getBytes32Slice(bytes32[] memory arr, uint startIdx, uint endIdx) private view returns (bytes32[] memory) {
+    function _getBytes32Slice(bytes32[] memory arr, uint startIdx, uint endIdx) private pure returns (bytes32[] memory) {
         bytes32[] memory slice = new bytes32[](endIdx - startIdx);
         uint sliceIdx = 0;
         for (uint arrIdx = startIdx; arrIdx < endIdx; arrIdx++) {
@@ -560,7 +560,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     }
 
     modifier validExec() {
-        require(_stakeMan.isCurExec(msg.sender), "Registry:not executor or expired");
+        require(_stakeMan.isUpdatedExec(msg.sender), "Reg: not executor or expired");
         _;
     }
 

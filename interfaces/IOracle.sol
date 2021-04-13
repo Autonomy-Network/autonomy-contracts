@@ -6,7 +6,7 @@ import "../interfaces/IPriceOracle.sol";
 
 interface IOracle {
     // Needs to output the same number for the whole epoch
-    function getRandNum(uint salt) external returns (uint);
+    function getRandNum(uint salt) external view returns (uint);
 
     function getPriceOracle() external view returns (IPriceOracle);
 

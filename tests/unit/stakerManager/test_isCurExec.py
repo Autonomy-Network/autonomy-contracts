@@ -2,7 +2,6 @@ from consts import *
 from utils import *
 from brownie import web3, chain
 from brownie import reverts
-from brownie.test import given, strategy
 
 
 # When there are no current stakers, should return true for any address
@@ -15,12 +14,13 @@ def test_isCurExec_no_stakes(a, asc):
     assert asc.sm.getExecutor() == NULL_EXEC
 
     for addr in a:
-        assert asc.sm.isCurExec(addr) == True
+        assert asc.sm.isUpdatedExec(addr).return_value
+        assert asc.sm.isCurExec(addr)
     
     chain.mine(BLOCKS_IN_EPOCH)
 
     for addr in a:
-        assert asc.sm.isCurExec(addr) == True
+        assert asc.sm.isCurExec(addr)
 
 
 def test_isCurExec(a, asc, stakedMin):
@@ -32,13 +32,14 @@ def test_isCurExec(a, asc, stakedMin):
 
     # Should only be true when the input is the executor
     for addr in a:
+        assert asc.sm.isUpdatedExec(addr).return_value == (addr == exec)
         assert asc.sm.isCurExec(addr) == (addr == exec)
     
     chain.mine(BLOCKS_IN_EPOCH)
 
     # Should always be false in another epoch when the executor hasn't been updated
     for addr in a:
-        assert asc.sm.isCurExec(addr) == False
+        assert not asc.sm.isCurExec(addr)
 
 
 # Should return true for every address after enough unstakes leave no stakes left
@@ -56,9 +57,10 @@ def test_isCurExec_after_all_unstaked(a, asc, stakedMin):
     assert asc.sm.getExecutor() == (exec, getEpoch(web3.eth.blockNumber))
 
     for addr in a:
-        assert asc.sm.isCurExec(addr) == True
+        assert asc.sm.isUpdatedExec(addr).return_value
+        assert asc.sm.isCurExec(addr)
     
     chain.mine(BLOCKS_IN_EPOCH)
 
     for addr in a:
-        assert asc.sm.isCurExec(addr) == True
+        assert asc.sm.isCurExec(addr)

@@ -13,15 +13,23 @@ def getRandNum(seed):
     return web3.toInt(web3.eth.getBlock(seed).hash)
 
 
-def getExecutor(asc, blockNum, stakers):
+def getExecutor(asc, blockNum, stakes):
     epoch = getEpoch(blockNum)
     # -1 because blockhash(seed) in Oracle will return 0x00 if the
     # seed == this block's height
     randNum = getRandNum(epoch - 1)
-    # i = randNum % len(stakers)
-    i = asc.sm.getRemainder(randNum, len(stakers))
-    # print(randNum, epoch, i, stakers[i], stakers)
-    return stakers[i], epoch
+    # i = randNum % len(stakes)
+    i = asc.sm.getRemainder(randNum, len(stakes))
+    # print(randNum, epoch, i, stakes[i], stakes)
+    return stakes[i], epoch
+
+
+def getUpdateExecResult(asc, curHeight, stakes):
+    epoch = getEpoch(web3.eth.blockNumber)
+    randNum = getRandNum(epoch - 1)
+    idx = asc.sm.getRemainder(randNum, len(stakes))
+
+    return (epoch, randNum, idx, stakes[idx])
 
 
 def getFirstIndexes(stakes, val, n):

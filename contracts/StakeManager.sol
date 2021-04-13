@@ -88,11 +88,27 @@ contract StakeManager is IStakeManager, Shared {
     function isCurExec(address addr) external view override returns (bool) {
         // So that the storage is only loaded once
         Executor memory ex = _executor;
+        if (ex.addr == addr && ex.forEpoch == getCurEpoch()) { return true; }
         // If there's no stakes, allow anyone to be the executor so that a random
         // person can bootstrap the network and nobody needs to be sent any coins
-        if (ex.addr == addr && ex.forEpoch == getCurEpoch()) { return true; }
         if (_stakes.length == 0) { return true; }
+        
         return false;
+    }
+
+    function getUpdatedExecRes() public view returns (uint epoch, uint randNum, uint idxOfExecutor, address exec) {
+        epoch = getCurEpoch();
+        // If the executor is out of date and the system already has stake,
+        // choose a new executor. This will do nothing if the system is starting
+        // and allow someone to stake without needing there to already be existing stakes
+        if (_executor.forEpoch != epoch && _stakes.length > 0) {
+            // -1 because blockhash(seed) in Oracle will return 0x00 if the
+            // seed == this block's height
+            randNum = _oracle.getRandNum(epoch - 1);
+            // idxOfExecutor = randNum % _stakes.length;
+            idxOfExecutor = getRemainder(randNum, _stakes.length);
+            exec = _stakes[idxOfExecutor];
+        }
     }
 
     function getRemainder(uint a, uint b) public pure returns (uint) {
@@ -108,8 +124,21 @@ contract StakeManager is IStakeManager, Shared {
 
     // Calls updateExec()
     // function updateExecutor() public updateExec noFish returns (uint, uint, address) {}
-    function updateExecutor() external noFish returns (uint, uint, uint, address) {
+    function updateExecutor() external override noFish returns (uint, uint, uint, address) {
         return _updateExecutor();
+    }
+
+    function isUpdatedExec(address addr) external override noFish returns (bool) {
+        Executor memory ex = _executor;
+        if (ex.forEpoch == getCurEpoch() && ex.addr == addr) {
+            return true;
+        } else {
+            (, , , address exec) = _updateExecutor();
+            if (exec == addr) { return true; }
+        }
+        if (_stakes.length == 0) { return true; }
+
+        return false;
     }
 
     // The 1st stake/unstake of an epoch shouldn't change the executor, otherwise
@@ -147,22 +176,13 @@ contract StakeManager is IStakeManager, Shared {
         
         _stakerToStakedAmount[msg.sender] -= amount;
         _totalStaked -= amount;
-        _ASCoin.transfer(msg.sender, amount);
+        require(_ASCoin.transfer(msg.sender, amount));
         emit Unstaked(msg.sender, amount);
     }
 
     function _updateExecutor() private returns (uint epoch, uint randNum, uint idxOfExecutor, address exec) {
-        epoch = getCurEpoch();
-        // If the executor is out of date and the system already has stake,
-        // choose a new executor. This will do nothing if the system is starting
-        // and allow someone to stake without needing there to already be existing stakes
-        if (_executor.forEpoch != epoch && _totalStaked > 0) {
-            // -1 because blockhash(seed) in Oracle will return 0x00 if the
-            // seed == this block's height
-            randNum = _oracle.getRandNum(epoch - 1);
-            // idxOfExecutor = randNum % _stakes.length;
-            idxOfExecutor = getRemainder(randNum, _stakes.length);
-            exec = _stakes[idxOfExecutor];
+        (epoch, randNum, idxOfExecutor, exec) = getUpdatedExecRes();
+        if (exec != _ADDR_0) {
             _executor = Executor(exec, epoch);
         }
     }
