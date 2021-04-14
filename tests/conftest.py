@@ -239,8 +239,6 @@ def reqsRaw(asc, mockTarget):
     asc.r.newRawReq(mockTarget, callData, True, True, ethForCall, asc.DENICE, {'from': asc.BOB, 'value': ethForCall})
     reqPayASCEthForCallVerifySender = (asc.BOB.address, mockTarget.address, callData, True, True, ethForCall, ethForCall, asc.DENICE.address)
 
-    assert asc.r.balance() == (msgValue * 2) + (ethForCall * 2)
-
     return reqNoEthForCall, reqEthForCall, reqPayASCNoEthForCall, reqPayASCEthForCall, reqPayASCEthForCallVerifySender, msgValue, ethForCall
 
 

@@ -84,6 +84,7 @@ REV_MSG_ETHFORCALL_HIGH = "Reg: ethForCall too high"
 REV_MSG_NOT_REQUESTER = "Reg: not the requester"
 REV_MSG_CALLDATA_NOT_VER = "Reg: calldata not verified"
 REV_MSG_FISHY = "Reg: something fishy here"
+REV_MSG_REENTRANCY = "ReentrancyGuard: reentrant call"
 
 
 # ASCoin

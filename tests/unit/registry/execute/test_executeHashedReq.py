@@ -4,6 +4,26 @@ from brownie.test import given, strategy
 from utils import *
 
 
+# Making a request that calls executeHashedReq should be banned to reduce attack surface
+# and generally prevent unknown funny business. Any 'legitimate' use of ASC should
+# just make a new request for recursive ASCs, I see no reason to need to call executeHashedReq
+# from a request etc. Can't make a call directly to the registry from the registry
+# because of `targetNotThis`, so need to call into it from a new contract
+def test_executeHashedReq_rev_nonReentrant(asc, mockTarget, mockReentrancyAttack):
+    # Create request to call in reentrance
+    callData = mockTarget.setX.encode_input(5)
+    asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB})
+    # Create request to be executed directly
+    callData = mockReentrancyAttack.callExecute.encode_input(0)
+    req = (asc.BOB.address, mockReentrancyAttack.address, callData, False, True, 0, 0, asc.DENICE.address)
+    addToIpfs(asc, req)
+
+    asc.r.newHashedReq(mockReentrancyAttack, callData, False, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
+
+    with reverts(REV_MSG_REENTRANCY):
+        asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req))
+
+
 # Randomly generate addresses for the sender and calldata input independently
 # to test validCalldata upon calling executeHashedReq
 @given(

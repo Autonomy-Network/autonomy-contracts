@@ -3,6 +3,23 @@ from brownie import chain, reverts, web3
 from brownie.test import given, strategy
 
 
+# Making a request that calls executeRawReq should be banned to reduce attack surface
+# and generally prevent unknown funny business. Any 'legitimate' use of ASC should
+# just make a new request for recursive ASCs, I see no reason to need to call executeRawReq
+# from a request etc. Can't make a call directly to the registry from the registry
+# because of `targetNotThis`, so need to call into it from a new contract
+def test_executeRawReq_rev_nonReentrant(asc, mockTarget, mockReentrancyAttack):
+    # Create request to call in reentrance
+    callData = mockTarget.setX.encode_input(5)
+    asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB})
+    # Create request to be executed directly
+    callData = mockReentrancyAttack.callExecute.encode_input(0)
+    asc.r.newRawReq(mockReentrancyAttack, callData, False, True, 0, asc.DENICE, {'from': asc.BOB})
+
+    with reverts(REV_MSG_REENTRANCY):
+        asc.r.executeRawReq(1)
+
+
 def test_executeRawReq_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     _, staker, __ = stakedMin
     reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender, msgValue, ethForCall = reqsRaw
@@ -16,7 +33,6 @@ def test_executeRawReq_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.ASC.balanceOf(asc.r) == 0
 
     tx = asc.r.executeRawReq(id, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
-    print(tx.gas_used)
 
     # Should've changed
     # Eth bals
@@ -65,7 +81,6 @@ def test_executeRawReq_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.ASC.balanceOf(asc.r) == 0
 
     tx = asc.r.executeRawReq(id, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
-    print(tx.gas_used)
 
     # Should've changed
     # Eth bals
@@ -114,7 +129,6 @@ def test_executeRawReq_pay_ASC(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.ASC.balanceOf(asc.r) == 0
 
     tx = asc.r.executeRawReq(id, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
-    print(tx.gas_used)
 
     # Should've changed
     # Eth bals
@@ -165,7 +179,6 @@ def test_executeRawReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsR
     assert asc.ASC.balanceOf(asc.r) == 0
 
     tx = asc.r.executeRawReq(id, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
-    print(tx.gas_used)
 
     # Should've changed
     # Eth bals
@@ -218,7 +231,6 @@ def test_executeRawReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, 
     assert asc.ASC.balanceOf(asc.r) == 0
 
     tx = asc.r.executeRawReq(id, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
-    print(tx.gas_used)
 
     # Should've changed
     # Eth bals
@@ -285,21 +297,3 @@ def test_executeRawReq_rev_noFish_payWithASC(asc, vulnerableRegistry, vulnerable
 
     with reverts(REV_MSG_FISHY):
         vulnerableRegistry.executeRawReq(id, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
-
-
-
-# For some reason this test produces an error in Brownie, presumed to be
-# a bug in Brownie
-# # Making a request that calls executeRawReq should be banned to reduce attack surface
-# # and generally prevent unknown funny business. Any 'legitimate' use of ASC should
-# # just make a new request for recursive ASCs, I see no reason to need to call executeRawReq
-# # from a request etc. Can't make a call directly to the registry from the registry
-# # because of `targetNotThis`, so need to call into it from a new contract
-# def test_executeRawReq_rev_nonReentrant(asc, stakedMin, reqsRaw, mockReentrancyAttack):
-#     _, staker, __ = stakedMin
-#     callData = mockReentrancyAttack.callExecute.encode_input(2)
-#     asc.r.newRawReq(mockReentrancyAttack, callData, False, True, 0, asc.DENICE, {'from': asc.BOB})
-
-#     with reverts(REV_MSG_NOT_EXEC):
-#         asc.r.executeRawReq(4, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
-#     # reqPayASC = (asc.BOB.address, asc.r.address, callData, True, 0, 0, asc.DENICE.address)

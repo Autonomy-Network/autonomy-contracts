@@ -2,6 +2,7 @@ from consts import *
 from utils import *
 from brownie import reverts
 from brownie.test import given, strategy
+from hypothesis import settings
 
 
 MAX_ARR_LEN = 100
@@ -14,6 +15,7 @@ NUM_SLICE_TESTS = 100
     startIdxs=strategy(f'uint[{NUM_SLICE_TESTS}]', max_value=MAX_ARR_LEN - 1),
     endIdxs=strategy(f'uint[{NUM_SLICE_TESTS}]', max_value=MAX_ARR_LEN)
 )
+@settings(max_examples=10)
 def test_getHashedReqsUnveriSlice(asc, mockTarget, requesters, hashedReqs, startIdxs, endIdxs):
     hashedReqs = [bytesToHex(h) for h in hashedReqs]
     for h, r in zip(hashedReqs, requesters):
