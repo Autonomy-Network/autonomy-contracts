@@ -64,7 +64,7 @@ REV_MSG_NOT_STAKER = "SM: idx is not you"
 # EXEC_GAS_OVERHEAD_REF = 60000
 GAS_OVERHEAD_ETH = 10000
 GAS_OVERHEAD_ASCOIN = 20000
-INIT_BASE_BOUNTY = 10**15
+INIT_BASE_BOUNTY = 2 * 10**15
 NULL_REQ = (ADDR_0, ADDR_0, NULL_BYTES, False, False, 0, 0, ADDR_0)
 # NULL_REQ_BYTES = b'\x80\x03O%\xfc\xea\xbf-\x0e\xdfP5\xb2"\xe6\x93$\x9f\x1b\xd3\x0bq\xe2\xc8\xfb\x07\x8a\xad9\x83\xd4j'
 # NULL_REQ_HEX = '0x' + NULL_REQ_BYTES.hex()
@@ -83,6 +83,7 @@ REV_MSG_ETHFORCALL_NOT_MSGVALUE = "Reg: ethForCall not msg.value"
 REV_MSG_ETHFORCALL_HIGH = "Reg: ethForCall too high"
 REV_MSG_NOT_REQUESTER = "Reg: not the requester"
 REV_MSG_CALLDATA_NOT_VER = "Reg: calldata not verified"
+REV_MSG_FISHY = "Reg: something fishy here"
 
 
 # ASCoin

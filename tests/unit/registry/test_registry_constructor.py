@@ -8,6 +8,7 @@ def test_constructor(asc):
     # assert asc.r.EXEC_GAS_OVERHEAD_REF() == EXEC_GAS_OVERHEAD_REF
     assert asc.r.GAS_OVERHEAD_ETH() == GAS_OVERHEAD_ETH
     assert asc.r.GAS_OVERHEAD_ASCOIN() == GAS_OVERHEAD_ASCOIN
+    assert asc.r.BASE_BOUNTY_AS_ETH() == INIT_BASE_BOUNTY
     assert asc.r.getASCoin() == asc.ASC
     assert asc.r.getStakeManager() == asc.sm
 
@@ -37,4 +38,3 @@ def test_constructor(asc):
     with reverts():
         asc.r.getHashedReqUnveri(0)
     
-    assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY

@@ -4,8 +4,8 @@ from brownie.test import given, strategy
 from utils import *
 
 
-def test_cancelHashedReqUnveri_no_ethForCall(asc, stakedMin, mockTarget, reqHashNoEth):
-    req, reqHashBytes = reqHashNoEth
+def test_cancelHashedReqUnveri_no_ethForCall(asc, stakedMin, mockTarget, hashedReqUnveri):
+    req, reqHashBytes = hashedReqUnveri
     id = 0
     tx = asc.r.cancelHashedReqUnveri(id, req, *getIpfsMetaData(asc, req), asc.FR_BOB)
 
@@ -35,14 +35,14 @@ def test_cancelHashedReqUnveri_no_ethForCall(asc, stakedMin, mockTarget, reqHash
     assert asc.ASC.balanceOf(asc.r) == 0
     assert asc.ASC.balanceOf(mockTarget) == 0
 
-    assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
+
     assert asc.r.getReqCountOf(asc.BOB) == 0
     assert asc.r.getExecCountOf(asc.ALICE) == 0
     assert asc.r.getReferalCountOf(asc.DENICE) == 0
 
 
-def test_cancelHashedReqUnveri_rev_req_not_the_same(asc, stakedMin, mockTarget, reqHashNoEth):
-    req, reqHashBytes = reqHashNoEth
+def test_cancelHashedReqUnveri_rev_req_not_the_same(asc, stakedMin, mockTarget, hashedReqUnveri):
+    req, reqHashBytes = hashedReqUnveri
     # Alter the request
     invalidReq = list(req)
     invalidReq[6] = 1
@@ -52,9 +52,9 @@ def test_cancelHashedReqUnveri_rev_req_not_the_same(asc, stakedMin, mockTarget, 
         asc.r.cancelHashedReqUnveri(id, invalidReq, *getIpfsMetaData(asc, req), asc.FR_BOB)
 
 
-def test_cancelHashedReqUnveri_rev_already_executed(asc, stakedMin, mockTarget, reqHashNoEth):
+def test_cancelHashedReqUnveri_rev_already_executed(asc, stakedMin, mockTarget, hashedReqUnveri):
     _, staker, __ = stakedMin
-    req, reqHashBytes = reqHashNoEth
+    req, reqHashBytes = hashedReqUnveri
     id = 0
     asc.r.executeHashedReqUnveri(id, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
 
@@ -62,8 +62,8 @@ def test_cancelHashedReqUnveri_rev_already_executed(asc, stakedMin, mockTarget, 
         asc.r.cancelHashedReqUnveri(id, req, *getIpfsMetaData(asc, req), asc.FR_BOB)
 
 
-def test_cancelHashedReqUnveri_rev_not_the_requester(asc, stakedMin, mockTarget, reqHashNoEth):
-    req, reqHashBytes = reqHashNoEth
+def test_cancelHashedReqUnveri_rev_not_the_requester(asc, stakedMin, mockTarget, hashedReqUnveri):
+    req, reqHashBytes = hashedReqUnveri
     id = 0
 
     with reverts(REV_MSG_NOT_REQUESTER):

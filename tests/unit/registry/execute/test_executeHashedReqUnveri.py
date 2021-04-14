@@ -5,7 +5,7 @@ from utils import *
 
 
 # Gotta put these these tests above test_executeHashedReqUnveri_pay_ASC since they don't
-# need to use reqHashNoEth first before running, and having tests that run any fixture
+# need to use hashedReqUnveri first before running, and having tests that run any fixture
 # before one that doesn't run it in the same file causes it to retain state from the
 # fixture that it shouldn't
 
@@ -54,9 +54,9 @@ def test_executeHashedReqUnveri_rev_verifySender(asc, mockTarget, stakedMin):
         asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
 
 
-def test_executeHashedReqUnveri_pay_ASC(asc, stakedMin, mockTarget, reqHashNoEth):
+def test_executeHashedReqUnveri_pay_ASC(asc, stakedMin, mockTarget, hashedReqUnveri):
     _, staker, __ = stakedMin
-    req, reqHashBytes = reqHashNoEth
+    req, reqHashBytes = hashedReqUnveri
     id = 0
     assert mockTarget.x() == 0
     assert asc.ALICE.balance() == INIT_ETH_BAL
@@ -101,10 +101,10 @@ def test_executeHashedReqUnveri_pay_ASC(asc, stakedMin, mockTarget, reqHashNoEth
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
-    assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
 
 
-def test_executeHashedReqUnveri_rev_target_is_registry(asc, mockTarget, stakedMin, reqHashNoEth):
+
+def test_executeHashedReqUnveri_rev_target_is_registry(asc, mockTarget, stakedMin, hashedReqUnveri):
     _, staker, __ = stakedMin
     callData = mockTarget.setX.encode_input(5)
     req = (asc.BOB.address, asc.r.address, callData, False, True, 0, 0, asc.DENICE.address)
@@ -113,7 +113,7 @@ def test_executeHashedReqUnveri_rev_target_is_registry(asc, mockTarget, stakedMi
         asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
 
 
-def test_executeHashedReqUnveri_rev_target_is_ASCoin(asc, mockTarget, stakedMin, reqHashNoEth):
+def test_executeHashedReqUnveri_rev_target_is_ASCoin(asc, mockTarget, stakedMin, hashedReqUnveri):
     _, staker, __ = stakedMin
     callData = mockTarget.setX.encode_input(5)
     req = (asc.BOB.address, asc.ASC.address, callData, False, True, 0, 0, asc.DENICE.address)
@@ -122,26 +122,35 @@ def test_executeHashedReqUnveri_rev_target_is_ASCoin(asc, mockTarget, stakedMin,
         asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
 
 
-def test_executeHashedReqUnveri_rev_not_executor(asc, stakedMin, reqHashNoEth):
-    req, reqHashBytes = reqHashNoEth
+def test_executeHashedReqUnveri_rev_not_executor(asc, stakedMin, hashedReqUnveri):
+    req, reqHashBytes = hashedReqUnveri
     with reverts(REV_MSG_NOT_EXEC):
         asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': asc.DENICE, 'gasPrice': TEST_GAS_PRICE})
 
 
-def test_executeHashedReqUnveri_rev_req_not_the_same(asc, stakedMin, reqHashNoEth):
+def test_executeHashedReqUnveri_rev_req_not_the_same(asc, stakedMin, hashedReqUnveri):
     _, staker, __ = stakedMin
-    req, reqHashBytes = reqHashNoEth
+    req, reqHashBytes = hashedReqUnveri
     invalidReq = list(req)
     invalidReq[6] = 1
     with reverts(REV_MSG_NOT_SAME):
         asc.r.executeHashedReqUnveri(0, invalidReq, *getIpfsMetaData(asc, invalidReq), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
 
 
-def test_executeHashedReqUnveri_rev_already_executed(asc, stakedMin, reqHashNoEth):
+def test_executeHashedReqUnveri_rev_already_executed(asc, stakedMin, hashedReqUnveri):
     _, staker, __ = stakedMin
-    req, reqHashBytes = reqHashNoEth
+    req, reqHashBytes = hashedReqUnveri
 
     asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
 
     with reverts(REV_MSG_NOT_SAME):
         asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+
+
+def test_executeHashedReqUnveri_rev_noFish(asc, vulnerableRegistry, vulnerableHashedReqUnveri, stakedMin):
+    _, staker, __ = stakedMin
+    req, reqHashBytes = vulnerableHashedReqUnveri
+    id = 0
+
+    with reverts(REV_MSG_FISHY):
+        vulnerableRegistry.executeHashedReqUnveri(id, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': TEST_GAS_PRICE})

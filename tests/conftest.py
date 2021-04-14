@@ -44,8 +44,7 @@ def deploy_initial_ASC_contracts(ASCoin, PriceOracle, Oracle, StakeManager, Regi
         asc.ASC,
         asc.sm,
         asc.o,
-        asc.vf,
-        INIT_BASE_BOUNTY
+        asc.vf
     )
     asc.vf.setReg(asc.r, asc.FR_DEPLOYER)
     asc.m = asc.DEPLOYER.deploy(
@@ -183,17 +182,32 @@ def vulnerableStaked(asc, vulnerableStaker):
     return vulnerableStaker, staker
 
 
+# Need to set up a vulnerable Registry to test `noFish` since there's
+# obviously intentionally no way of getting ETH out of Registry
+# without ethForCall or paying the bounty in ETH
+@pytest.fixture(scope="module")
+def vulnerableRegistry(asc, VulnerableRegistry):
+    return asc.DEPLOYER.deploy(
+        VulnerableRegistry,
+        asc.ASC,
+        asc.sm,
+        asc.o,
+        asc.vf
+    )
+
+
 # Need to have some 'external' contract whose state needs changing in order
 # to use ASC
 @pytest.fixture(scope="module")
-def mockTarget(asc, MockTarget):
-    return asc.DEPLOYER.deploy(MockTarget, asc.vf)
+def mockTarget(asc, MockTarget, vulnerableRegistry):
+    return asc.DEPLOYER.deploy(MockTarget, asc.vf, vulnerableRegistry)
 
 
 # Need to test nonReentrant modifier
 @pytest.fixture(scope="module")
 def mockReentrancyAttack(asc, MockReentrancyAttack):
     return asc.DEPLOYER.deploy(MockReentrancyAttack, asc.r)
+
 
 
 # Need to have some raw requests to test executeRawReq. Need a request that has ethForCall
@@ -233,7 +247,7 @@ def reqsRaw(asc, mockTarget):
 # Need to have some hashed requests to test executeHashedReq. Need a request that has ethForCall
 # set to 0 and 1 that doesn't, and 1 that pays with ASC with ethForCall and 1 without
 @pytest.fixture(scope="module")
-def reqsHashEth(asc, mockTarget):
+def hashedReqs(asc, mockTarget):
     ethForCall = E_18
     msgValue = 1.5 * ethForCall
 
@@ -268,13 +282,70 @@ def reqsHashEth(asc, mockTarget):
 # With hashReqNoEth, we can't send eth in the call and have to pay via ASC, so
 # only one combination this time
 @pytest.fixture(scope="module")
-def reqHashNoEth(asc, mockTarget):
+def hashedReqUnveri(asc, mockTarget):
     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
     callData = mockTarget.setX.encode_input(5)
     req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
     reqHashBytes = addReqGetHashBytes(asc, req)
 
     tx = asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
+
+    return req, reqHashBytes
+
+
+# Need to have already staked and have new requests already made so that execute
+# can be tested with and without payWithASC for each type
+@pytest.fixture(scope="module")
+def vulnerableReqsRaw(asc, mockTarget, vulnerableRegistry, stakedMin):
+    ethForCall = E_18
+    msgValue = 1.5 * ethForCall
+
+    callData = mockTarget.callVulnerableTransfer.encode_input(asc.DENICE, 1)
+    vulnerableRegistry.newRawReq(mockTarget, callData, False, False, ethForCall, asc.DENICE, {'from': asc.BOB, 'value': msgValue})
+    reqEthForCall = (asc.BOB.address, mockTarget.address, callData, False, False, msgValue, ethForCall, asc.DENICE.address)
+
+    asc.ASC.approve(vulnerableRegistry, MAX_TEST_STAKE, asc.FR_BOB)
+
+    vulnerableRegistry.newRawReq(mockTarget, callData, False, True, ethForCall, asc.DENICE, {'from': asc.BOB, 'value': ethForCall})
+    reqPayASCEthForCall = (asc.BOB.address, mockTarget.address, callData, False, True, ethForCall, ethForCall, asc.DENICE.address)
+
+    return reqEthForCall, reqPayASCEthForCall, msgValue, ethForCall
+
+
+# Need to have already staked and have new requests already made so that execute
+# can be tested with and without payWithASC for each type
+@pytest.fixture(scope="module")
+def vulnerableHashedReqs(asc, mockTarget, vulnerableRegistry, stakedMin):
+    ethForCall = E_18
+    msgValue = 1.5 * ethForCall
+
+    callData = mockTarget.callVulnerableTransfer.encode_input(asc.DENICE, 1)
+    reqEthForCall = (asc.BOB.address, mockTarget.address, callData, False, False, msgValue, ethForCall, asc.DENICE.address)
+    tx = vulnerableRegistry.newHashedReq(mockTarget, callData, False, False, ethForCall, asc.DENICE, *getIpfsMetaData(asc, reqEthForCall), {'from': asc.BOB, 'value': msgValue})
+
+    asc.ASC.approve(vulnerableRegistry, MAX_TEST_STAKE, asc.FR_BOB)
+
+    reqPayASCEthForCall = (asc.BOB.address, mockTarget.address, callData, False, True, ethForCall, ethForCall, asc.DENICE.address)
+    tx = vulnerableRegistry.newHashedReq(mockTarget, callData, False, True, ethForCall, asc.DENICE, *getIpfsMetaData(asc, reqPayASCEthForCall), {'from': asc.BOB, 'value': ethForCall})
+
+    reqs = [reqEthForCall, reqPayASCEthForCall]
+    reqHashes = [bytesToHex(addReqGetHashBytes(asc, r)) for r in reqs]
+
+    return reqs, reqHashes, msgValue, ethForCall
+
+
+# Need to have already staked and have new requests already made so that execute
+# can be tested with and without payWithASC for each type
+@pytest.fixture(scope="module")
+def vulnerableHashedReqUnveri(asc, mockTarget, vulnerableRegistry, stakedMin):
+    # Send it ETH so that there is ETH to steal
+    asc.DEPLOYER.transfer(vulnerableRegistry, 1)
+    asc.ASC.approve(vulnerableRegistry, MAX_TEST_STAKE, asc.FR_BOB)
+    callData = mockTarget.callVulnerableTransfer.encode_input(asc.DENICE, 1)
+    req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+    reqHashBytes = addReqGetHashBytes(asc, req)
+
+    tx = vulnerableRegistry.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
     return req, reqHashBytes
 

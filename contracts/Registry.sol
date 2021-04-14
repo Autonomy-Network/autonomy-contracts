@@ -36,7 +36,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     // The minimum bounty priced in Eth. This amount is converted
     // directly to the equivalent value in ASCoin if the requester wants
     // to pay with ASCoin, and is doubled if they want to pay in Eth
-    uint private _baseBountyAsEth;
+    uint public constant BASE_BOUNTY_AS_ETH = 2 * 10**15;
     // This counts the number of times each requester has had a request executed
     mapping(address => uint) private _reqCounts;
     // This counts the number of times each staker has executed a request
@@ -70,14 +70,12 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         IERC20 ASCoin,
         IStakeManager staker,
         IOracle oracle,
-        IForwarder veriForwarder,
-        uint baseBountyAsEth
+        IForwarder veriForwarder
     ) ReentrancyGuard() {
         _ASCoin = ASCoin;
         _stakeMan = staker;
         _oracle = oracle;
         _veriForwarder = veriForwarder;
-        _baseBountyAsEth = baseBountyAsEth;
     }
 
 
@@ -266,11 +264,18 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     function executeRawReq(uint id) external override validExec nonReentrant returns (uint gasUsed) {
         Request memory r = _rawReqs[id];
         require(r.requester != _ADDR_0, "Reg: already executed");
+        uint ethStartBal = address(this).balance;
         
         gasUsed = _execute(r);
         
         emit RawReqRemoved(id, true);
         delete _rawReqs[id];
+        
+        if (r.payWithASC) {
+            require(address(this).balance >= ethStartBal - r.ethForCall, "Reg: something fishy here");
+        } else {
+            require(address(this).balance >= ethStartBal - r.initEthSent, "Reg: something fishy here");
+        }
     }
 
     /**
@@ -291,6 +296,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         override
         validExec
         nonReentrant
+        noFish(r)
         validCalldata(r)
         verReq(id, r, dataPrefix, dataSuffix, _hashedReqs)
         returns (uint gasUsed)
@@ -316,6 +322,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         override
         validExec
         nonReentrant
+        noFish(r)
         targetNotThis(r.target)
         verReq(id, r, dataPrefix, dataSuffix, _hashedReqsUnveri)
         returns (uint gasUsed)
@@ -388,7 +395,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
             }
             // gasUsed = gasUsed * 11 / 10;
 
-            ethNeeded = (gasUsed * tx.gasprice) + _baseBountyAsEth;
+            ethNeeded = (gasUsed * tx.gasprice) + BASE_BOUNTY_AS_ETH;
             uint ASCoinNeeded = ethNeeded * _oracle.getASCPerETH() / _E_18;
 
             // Send the executor their bounty
@@ -401,7 +408,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
                 gasUsed -= gasRefunded;
             }
 
-            ethNeeded = (gasUsed * tx.gasprice) + (2 * _baseBountyAsEth);
+            ethNeeded = (gasUsed * tx.gasprice) + (2 * BASE_BOUNTY_AS_ETH);
             uint ethReceived = r.initEthSent - r.ethForCall;
 
             // Send the executor their bounty
@@ -495,11 +502,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     function getVerifiedForwarder() external view override returns (address) {
         return address(_veriForwarder);
     }
-    
-    function getBaseBountyAsEth() external view override returns (uint) {
-        return _baseBountyAsEth;
-    }
-    
+
     function getReqCountOf(address addr) external view override returns (uint) {
         return _reqCounts[addr];
     }
@@ -562,6 +565,18 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     modifier validExec() {
         require(_stakeMan.isUpdatedExec(msg.sender), "Reg: not executor or expired");
         _;
+    }
+
+    modifier noFish(Request calldata r) {
+        uint ethStartBal = address(this).balance;
+
+        _;
+
+        if (r.payWithASC) {
+            require(address(this).balance >= ethStartBal - r.ethForCall, "Reg: something fishy here");
+        } else {
+            require(address(this).balance >= ethStartBal - r.initEthSent, "Reg: something fishy here");
+        }
     }
 
     // Verify that a request is the same as the one initially stored. This also

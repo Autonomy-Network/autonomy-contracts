@@ -16,6 +16,7 @@ def test_executeRawReq_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.ASC.balanceOf(asc.r) == 0
 
     tx = asc.r.executeRawReq(id, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    print(tx.gas_used)
 
     # Should've changed
     # Eth bals
@@ -48,7 +49,7 @@ def test_executeRawReq_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
-    assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
+
 
 
 def test_executeRawReq_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
@@ -64,6 +65,7 @@ def test_executeRawReq_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.ASC.balanceOf(asc.r) == 0
 
     tx = asc.r.executeRawReq(id, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    print(tx.gas_used)
 
     # Should've changed
     # Eth bals
@@ -96,7 +98,7 @@ def test_executeRawReq_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
-    assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
+
 
 
 def test_executeRawReq_pay_ASC(asc, stakedMin, mockTarget, reqsRaw):
@@ -112,6 +114,7 @@ def test_executeRawReq_pay_ASC(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.ASC.balanceOf(asc.r) == 0
 
     tx = asc.r.executeRawReq(id, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    print(tx.gas_used)
 
     # Should've changed
     # Eth bals
@@ -146,7 +149,7 @@ def test_executeRawReq_pay_ASC(asc, stakedMin, mockTarget, reqsRaw):
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
-    assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
+
 
 
 def test_executeRawReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
@@ -162,6 +165,7 @@ def test_executeRawReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsR
     assert asc.ASC.balanceOf(asc.r) == 0
 
     tx = asc.r.executeRawReq(id, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    print(tx.gas_used)
 
     # Should've changed
     # Eth bals
@@ -196,7 +200,7 @@ def test_executeRawReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsR
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
-    assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
+
 
 
 def test_executeRawReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, mockTarget, reqsRaw):
@@ -214,6 +218,7 @@ def test_executeRawReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, 
     assert asc.ASC.balanceOf(asc.r) == 0
 
     tx = asc.r.executeRawReq(id, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    print(tx.gas_used)
 
     # Should've changed
     # Eth bals
@@ -248,7 +253,7 @@ def test_executeRawReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, 
 
     # Shouldn't've changed
     assert mockTarget.x() == 0
-    assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
+
 
 
 def test_executeRawReq_rev_already_executed(asc, stakedMin, reqsRaw):
@@ -262,6 +267,25 @@ def test_executeRawReq_rev_already_executed(asc, stakedMin, reqsRaw):
 def test_executeRawReq_rev_not_executor(asc, stakedMin, reqsRaw):
     with reverts(REV_MSG_NOT_EXEC):
         asc.r.executeRawReq(2, {'from': asc.DENICE, 'gasPrice': TEST_GAS_PRICE})
+
+
+def test_executeRawReq_rev_noFish_pay_eth(asc, vulnerableRegistry, vulnerableReqsRaw, stakedMin):
+    _, staker, __ = stakedMin
+    reqEthForCall, reqPayASCEthForCall, msgValue, ethForCall = vulnerableReqsRaw
+    id = 0
+
+    with reverts(REV_MSG_FISHY):
+        vulnerableRegistry.executeRawReq(id, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+
+
+def test_executeRawReq_rev_noFish_payWithASC(asc, vulnerableRegistry, vulnerableReqsRaw, stakedMin):
+    _, staker, __ = stakedMin
+    reqEthForCall, reqPayASCEthForCall, msgValue, ethForCall = vulnerableReqsRaw
+    id = 1
+
+    with reverts(REV_MSG_FISHY):
+        vulnerableRegistry.executeRawReq(id, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+
 
 
 # For some reason this test produces an error in Brownie, presumed to be

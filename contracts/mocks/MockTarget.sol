@@ -1,16 +1,21 @@
 pragma solidity ^0.8;
 
 
+import "./VulnerableRegistry.sol";
+
+
 contract MockTarget {
 
     address public veriForwarderAddr;
     uint public x;
     address public userAddr;
     address public msgSender;
+    VulnerableRegistry public _vulnReg;
 
 
-    constructor(address newVeriForwarderAddr) {
+    constructor(address newVeriForwarderAddr, VulnerableRegistry vulnReg) {
         veriForwarderAddr = newVeriForwarderAddr;
+        _vulnReg = vulnReg;
     }
 
 
@@ -25,6 +30,10 @@ contract MockTarget {
     function setAddrPayVerified(address newUserAddr) public payable updateMsgSender {
         require(msg.sender == veriForwarderAddr, "Not sent from veriForwarder");
         userAddr = newUserAddr;
+    }
+
+    function callVulnerableTransfer(address payable receiver, uint amount) external payable {
+        _vulnReg.vulnerableTransfer(receiver, amount);
     }
 
 

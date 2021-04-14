@@ -165,8 +165,6 @@ interface IRegistry {
     
     function getVerifiedForwarder() external view returns (address);
     
-    function getBaseBountyAsEth() external view returns (uint);
-    
     function getReqCountOf(address addr) external view returns (uint);
     
     function getExecCountOf(address addr) external view returns (uint);

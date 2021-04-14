@@ -80,12 +80,12 @@ def test_executeHashedReq_validCalldata(asc, stakedMin, mockTarget, ethForCall, 
             # Shouldn't've changed
             assert mockTarget.x() == 0
             assert asc.r.balance() == 0
-            assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
+        
                 
 
-def test_executeHashedReq_no_ethForCall(asc, stakedMin, mockTarget, reqsHashEth):
+def test_executeHashedReq_no_ethForCall(asc, stakedMin, mockTarget, hashedReqs):
     _, staker, __ = stakedMin
-    reqs, reqHashes, msgValue, ethForCall = reqsHashEth
+    reqs, reqHashes, msgValue, ethForCall = hashedReqs
     # reqHashes will modify the original even after this test has finished otherwise since it's a reference
     reqHashes = reqHashes[:]
     id = 0
@@ -130,12 +130,12 @@ def test_executeHashedReq_no_ethForCall(asc, stakedMin, mockTarget, reqsHashEth)
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
-    assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
 
 
-def test_executeHashedReq_with_ethForCall(asc, stakedMin, mockTarget, reqsHashEth):
+
+def test_executeHashedReq_with_ethForCall(asc, stakedMin, mockTarget, hashedReqs):
     _, staker, __ = stakedMin
-    reqs, reqHashes, msgValue, ethForCall = reqsHashEth
+    reqs, reqHashes, msgValue, ethForCall = hashedReqs
     # reqHashes will modify the original even after this test has finished otherwise since it's a reference
     reqHashes = reqHashes[:]
     id = 1
@@ -184,12 +184,12 @@ def test_executeHashedReq_with_ethForCall(asc, stakedMin, mockTarget, reqsHashEt
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
-    assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
 
 
-def test_executeHashedReq_pay_ASC(asc, stakedMin, mockTarget, reqsHashEth):
+
+def test_executeHashedReq_pay_ASC(asc, stakedMin, mockTarget, hashedReqs):
     _, staker, __ = stakedMin
-    reqs, reqHashes, msgValue, ethForCall = reqsHashEth
+    reqs, reqHashes, msgValue, ethForCall = hashedReqs
     # reqHashes will modify the original even after this test has finished otherwise since it's a reference
     reqHashes = reqHashes[:]
     id = 2
@@ -236,12 +236,12 @@ def test_executeHashedReq_pay_ASC(asc, stakedMin, mockTarget, reqsHashEth):
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
-    assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
 
 
-def test_executeHashedReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsHashEth):
+
+def test_executeHashedReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, hashedReqs):
     _, staker, __ = stakedMin
-    reqs, reqHashes, msgValue, ethForCall = reqsHashEth
+    reqs, reqHashes, msgValue, ethForCall = hashedReqs
     # reqHashes will modify the original even after this test has finished otherwise since it's a reference
     reqHashes = reqHashes[:]
     id = 3
@@ -288,12 +288,12 @@ def test_executeHashedReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, re
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
-    assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
 
 
-def test_executeHashedReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, mockTarget, reqsHashEth):
+
+def test_executeHashedReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, mockTarget, hashedReqs):
     _, staker, __ = stakedMin
-    reqs, reqHashes, msgValue, ethForCall = reqsHashEth
+    reqs, reqHashes, msgValue, ethForCall = hashedReqs
     # reqHashes will modify the original even after this test has finished otherwise since it's a reference
     reqHashes = reqHashes[:]
     id = 4
@@ -340,29 +340,46 @@ def test_executeHashedReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMi
 
     # Shouldn't've changed
     assert mockTarget.x() == 0
-    assert asc.r.getBaseBountyAsEth() == INIT_BASE_BOUNTY
 
 
-def test_executeHashedReq_rev_not_executor(asc, stakedMin, reqsHashEth):
-    reqs, reqHashes, msgValue, ethForCall = reqsHashEth
+def test_executeHashedReq_rev_not_executor(asc, stakedMin, hashedReqs):
+    reqs, reqHashes, msgValue, ethForCall = hashedReqs
     with reverts(REV_MSG_NOT_EXEC):
         asc.r.executeHashedReq(0, reqs[0], *getIpfsMetaData(asc, reqs[0]), {'from': asc.DENICE, 'gasPrice': TEST_GAS_PRICE})
 
 
-def test_executeHashedReq_rev_req_not_the_same(asc, stakedMin, reqsHashEth):
+def test_executeHashedReq_rev_req_not_the_same(asc, stakedMin, hashedReqs):
     _, staker, __ = stakedMin
-    reqs, reqHashes, msgValue, ethForCall = reqsHashEth
+    reqs, reqHashes, msgValue, ethForCall = hashedReqs
     invalidReq = list(reqs[0])
     invalidReq[6] = 1
     with reverts(REV_MSG_NOT_SAME):
         asc.r.executeHashedReq(0, invalidReq, *getIpfsMetaData(asc, invalidReq), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
 
 
-def test_executeHashedReq_rev_already_executeHashedReqd(asc, stakedMin, reqsHashEth):
+def test_executeHashedReq_rev_already_executeHashedReqd(asc, stakedMin, hashedReqs):
     _, staker, __ = stakedMin
-    reqs, reqHashes, msgValue, ethForCall = reqsHashEth
+    reqs, reqHashes, msgValue, ethForCall = hashedReqs
 
     asc.r.executeHashedReq(0, reqs[0], *getIpfsMetaData(asc, reqs[0]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
 
     with reverts(REV_MSG_NOT_SAME):
         asc.r.executeHashedReq(0, reqs[0], *getIpfsMetaData(asc, reqs[0]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+
+
+def test_executeHashedReq_rev_noFish_pay_eth(asc, vulnerableRegistry, vulnerableHashedReqs, stakedMin):
+    _, staker, __ = stakedMin
+    reqs, reqHashes, msgValue, ethForCall = vulnerableHashedReqs
+    id = 0
+
+    with reverts(REV_MSG_FISHY):
+        vulnerableRegistry.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+
+
+def test_executeHashedReq_rev_noFish_payWithASC(asc, vulnerableRegistry, vulnerableHashedReqs, stakedMin):
+    _, staker, __ = stakedMin
+    reqs, reqHashes, msgValue, ethForCall = vulnerableHashedReqs
+    id = 1
+
+    with reverts(REV_MSG_FISHY):
+        vulnerableRegistry.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
