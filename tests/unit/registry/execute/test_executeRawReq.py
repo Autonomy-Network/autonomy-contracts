@@ -13,7 +13,7 @@ def test_executeRawReq_rev_nonReentrant(asc, mockTarget, mockReentrancyAttack):
     callData = mockTarget.setX.encode_input(5)
     asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB})
     # Create request to be executed directly
-    callData = mockReentrancyAttack.callExecute.encode_input(0)
+    callData = mockReentrancyAttack.callExecuteRawReq.encode_input(0)
     asc.r.newRawReq(mockReentrancyAttack, callData, False, True, 0, asc.DENICE, {'from': asc.BOB})
 
     with reverts(REV_MSG_REENTRANCY):

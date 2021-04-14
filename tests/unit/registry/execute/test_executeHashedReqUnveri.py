@@ -18,16 +18,20 @@ from utils import *
 def test_executeHashedReqUnveri_rev_nonReentrant(asc, mockTarget, mockReentrancyAttack):
     # Create request to call in reentrance
     callData = mockTarget.setX.encode_input(5)
-    asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB})
-    # Create request to be executed directly
-    callData = mockReentrancyAttack.callExecute.encode_input(0)
-    req = (asc.BOB.address, mockReentrancyAttack.address, callData, False, True, 0, 0, asc.DENICE.address)
-    reqHashBytes = addReqGetHashBytes(asc, req)
+    req1 = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+    reqHashBytes1 = addReqGetHashBytes(asc, req1)
 
-    asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB})
+    asc.r.newHashedReqUnveri(reqHashBytes1, {'from': asc.BOB})
+
+    # Create request to be executed directly
+    callData = mockReentrancyAttack.callExecuteHashedReqUnveri.encode_input(0, req1, *getIpfsMetaData(asc, req1))
+    req2 = (asc.BOB.address, mockReentrancyAttack.address, callData, False, True, 0, 0, asc.DENICE.address)
+    reqHashBytes2 = addReqGetHashBytes(asc, req2)
+
+    asc.r.newHashedReqUnveri(reqHashBytes2, {'from': asc.BOB})
 
     with reverts(REV_MSG_REENTRANCY):
-        asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req))
+        asc.r.executeHashedReqUnveri(1, req2, *getIpfsMetaData(asc, req2))
 
 
 def test_executeHashedReqUnveri_rev_initEthSent(asc, mockTarget, stakedMin):

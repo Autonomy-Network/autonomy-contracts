@@ -4,6 +4,30 @@ from brownie.test import given, strategy
 from utils import *
 
 
+# Making a request that calls executeHashedReqUnveri should be banned to reduce attack surface
+# and generally prevent unknown funny business. Any 'legitimate' use of ASC should
+# just make a new request for recursive ASCs, I see no reason to need to call executeHashedReqUnveri
+# from a request etc. Can't make a call directly to the registry from the registry
+# because of `targetNotThis`, so need to call into it from a new contract
+def test_cancelHashedReqUnveri_rev_nonReentrant(asc, mockTarget, mockReentrancyAttack):
+    # Create request to call in reentrance
+    callData = mockTarget.setX.encode_input(5)
+    req1 = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+    reqHashBytes1 = addReqGetHashBytes(asc, req1)
+
+    asc.r.newHashedReqUnveri(reqHashBytes1, {'from': asc.BOB})
+
+    # Create request to be executed directly
+    callData = mockReentrancyAttack.callCancelHashedReqUnveri.encode_input(0, req1, *getIpfsMetaData(asc, req1))
+    req2 = (asc.BOB.address, mockReentrancyAttack.address, callData, False, True, 0, 0, asc.DENICE.address)
+    reqHashBytes2 = addReqGetHashBytes(asc, req2)
+
+    asc.r.newHashedReqUnveri(reqHashBytes2, {'from': asc.BOB})
+
+    with reverts(REV_MSG_REENTRANCY):
+        asc.r.executeHashedReqUnveri(1, req2, *getIpfsMetaData(asc, req2))
+
+
 def test_cancelHashedReqUnveri_no_ethForCall(asc, stakedMin, mockTarget, hashedReqUnveri):
     req, reqHashBytes = hashedReqUnveri
     id = 0

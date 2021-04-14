@@ -3,6 +3,23 @@ from brownie import chain, reverts, web3
 from brownie.test import given, strategy
 
 
+# Making a request that calls executeRawReq should be banned to reduce attack surface
+# and generally prevent unknown funny business. Any 'legitimate' use of ASC should
+# just make a new request for recursive ASCs, I see no reason to need to call executeRawReq
+# from a request etc. Can't make a call directly to the registry from the registry
+# because of `targetNotThis`, so need to call into it from a new contract
+def test_cancelRawReq_rev_nonReentrant(asc, mockTarget, mockReentrancyAttack):
+    # Create request to call in reentrance
+    callData = mockTarget.setX.encode_input(5)
+    asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB})
+    # Create request to be executed directly
+    callData = mockReentrancyAttack.callCancelRawReq.encode_input(0)
+    asc.r.newRawReq(mockReentrancyAttack, callData, False, True, 0, asc.DENICE, {'from': asc.BOB})
+
+    with reverts(REV_MSG_REENTRANCY):
+        asc.r.executeRawReq(1)
+
+
 def test_cancelRawReq_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender, msgValue, ethForCall = reqsRaw
     id = 0
