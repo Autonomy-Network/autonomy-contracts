@@ -24,8 +24,12 @@ contract Oracle is IOracle, Ownable {
         return _priceOracle;
     }
 
-    function getASCPerETH() external override view returns (uint) {
-        return _priceOracle.getASCPerETH();
+    function getASCPerUSD() external override view returns (uint) {
+        return _priceOracle.getASCPerUSD();
+    }
+
+    function getETHPerUSD() external override view returns (uint) {
+        return _priceOracle.getETHPerUSD();
     }
 
     function setPriceOracle(IPriceOracle newPriceOracle) external override onlyOwner {

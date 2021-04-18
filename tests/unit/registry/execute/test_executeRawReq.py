@@ -1,6 +1,7 @@
 from consts import *
 from brownie import chain, reverts, web3
 from brownie.test import given, strategy
+from utils import *
 
 
 # Making a request that calls executeRawReq should be banned to reduce attack surface
@@ -36,7 +37,7 @@ def test_executeRawReq_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
 
     # Should've changed
     # Eth bals
-    ethForExec = (tx.return_value * tx.gas_price) + (INIT_BASE_BOUNTY * 2)
+    ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
     assert asc.ALICE.balance() == INIT_ETH_BAL + ethForExec - (tx.gas_used * tx.gas_price)
     assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall)) + msgValue - ethForExec
     assert asc.r.balance() == msgValue + (2 * ethForCall)
@@ -84,7 +85,7 @@ def test_executeRawReq_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
 
     # Should've changed
     # Eth bals
-    ethForExec = (tx.return_value * tx.gas_price) + (INIT_BASE_BOUNTY * 2)
+    ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
     assert asc.ALICE.balance() == INIT_ETH_BAL + ethForExec - (tx.gas_used * tx.gas_price)
     assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall)) + msgValue - ethForCall - ethForExec
     assert asc.r.balance() == msgValue + (2 * ethForCall)
@@ -137,9 +138,7 @@ def test_executeRawReq_pay_ASC(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.r.balance() == (2 * msgValue) + (2 * ethForCall)
     assert mockTarget.balance() == 0
     # ASC bals
-    # Need to account for differences in division between Python and Solidity
-    ASCForExecNotScaled = ((tx.return_value * tx.gas_price) + INIT_BASE_BOUNTY) * INIT_ETH_TO_ASCOIN_RATE
-    ASCForExec = asc.r.divAOverB(ASCForExecNotScaled, E_18)
+    ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
     assert asc.ASC.balanceOf(asc.DENICE) == 0
@@ -187,9 +186,7 @@ def test_executeRawReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsR
     assert asc.r.balance() == 2 * msgValue + ethForCall
     assert mockTarget.balance() == ethForCall
     # ASC bals
-    # Need to account for differences in division between Python and Solidity
-    ASCForExecNotScaled = ((tx.return_value * tx.gas_price) + INIT_BASE_BOUNTY) * INIT_ETH_TO_ASCOIN_RATE
-    ASCForExec = asc.r.divAOverB(ASCForExecNotScaled, E_18)
+    ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
     assert asc.ASC.balanceOf(asc.DENICE) == 0
@@ -239,9 +236,7 @@ def test_executeRawReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, 
     assert asc.r.balance() == 2 * msgValue + ethForCall
     assert mockTarget.balance() == ethForCall
     # ASC bals
-    # Need to account for differences in division between Python and Solidity
-    ASCForExecNotScaled = ((tx.return_value * tx.gas_price) + INIT_BASE_BOUNTY) * INIT_ETH_TO_ASCOIN_RATE
-    ASCForExec = asc.r.divAOverB(ASCForExecNotScaled, E_18)
+    ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
     assert asc.ASC.balanceOf(asc.DENICE) == 0

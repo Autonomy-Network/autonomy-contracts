@@ -8,19 +8,28 @@ import "../interfaces/IPriceOracle.sol";
 contract PriceOracle is IPriceOracle, Ownable {
 
 
-    uint private _ASCPerETH;
+    uint private _ASCPerUSD;
+    uint private _ETHPerUSD;
 
 
-    constructor(uint ASCPerETH) Ownable() {
-        _ASCPerETH = ASCPerETH;
+    constructor(uint ASCPerUSD, uint ETHPerUSD) Ownable() {
+        _ASCPerUSD = ASCPerUSD;
+        _ETHPerUSD = ETHPerUSD;
     }
 
-
-    function getASCPerETH() external override view returns (uint) {
-        return _ASCPerETH;
+    function getASCPerUSD() external override view returns (uint) {
+        return _ASCPerUSD;
     }
 
-    function updateASCPerETH(uint ASCPerETH) external onlyOwner override {
-        _ASCPerETH = ASCPerETH;
+    function updateASCPerUSD(uint ASCPerUSD) external onlyOwner override {
+        _ASCPerUSD = ASCPerUSD;
+    }
+
+    function getETHPerUSD() external override view returns (uint) {
+        return _ETHPerUSD;
+    }
+
+    function updateETHPerUSD(uint ETHPerUSD) external onlyOwner override {
+        _ETHPerUSD = ETHPerUSD;
     }
 }

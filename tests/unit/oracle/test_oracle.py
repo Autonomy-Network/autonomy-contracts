@@ -6,7 +6,8 @@ from utils import *
 
 def test_constructor(asc):
     assert asc.o.getPriceOracle() == asc.po
-    assert asc.o.getASCPerETH() == INIT_ETH_TO_ASCOIN_RATE
+    assert asc.o.getASCPerUSD() == INIT_ASC_PER_USD
+    assert asc.o.getETHPerUSD() == INIT_ETH_PER_USD
     assert asc.o.owner() == asc.DEPLOYER
 
 
@@ -19,13 +20,14 @@ def test_getRandNum(asc):
 # Test with a new price oracle so we can test that getASCPerETH
 # properly reads the new price
 def test_setPriceOracle(asc, PriceOracle):
-    newRate = 15
-    newPriceOracle = asc.DEPLOYER.deploy(PriceOracle, newRate)
+    newASCRate = 17
+    newETHRate = 15
+    newPriceOracle = asc.DEPLOYER.deploy(PriceOracle, newASCRate, newETHRate)
 
     asc.o.setPriceOracle(newPriceOracle, asc.FR_DEPLOYER)
     
-    assert asc.o.getPriceOracle() == newPriceOracle
-    assert asc.o.getASCPerETH() == newRate
+    assert asc.o.getASCPerUSD() == newASCRate
+    assert asc.o.getETHPerUSD() == newETHRate
     assert asc.o.owner() == asc.DEPLOYER
 
 

@@ -99,9 +99,7 @@ def test_executeHashedReqUnveri_pay_ASC(asc, stakedMin, mockTarget, hashedReqUnv
     assert asc.r.balance() == 0
     assert mockTarget.balance() == 0
     # ASC bals
-    # Need to account for differences in division between Python and Solidity
-    ASCForExecNotScaled = ((tx.return_value * tx.gas_price) + INIT_BASE_BOUNTY) * INIT_ETH_TO_ASCOIN_RATE
-    ASCForExec = asc.r.divAOverB(ASCForExecNotScaled, E_18)
+    ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
     assert asc.ASC.balanceOf(asc.DENICE) == 0

@@ -3,7 +3,11 @@ pragma solidity ^0.8;
 
 interface IPriceOracle {
 
-    function getASCPerETH() external view returns (uint);
+    function getASCPerUSD() external view returns (uint);
 
-    function updateASCPerETH(uint ASCPerETH) external;
+    function updateASCPerUSD(uint ASCPerUSD) external;
+
+    function getETHPerUSD() external view returns (uint);
+
+    function updateETHPerUSD(uint ETHPerUSD) external;
 }

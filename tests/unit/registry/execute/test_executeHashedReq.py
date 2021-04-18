@@ -61,21 +61,20 @@ def test_executeHashedReq_validCalldata(asc, stakedMin, mockTarget, ethForCall, 
         else:
             tx = asc.r.executeHashedReq(id, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
 
-            ethForExec = (tx.return_value * tx.gas_price) + (INIT_BASE_BOUNTY * 2)
             assert mockTarget.balance() == ethForCall
             if payWithASC:
                 # Eth bals
                 assert asc.ALICE.balance() == INIT_ETH_BAL - (tx.gas_used * tx.gas_price)
                 assert sender.balance() == INIT_ETH_BAL - ethForCall
                 # ASC bals
-                ASCForExecNotScaled = ((tx.return_value * tx.gas_price) + INIT_BASE_BOUNTY) * INIT_ETH_TO_ASCOIN_RATE
-                ASCForExec = asc.r.divAOverB(ASCForExecNotScaled, E_18)
+                ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
                 assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
                 assert asc.ASC.balanceOf(sender) - senderASCStartBal == -ASCForExec
                 assert asc.ASC.balanceOf(asc.DENICE) == 0
                 assert asc.ASC.balanceOf(asc.r) == 0
             else:
                 # Eth bals
+                ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
                 assert asc.ALICE.balance() == INIT_ETH_BAL + ethForExec - (tx.gas_used * tx.gas_price)
                 assert sender.balance() == INIT_ETH_BAL - ethForCall - ethForExec
                 # ASC bals
@@ -125,7 +124,7 @@ def test_executeHashedReq_no_ethForCall(asc, stakedMin, mockTarget, hashedReqs):
     
     # Should've changed
     # Eth bals
-    ethForExec = (tx.return_value * tx.gas_price) + (INIT_BASE_BOUNTY * 2)
+    ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
     assert asc.ALICE.balance() == INIT_ETH_BAL + ethForExec - (tx.gas_used * tx.gas_price)
     assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall)) + msgValue - ethForExec
     assert asc.r.balance() == msgValue + (2 * ethForCall)
@@ -175,7 +174,7 @@ def test_executeHashedReq_with_ethForCall(asc, stakedMin, mockTarget, hashedReqs
     
     # Should've changed
     # Eth bals
-    ethForExec = (tx.return_value * tx.gas_price) + (INIT_BASE_BOUNTY * 2)
+    ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
     assert asc.ALICE.balance() == INIT_ETH_BAL + ethForExec - (tx.gas_used * tx.gas_price)
     assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall)) + msgValue - ethForCall - ethForExec
     assert asc.r.balance() == msgValue + (2 * ethForCall)
@@ -234,9 +233,7 @@ def test_executeHashedReq_pay_ASC(asc, stakedMin, mockTarget, hashedReqs):
     assert asc.r.balance() == (2 * msgValue) + (2 * ethForCall)
     assert mockTarget.balance() == 0
     # ASC bals
-    # Need to account for differences in division between Python and Solidity
-    ASCForExecNotScaled = ((tx.return_value * tx.gas_price) + INIT_BASE_BOUNTY) * INIT_ETH_TO_ASCOIN_RATE
-    ASCForExec = asc.r.divAOverB(ASCForExecNotScaled, E_18)
+    ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
     assert asc.ASC.balanceOf(asc.DENICE) == 0
@@ -286,9 +283,7 @@ def test_executeHashedReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, ha
     assert asc.r.balance() == 2 * msgValue + ethForCall
     assert mockTarget.balance() == ethForCall
     # ASC bals
-    # Need to account for differences in division between Python and Solidity
-    ASCForExecNotScaled = ((tx.return_value * tx.gas_price) + INIT_BASE_BOUNTY) * INIT_ETH_TO_ASCOIN_RATE
-    ASCForExec = asc.r.divAOverB(ASCForExecNotScaled, E_18)
+    ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
     assert asc.ASC.balanceOf(asc.DENICE) == 0
@@ -338,9 +333,7 @@ def test_executeHashedReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMi
     assert asc.r.balance() == 2 * msgValue + ethForCall
     assert mockTarget.balance() == ethForCall
     # ASC bals
-    # Need to account for differences in division between Python and Solidity
-    ASCForExecNotScaled = ((tx.return_value * tx.gas_price) + INIT_BASE_BOUNTY) * INIT_ETH_TO_ASCOIN_RATE
-    ASCForExec = asc.r.divAOverB(ASCForExecNotScaled, E_18)
+    ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
     assert asc.ASC.balanceOf(asc.DENICE) == 0

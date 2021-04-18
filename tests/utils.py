@@ -117,3 +117,14 @@ def getIpfsMetaData(asc, req):
 
 def addReqGetHashBytes(asc, req):
     return getHashBytesFromCID(addToIpfs(asc, req))
+
+
+# No way for INIT_BASE_BOUNTY_USD to be changed
+def getEthForExec(tx, ethRate):
+    return (tx.return_value * tx.gas_price) + (3 * INIT_BASE_BOUNTY_USD * ethRate)
+
+
+def getASCForExec(asc, tx, ethRate, ascRate):
+    # Need to account for differences in division between Python and Solidity
+    gasInASC = tx.return_value * tx.gas_price * asc.r.divAOverB(ascRate, ethRate)
+    return (INIT_BASE_BOUNTY_USD * ascRate) + int(gasInASC)

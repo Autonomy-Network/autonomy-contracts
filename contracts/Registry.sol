@@ -13,9 +13,10 @@ import "./abstract/Shared.sol";
 contract Registry is IRegistry, Shared, ReentrancyGuard {
     
     // Constant public
-    uint public constant GAS_OVERHEAD_ETH = 10000;
-    uint public constant GAS_OVERHEAD_ASCOIN = 20000;
-    uint private constant _NET_GAS_REFUND = 10000;
+    uint public constant GAS_OVERHEAD_ETH = 65000;
+    uint public constant GAS_OVERHEAD_ASCOIN = 82500;
+    uint public constant BASE_BOUNTY_USD = 5;
+    uint public constant ETH_BOUNTY_MULTIPLIER = 3;
 
     // Constant private
     bytes private constant _EMPTY_BYTES = "";
@@ -33,10 +34,6 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     // that can be known implicitly by having 2 separate arrays.
     bytes32[] private _hashedReqs;
     bytes32[] private _hashedReqsUnveri;
-    // The minimum bounty priced in Eth. This amount is converted
-    // directly to the equivalent value in ASCoin if the requester wants
-    // to pay with ASCoin, and is doubled if they want to pay in Eth
-    uint public constant BASE_BOUNTY_AS_ETH = 2 * 10**15;
     // This counts the number of times each requester has had a request executed
     mapping(address => uint) private _reqCounts;
     // This counts the number of times each staker has executed a request
@@ -262,20 +259,24 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     //////////////////////////////////////////////////////////////
 
     function executeRawReq(uint id) external override validExec nonReentrant returns (uint gasUsed) {
+        uint gasss = gasleft();
         Request memory r = _rawReqs[id];
         require(r.requester != _ADDR_0, "Reg: already executed");
         uint ethStartBal = address(this).balance;
         
-        gasUsed = _execute(r);
+        uint startGas = gasleft();
+        delete _rawReqs[id];
+        // 224 is approx the gas cost of calldata for this fcn
+        gasUsed = _execute(r, startGas - gasleft());
         
         emit RawReqRemoved(id, true);
-        delete _rawReqs[id];
-        
+
         if (r.payWithASC) {
             require(address(this).balance >= ethStartBal - r.ethForCall, "Reg: something fishy here");
         } else {
             require(address(this).balance >= ethStartBal - r.initEthSent, "Reg: something fishy here");
         }
+        // emit Test(gasss - gasleft(), 0, 0, false);
     }
 
     /**
@@ -301,7 +302,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         verReq(id, r, dataPrefix, dataSuffix, _hashedReqs)
         returns (uint gasUsed)
     {
-        gasUsed = _execute(r);
+        gasUsed = _execute(r, 0);
         
         emit HashedReqRemoved(id, true);
         delete _hashedReqs[id];
@@ -335,13 +336,14 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
             "Reg: cannot verify. Nice try ;)"
         );
 
-        gasUsed = _execute(r);
+        gasUsed = _execute(r, 0);
         
         emit HashedReqUnveriRemoved(id, true);
         delete _hashedReqsUnveri[id];
     }
 
-    function _execute(Request memory r) private returns (uint gasUsed) {
+    event Test(uint a, uint b, uint c, bool d);
+    function _execute(Request memory r, uint gasUsedInDelete) private returns (uint gasUsed) {
         uint startGas = gasleft();
 
         // Make the call that the user requested
@@ -376,39 +378,45 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
             _referalCounts[r.referer] += 1;
         }
 
-        // +1 since it never divides exactly because of the 4 bytes of methodID
-        uint numStorageRefunds = (r.callData.length / 32) + 1;
-        numStorageRefunds += r.referer == _ADDR_0 ? 5 : 6;
+        // uint numStorageRefunds = (r.callData.length / 32);
+        // numStorageRefunds += r.referer == _ADDR_0 ? 5 : 6;
+        uint numStorageRefunds = (gasUsedInDelete / 5000);
         
-        gasUsed = 21512 + (numStorageRefunds * 5000) + startGas - gasleft();
+        // gasUsed = 21000 + (msg.data.length * 10) + gasUsedInDelete + startGas - gasleft();
+        gasUsed = (msg.data.length * 10) + gasUsedInDelete + startGas - gasleft();
 
         uint gasRefunded = numStorageRefunds * 15000;
-
-        uint ethNeeded;
 
         if (r.payWithASC) {
             gasUsed += GAS_OVERHEAD_ASCOIN;
             if (gasRefunded > gasUsed / 2) {
-                gasUsed = gasUsed / 2;
+                // emit Test(numStorageRefunds, gasUsed, gasRefunded, true);
+                gasUsed = (gasUsed / 2) + (numStorageRefunds * 427);
+                // gasUsed = (gasUsed / 2);
             } else {
+                // emit Test(numStorageRefunds, gasUsed, gasRefunded, false);
+                gasUsed += (numStorageRefunds * 500);
                 gasUsed -= gasRefunded;
             }
-            // gasUsed = gasUsed * 11 / 10;
 
-            ethNeeded = (gasUsed * tx.gasprice) + BASE_BOUNTY_AS_ETH;
-            uint ASCoinNeeded = ethNeeded * _oracle.getASCPerETH() / _E_18;
+            uint gasInASC = gasUsed * tx.gasprice * _oracle.getASCPerUSD() / _oracle.getETHPerUSD();
+            uint ASCNeeded = (_oracle.getASCPerUSD() * BASE_BOUNTY_USD) + gasInASC;
 
             // Send the executor their bounty
-            require(_ASCoin.transferFrom(r.requester, msg.sender, ASCoinNeeded));
+            require(_ASCoin.transferFrom(r.requester, msg.sender, ASCNeeded));
         } else {
             gasUsed += GAS_OVERHEAD_ETH;
             if (gasRefunded > gasUsed / 2) {
-                gasUsed = gasUsed / 2;
+                // emit Test(numStorageRefunds, gasUsed, gasRefunded, true);
+                gasUsed = (gasUsed / 2) + (numStorageRefunds * 500);
+                // gasUsed = (gasUsed / 2);
             } else {
+                // emit Test(numStorageRefunds, gasUsed, gasRefunded, false);
+                gasUsed += (numStorageRefunds * 666);
                 gasUsed -= gasRefunded;
             }
 
-            ethNeeded = (gasUsed * tx.gasprice) + (2 * BASE_BOUNTY_AS_ETH);
+            uint ethNeeded = (gasUsed * tx.gasprice) + (3 * BASE_BOUNTY_USD * _oracle.getETHPerUSD());
             uint ethReceived = r.initEthSent - r.ethForCall;
 
             // Send the executor their bounty
