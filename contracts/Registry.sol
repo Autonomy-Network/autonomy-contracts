@@ -13,8 +13,8 @@ import "./abstract/Shared.sol";
 contract Registry is IRegistry, Shared, ReentrancyGuard {
     
     // Constant public
-    uint public constant GAS_OVERHEAD_ETH = 65000;
-    uint public constant GAS_OVERHEAD_ASCOIN = 82500;
+    uint public constant GAS_OVERHEAD_ASCOIN = 96000;
+    uint public constant GAS_OVERHEAD_ETH = 72000;
     uint public constant BASE_BOUNTY_USD = 5;
     uint public constant ETH_BOUNTY_MULTIPLIER = 3;
 
@@ -380,7 +380,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
 
         // uint numStorageRefunds = (r.callData.length / 32);
         // numStorageRefunds += r.referer == _ADDR_0 ? 5 : 6;
-        uint numStorageRefunds = (gasUsedInDelete / 5000);
+        uint numStorageRefunds = (gasUsedInDelete / 5000) - 1;
         
         // gasUsed = 21000 + (msg.data.length * 10) + gasUsedInDelete + startGas - gasleft();
         gasUsed = (msg.data.length * 10) + gasUsedInDelete + startGas - gasleft();
@@ -391,11 +391,11 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
             gasUsed += GAS_OVERHEAD_ASCOIN;
             if (gasRefunded > gasUsed / 2) {
                 // emit Test(numStorageRefunds, gasUsed, gasRefunded, true);
-                gasUsed = (gasUsed / 2) + (numStorageRefunds * 427);
+                gasUsed = (gasUsed / 2) + (numStorageRefunds * 450);
                 // gasUsed = (gasUsed / 2);
             } else {
                 // emit Test(numStorageRefunds, gasUsed, gasRefunded, false);
-                gasUsed += (numStorageRefunds * 500);
+                gasUsed += (numStorageRefunds * 855);
                 gasUsed -= gasRefunded;
             }
 
@@ -412,7 +412,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
                 // gasUsed = (gasUsed / 2);
             } else {
                 // emit Test(numStorageRefunds, gasUsed, gasRefunded, false);
-                gasUsed += (numStorageRefunds * 666);
+                gasUsed += (numStorageRefunds * 855);
                 gasUsed -= gasRefunded;
             }
 
