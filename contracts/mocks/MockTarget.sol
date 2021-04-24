@@ -29,8 +29,7 @@ contract MockTarget {
         x = newX;
     }
 
-    function setAddrPayVerified(address newUserAddr) public payable updateMsgSender {
-        require(msg.sender == veriForwarderAddr, "Not sent from veriForwarder");
+    function setAddrPayVerified(address newUserAddr) public payable updateMsgSender veri {
         userAddr = newUserAddr;
     }
 
@@ -38,44 +37,106 @@ contract MockTarget {
         _vulnReg.vulnerableTransfer(receiver, amount);
     }
 
+    /// @dev    See how gas measurement accuracy changes as calldata size doesn't change and the
+    ///         gas of the actual call increases
     function useGasWithArray(uint num) external {
         for (uint i; i < num; i++) {
             gasWaster.push(i);
         }
     }
 
+    /// @dev    See how gas measurement accuracy changes as both calldata size increases and the
+    ///         gas of the actual call increase at a consistent rate
     function useGasWithCallData(uint[] calldata arr) external {}
 
+    /// @dev    See how gas measurement accuracy changes as calldata size increases and the
+    ///         gas of the actual call doesn't change
     function useGasCallDataAndArray(uint[] calldata arr) external {
         for (uint i; i < arr.length; i++) {
             gasWaster.push(arr[i]);
         }
     }
 
+    /// @dev    See how gas measurement accuracy changes as both calldata size increases and the
+    ///         gas of the actual call increase at a consistent rate, using addresses instead
     function useGasCallDataAndAddrArray(address[] calldata arr) external {
         for (uint i; i < arr.length; i++) {
             gasWasterAddr.push(arr[i]);
         }
     }
 
+    /// @dev    See how gas measurement accuracy changes as the calldata is large and the gas of the
+    ///         actual call increases, but the overall gas of the former is greater than the latter
     function useGasCallDataAndSpecificAddrArray(address[] calldata arr, uint numToPush) external {
         for (uint i; i < numToPush; i++) {
             gasWasterAddr.push(arr[i]);
         }
     }
 
+    /// @dev    See how gas measurement accuracy changes as the calldata is large and the gas of the
+    ///         actual call increases, but the overall gas of the former is lesser than the latter
     function useGasCallDataAndAddrArrayMultiple(address[] calldata arr, uint numCycles) external {
         for (uint j; j < numCycles; j++) {
             for (uint i; i < arr.length; i++) {
                 gasWasterAddr.push(arr[i]);
             }
         }
-        
+    }
+
+    /// @dev    See how gas measurement accuracy changes as calldata size doesn't change and the
+    ///         gas of the actual call increases
+    function useGasWithArrayVeri(address user, uint num) external veri {
+        for (uint i; i < num; i++) {
+            gasWaster.push(i);
+        }
+    }
+
+    /// @dev    See how gas measurement accuracy changes as both calldata size increases and the
+    ///         gas of the actual call increase at a consistent rate
+    function useGasWithCallDataVeri(address user, uint[] calldata arr) external veri {}
+
+    /// @dev    See how gas measurement accuracy changes as calldata size increases and the
+    ///         gas of the actual call doesn't change
+    function useGasCallDataAndArrayVeri(address user, uint[] calldata arr) external veri {
+        for (uint i; i < arr.length; i++) {
+            gasWaster.push(arr[i]);
+        }
+    }
+
+    /// @dev    See how gas measurement accuracy changes as both calldata size increases and the
+    ///         gas of the actual call increase at a consistent rate, using addresses instead
+    function useGasCallDataAndAddrArrayVeri(address user, address[] calldata arr) external veri {
+        for (uint i; i < arr.length; i++) {
+            gasWasterAddr.push(arr[i]);
+        }
+    }
+
+    /// @dev    See how gas measurement accuracy changes as the calldata is large and the gas of the
+    ///         actual call increases, but the overall gas of the former is greater than the latter
+    function useGasCallDataAndSpecificAddrArrayVeri(address user, address[] calldata arr, uint numToPush) external veri {
+        for (uint i; i < numToPush; i++) {
+            gasWasterAddr.push(arr[i]);
+        }
+    }
+
+    /// @dev    See how gas measurement accuracy changes as the calldata is large and the gas of the
+    ///         actual call increases, but the overall gas of the former is lesser than the latter
+    function useGasCallDataAndAddrArrayMultipleVeri(address user, address[] calldata arr, uint numCycles) external veri {
+        for (uint j; j < numCycles; j++) {
+            for (uint i; i < arr.length; i++) {
+                gasWasterAddr.push(arr[i]);
+            }
+        }
     }
 
 
     modifier updateMsgSender() {
         _;
         msgSender = msg.sender;
+    }
+
+    modifier veri() {
+        require(msg.sender == veriForwarderAddr, "Not sent from veriForwarder");
+        _;
     }
 }

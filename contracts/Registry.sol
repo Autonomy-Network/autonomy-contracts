@@ -13,8 +13,8 @@ import "./abstract/Shared.sol";
 contract Registry is IRegistry, Shared, ReentrancyGuard {
     
     // Constant public
-    uint public constant GAS_OVERHEAD_ASCOIN = 96000;
-    uint public constant GAS_OVERHEAD_ETH = 72000;
+    uint public constant GAS_OVERHEAD_ASCOIN = 70500;
+    uint public constant GAS_OVERHEAD_ETH = 47000;
     uint public constant BASE_BOUNTY_USD = 5;
     uint public constant ETH_BOUNTY_MULTIPLIER = 3;
 
@@ -266,8 +266,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         
         uint startGas = gasleft();
         delete _rawReqs[id];
-        // 224 is approx the gas cost of calldata for this fcn
-        gasUsed = _execute(r, startGas - gasleft());
+        gasUsed = _execute(r, startGas - gasleft(), 19500);
         
         emit RawReqRemoved(id, true);
 
@@ -302,10 +301,11 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         verReq(id, r, dataPrefix, dataSuffix, _hashedReqs)
         returns (uint gasUsed)
     {
-        gasUsed = _execute(r, 0);
+        uint startGas = gasleft();
+        delete _hashedReqs[id];
+        gasUsed = _execute(r, startGas - gasleft(), msg.data.length * 20);
         
         emit HashedReqRemoved(id, true);
-        delete _hashedReqs[id];
     }
 
     /**
@@ -336,14 +336,15 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
             "Reg: cannot verify. Nice try ;)"
         );
 
-        gasUsed = _execute(r, 0);
+        uint startGas = gasleft();
+        delete _hashedReqsUnveri[id];
+        // 1000 extra is needed compared to executeHashedReq because of the extra checks
+        gasUsed = _execute(r, startGas - gasleft(), (msg.data.length * 20) + 1000);
         
         emit HashedReqUnveriRemoved(id, true);
-        delete _hashedReqsUnveri[id];
     }
 
-    event Test(uint a, uint b, uint c, bool d);
-    function _execute(Request memory r, uint gasUsedInDelete) private returns (uint gasUsed) {
+    function _execute(Request memory r, uint gasUsedInDelete, uint extraOverhead) private returns (uint gasUsed) {
         uint startGas = gasleft();
 
         // Make the call that the user requested
@@ -378,23 +379,18 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
             _referalCounts[r.referer] += 1;
         }
 
-        // uint numStorageRefunds = (r.callData.length / 32);
-        // numStorageRefunds += r.referer == _ADDR_0 ? 5 : 6;
         uint numStorageRefunds = (gasUsedInDelete / 5000) - 1;
         
-        // gasUsed = 21000 + (msg.data.length * 10) + gasUsedInDelete + startGas - gasleft();
-        gasUsed = (msg.data.length * 10) + gasUsedInDelete + startGas - gasleft();
+        uint callGasUsed = (startGas - gasleft());
+        gasUsed = gasUsedInDelete + callGasUsed + extraOverhead;
 
         uint gasRefunded = numStorageRefunds * 15000;
 
         if (r.payWithASC) {
             gasUsed += GAS_OVERHEAD_ASCOIN;
             if (gasRefunded > gasUsed / 2) {
-                // emit Test(numStorageRefunds, gasUsed, gasRefunded, true);
-                gasUsed = (gasUsed / 2) + (numStorageRefunds * 450);
-                // gasUsed = (gasUsed / 2);
+                gasUsed = (gasUsed / 2) + (numStorageRefunds * 700);
             } else {
-                // emit Test(numStorageRefunds, gasUsed, gasRefunded, false);
                 gasUsed += (numStorageRefunds * 855);
                 gasUsed -= gasRefunded;
             }
@@ -407,11 +403,8 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         } else {
             gasUsed += GAS_OVERHEAD_ETH;
             if (gasRefunded > gasUsed / 2) {
-                // emit Test(numStorageRefunds, gasUsed, gasRefunded, true);
-                gasUsed = (gasUsed / 2) + (numStorageRefunds * 500);
-                // gasUsed = (gasUsed / 2);
+                gasUsed = (gasUsed / 2) + (numStorageRefunds * 700);
             } else {
-                // emit Test(numStorageRefunds, gasUsed, gasRefunded, false);
                 gasUsed += (numStorageRefunds * 855);
                 gasUsed -= gasRefunded;
             }
