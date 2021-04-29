@@ -7,7 +7,7 @@ import "../interfaces/IForwarder.sol";
 
 contract Forwarder is IForwarder, Ownable {
 
-    address private _reg;
+    mapping(address => bool) private _canCall;
 
 
     constructor() Ownable() {}
@@ -17,16 +17,16 @@ contract Forwarder is IForwarder, Ownable {
         address target,
         bytes calldata callData
     ) external override payable returns (bool success, bytes memory returnData) {
-        require(msg.sender == _reg, "Forw: caller not the Registry");
+        require(_canCall[msg.sender], "Forw: caller not the Registry");
         (success, returnData) = target.call{value: msg.value}(callData);
     }
 
-    function getReg() external view returns (address) {
-        return _reg;
+    function canCall(address caller) external view returns (bool) {
+        return _canCall[caller];
     }
 
-    function setReg(address reg) external onlyOwner {
-        _reg = reg;
+    function setCaller(address caller, bool b) external onlyOwner {
+        _canCall[caller] = b;
     }
 
 }

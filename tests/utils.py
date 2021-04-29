@@ -128,3 +128,11 @@ def getASCForExec(asc, tx, ethRate, ascRate):
     # Need to account for differences in division between Python and Solidity
     gasInASC = tx.return_value * tx.gas_price * asc.r.divAOverB(ascRate, ethRate)
     return (INIT_BASE_BOUNTY_USD * ascRate) + int(gasInASC)
+
+
+def checkAreCallers(asc, addrs, callers):
+    print()
+    print(callers)
+    for addr in addrs:
+        print(addr, asc.vf.canCall(addr), addr in callers)
+        assert asc.vf.canCall(addr) == (addr in callers)

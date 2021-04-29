@@ -46,7 +46,7 @@ def deploy_initial_ASC_contracts(ASCoin, PriceOracle, Oracle, StakeManager, Regi
         asc.o,
         asc.vf
     )
-    asc.vf.setReg(asc.r, asc.FR_DEPLOYER)
+    asc.vf.setCaller(asc.r, True, asc.FR_DEPLOYER)
     asc.m = asc.DEPLOYER.deploy(
         Miner,
         asc.ASC,
