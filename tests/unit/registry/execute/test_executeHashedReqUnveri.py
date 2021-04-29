@@ -42,7 +42,7 @@ def test_executeHashedReqUnveri_rev_initEthSent(asc, mockTarget, stakedMin):
     asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
     with reverts(REV_MSG_CANNOT_VERIFY):
-        asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+        asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReqUnveri_rev_ethForCall(asc, mockTarget, stakedMin):
@@ -53,7 +53,7 @@ def test_executeHashedReqUnveri_rev_ethForCall(asc, mockTarget, stakedMin):
     asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
     with reverts(REV_MSG_CANNOT_VERIFY):
-        asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+        asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReqUnveri_rev_payWithASC(asc, mockTarget, stakedMin):
@@ -64,7 +64,7 @@ def test_executeHashedReqUnveri_rev_payWithASC(asc, mockTarget, stakedMin):
     asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
     with reverts(REV_MSG_CANNOT_VERIFY):
-        asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+        asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReqUnveri_rev_verifySender(asc, mockTarget, stakedMin):
@@ -75,7 +75,7 @@ def test_executeHashedReqUnveri_rev_verifySender(asc, mockTarget, stakedMin):
     asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
     with reverts(REV_MSG_CANNOT_VERIFY):
-        asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+        asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReqUnveri_pay_ASC(asc, stakedMin, mockTarget, hashedReqUnveri):
@@ -90,7 +90,7 @@ def test_executeHashedReqUnveri_pay_ASC(asc, stakedMin, mockTarget, hashedReqUnv
     assert asc.ASC.balanceOf(asc.DENICE) == 0
     assert asc.ASC.balanceOf(asc.r) == 0
 
-    tx = asc.r.executeHashedReqUnveri(id, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    tx = asc.r.executeHashedReqUnveri(id, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
@@ -99,7 +99,7 @@ def test_executeHashedReqUnveri_pay_ASC(asc, stakedMin, mockTarget, hashedReqUnv
     assert asc.r.balance() == 0
     assert mockTarget.balance() == 0
     # ASC bals
-    ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+    ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
     assert asc.ASC.balanceOf(asc.DENICE) == 0
@@ -132,7 +132,7 @@ def test_executeHashedReqUnveri_rev_target_is_registry(asc, mockTarget, stakedMi
     req = (asc.BOB.address, asc.r.address, callData, False, True, 0, 0, asc.DENICE.address)
 
     with reverts(REV_MSG_TARGET):
-        asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+        asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReqUnveri_rev_target_is_ASCoin(asc, mockTarget, stakedMin, hashedReqUnveri):
@@ -141,13 +141,13 @@ def test_executeHashedReqUnveri_rev_target_is_ASCoin(asc, mockTarget, stakedMin,
     req = (asc.BOB.address, asc.ASC.address, callData, False, True, 0, 0, asc.DENICE.address)
 
     with reverts(REV_MSG_TARGET):
-        asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+        asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReqUnveri_rev_not_executor(asc, stakedMin, hashedReqUnveri):
     req, reqHashBytes = hashedReqUnveri
     with reverts(REV_MSG_NOT_EXEC):
-        asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': asc.DENICE, 'gasPrice': TEST_GAS_PRICE})
+        asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': asc.DENICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReqUnveri_rev_req_not_the_same(asc, stakedMin, hashedReqUnveri):
@@ -156,17 +156,17 @@ def test_executeHashedReqUnveri_rev_req_not_the_same(asc, stakedMin, hashedReqUn
     invalidReq = list(req)
     invalidReq[6] = 1
     with reverts(REV_MSG_NOT_SAME):
-        asc.r.executeHashedReqUnveri(0, invalidReq, *getIpfsMetaData(asc, invalidReq), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+        asc.r.executeHashedReqUnveri(0, invalidReq, *getIpfsMetaData(asc, invalidReq), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReqUnveri_rev_already_executed(asc, stakedMin, hashedReqUnveri):
     _, staker, __ = stakedMin
     req, reqHashBytes = hashedReqUnveri
 
-    asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
     with reverts(REV_MSG_NOT_SAME):
-        asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+        asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReqUnveri_rev_noFish(asc, vulnerableRegistry, vulnerableHashedReqUnveri, stakedMin):
@@ -175,4 +175,4 @@ def test_executeHashedReqUnveri_rev_noFish(asc, vulnerableRegistry, vulnerableHa
     id = 0
 
     with reverts(REV_MSG_FISHY):
-        vulnerableRegistry.executeHashedReqUnveri(id, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+        vulnerableRegistry.executeHashedReqUnveri(id, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})

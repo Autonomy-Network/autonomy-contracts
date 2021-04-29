@@ -244,7 +244,7 @@ def test_cancelHashedReq_rev_already_executed(asc, stakedMin, mockTarget, hashed
     _, staker, __ = stakedMin
     reqs, reqHashes, msgValue, ethForCall = hashedReqs
     id = 1
-    asc.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    asc.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
     with reverts(REV_MSG_NOT_SAME):
         asc.r.cancelHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), asc.FR_BOB)

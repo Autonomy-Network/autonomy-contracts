@@ -218,12 +218,12 @@ def test_cancelRawReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, m
 
 def test_cancelRawReq_rev_not_requester(asc, stakedMin, reqsRaw):
     with reverts(REV_MSG_NOT_REQUESTER):
-        asc.r.cancelRawReq(2, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+        asc.r.cancelRawReq(2, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 # If it's already been executed, then Request.requester will be ETH_ADDR
 def test_cancelRawReq_rev_already_executed(asc, stakedMin, reqsRaw):
-    asc.r.cancelRawReq(2, {'from': asc.BOB, 'gasPrice': TEST_GAS_PRICE})
+    asc.r.cancelRawReq(2, {'from': asc.BOB, 'gasPrice': INIT_GAS_PRICE_FAST})
 
     with reverts(REV_MSG_NOT_REQUESTER):
-        asc.r.cancelRawReq(2, {'from': asc.BOB, 'gasPrice': TEST_GAS_PRICE})
+        asc.r.cancelRawReq(2, {'from': asc.BOB, 'gasPrice': INIT_GAS_PRICE_FAST})

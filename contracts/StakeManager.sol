@@ -89,7 +89,7 @@ contract StakeManager is IStakeManager, Shared {
         // So that the storage is only loaded once
         Executor memory ex = _executor;
         if (ex.addr == addr && ex.forEpoch == getCurEpoch()) { return true; }
-        // If there's no stakes, allow anyone to be the executor so that a random
+        // If there're no stakes, allow anyone to be the executor so that a random
         // person can bootstrap the network and nobody needs to be sent any coins
         if (_stakes.length == 0) { return true; }
         
@@ -105,7 +105,6 @@ contract StakeManager is IStakeManager, Shared {
             // -1 because blockhash(seed) in Oracle will return 0x00 if the
             // seed == this block's height
             randNum = _oracle.getRandNum(epoch - 1);
-            // idxOfExecutor = randNum % _stakes.length;
             idxOfExecutor = getRemainder(randNum, _stakes.length);
             exec = _stakes[idxOfExecutor];
         }
@@ -123,7 +122,6 @@ contract StakeManager is IStakeManager, Shared {
     //////////////////////////////////////////////////////////////
 
     // Calls updateExec()
-    // function updateExecutor() public updateExec noFish returns (uint, uint, address) {}
     function updateExecutor() external override noFish returns (uint, uint, uint, address) {
         return _updateExecutor();
     }
@@ -148,9 +146,9 @@ contract StakeManager is IStakeManager, Shared {
         uint amount = numStakes * STAN_STAKE;
         // Deposit the coins
         uint balBefore = _ASCoin.balanceOf(address(this));
-        _ASCoin.transferFrom(msg.sender, address(this), amount);
+        require(_ASCoin.transferFrom(msg.sender, address(this), amount), "SM: transfer failed");
         // This check is a bit unnecessary, but better to be paranoid than r3kt
-        require(_ASCoin.balanceOf(address(this)) - balBefore == amount, "SM: transfer failed");
+        require(_ASCoin.balanceOf(address(this)) - balBefore == amount, "SM: transfer bal check failed");
 
         for (uint i; i < numStakes; i++) {
             _stakes.push(msg.sender);

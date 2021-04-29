@@ -14,5 +14,5 @@ interface IOracle {
 
     function getETHPerUSD() external view returns (uint);
 
-    function setPriceOracle(IPriceOracle newPriceOracle) external;
+    function getGasPriceFast() external view returns (uint);
 }

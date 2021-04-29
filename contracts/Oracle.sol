@@ -32,7 +32,11 @@ contract Oracle is IOracle, Ownable {
         return _priceOracle.getETHPerUSD();
     }
 
-    function setPriceOracle(IPriceOracle newPriceOracle) external override onlyOwner {
+    function getGasPriceFast() external override view returns (uint) {
+        return _priceOracle.getGasPriceFast();
+    }
+
+    function setPriceOracle(IPriceOracle newPriceOracle) external onlyOwner {
         _priceOracle = newPriceOracle;
     }
 }

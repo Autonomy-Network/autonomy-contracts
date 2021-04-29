@@ -14,7 +14,7 @@ from utils import *
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     callData = mockTarget.useGasWithArray.encode_input(0)
 #     asc.r.newRawReq(mockTarget, callData, False, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -31,7 +31,7 @@ from utils import *
 #         callData = mockTarget.useGasWithArray.encode_input(i)
 #         asc.r.newRawReq(mockTarget, callData, False, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
 #         ethSpent = (tx.gas_used * tx.gas_price)
@@ -59,7 +59,7 @@ from utils import *
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     callData = mockTarget.useGasWithCallData.encode_input([])
 #     asc.r.newRawReq(mockTarget, callData, False, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -76,7 +76,7 @@ from utils import *
 #         callData = mockTarget.useGasWithCallData.encode_input([i for i in range(i)])
 #         asc.r.newRawReq(mockTarget, callData, False, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
 #         ethSpent = (tx.gas_used * tx.gas_price)
@@ -104,7 +104,7 @@ from utils import *
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     callData = mockTarget.useGasCallDataAndArray.encode_input([])
 #     asc.r.newRawReq(mockTarget, callData, False, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -121,7 +121,7 @@ from utils import *
 #         callData = mockTarget.useGasCallDataAndArray.encode_input([i for i in range(i)])
 #         asc.r.newRawReq(mockTarget, callData, False, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
 #         ethSpent = (tx.gas_used * tx.gas_price)
@@ -151,7 +151,7 @@ from utils import *
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     callData = mockTarget.useGasCallDataAndAddrArray.encode_input([])
 #     asc.r.newRawReq(mockTarget, callData, False, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -168,7 +168,7 @@ from utils import *
 #         callData = mockTarget.useGasCallDataAndAddrArray.encode_input(addrs[:i])
 #         asc.r.newRawReq(mockTarget, callData, False, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
 #         ethSpent = (tx.gas_used * tx.gas_price)
@@ -198,7 +198,7 @@ from utils import *
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     callData = mockTarget.useGasCallDataAndSpecificAddrArray.encode_input([], 0)
 #     asc.r.newRawReq(mockTarget, callData, False, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -215,7 +215,7 @@ from utils import *
 #         callData = mockTarget.useGasCallDataAndSpecificAddrArray.encode_input(addrs, i)
 #         asc.r.newRawReq(mockTarget, callData, False, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
 #         ethSpent = (tx.gas_used * tx.gas_price)
@@ -245,7 +245,7 @@ from utils import *
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     callData = mockTarget.useGasCallDataAndAddrArrayMultiple.encode_input([], 0)
 #     asc.r.newRawReq(mockTarget, callData, False, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -262,7 +262,7 @@ from utils import *
 #         callData = mockTarget.useGasCallDataAndAddrArrayMultiple.encode_input(addrs, i)
 #         asc.r.newRawReq(mockTarget, callData, False, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
 #         ethSpent = (tx.gas_used * tx.gas_price)
@@ -295,7 +295,7 @@ from utils import *
 #     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 #     callData = mockTarget.useGasWithArray.encode_input(0)
 #     asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -311,9 +311,9 @@ from utils import *
 #         callData = mockTarget.useGasWithArray.encode_input(i)
 #         asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 
@@ -337,7 +337,7 @@ from utils import *
 #     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 #     callData = mockTarget.useGasWithCallData.encode_input([])
 #     asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -354,9 +354,9 @@ from utils import *
 #         # print(callData)
 #         asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 
@@ -380,7 +380,7 @@ from utils import *
 #     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 #     callData = mockTarget.useGasCallDataAndArray.encode_input([])
 #     asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -397,9 +397,9 @@ from utils import *
 #         # print(callData)
 #         asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 
@@ -425,7 +425,7 @@ from utils import *
 #     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 #     callData = mockTarget.useGasCallDataAndAddrArray.encode_input([])
 #     asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -442,9 +442,9 @@ from utils import *
 #         # print(callData)
 #         asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 
@@ -470,7 +470,7 @@ from utils import *
 #     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 #     callData = mockTarget.useGasCallDataAndSpecificAddrArray.encode_input([], 0)
 #     asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -487,9 +487,9 @@ from utils import *
 #         # print(callData)
 #         asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 
@@ -516,7 +516,7 @@ from utils import *
 #     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 #     callData = mockTarget.useGasCallDataAndAddrArrayMultiple.encode_input([], 0)
 #     asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -533,9 +533,9 @@ from utils import *
 #         # print(callData)
 #         asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 
@@ -579,7 +579,7 @@ from utils import *
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     callData = mockTarget.useGasWithArrayVeri.encode_input(asc.BOB, 0)
 #     asc.r.newRawReq(mockTarget, callData, True, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -596,7 +596,7 @@ from utils import *
 #         callData = mockTarget.useGasWithArrayVeri.encode_input(asc.BOB, i)
 #         asc.r.newRawReq(mockTarget, callData, True, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
 #         ethSpent = (tx.gas_used * tx.gas_price)
@@ -624,7 +624,7 @@ from utils import *
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     callData = mockTarget.useGasWithCallDataVeri.encode_input(asc.BOB, [])
 #     asc.r.newRawReq(mockTarget, callData, True, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -641,7 +641,7 @@ from utils import *
 #         callData = mockTarget.useGasWithCallDataVeri.encode_input(asc.BOB, [i for i in range(i)])
 #         asc.r.newRawReq(mockTarget, callData, True, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
 #         ethSpent = (tx.gas_used * tx.gas_price)
@@ -669,7 +669,7 @@ from utils import *
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     callData = mockTarget.useGasCallDataAndArrayVeri.encode_input(asc.BOB, [])
 #     asc.r.newRawReq(mockTarget, callData, True, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -686,7 +686,7 @@ from utils import *
 #         callData = mockTarget.useGasCallDataAndArrayVeri.encode_input(asc.BOB, [i for i in range(i)])
 #         asc.r.newRawReq(mockTarget, callData, True, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
 #         ethSpent = (tx.gas_used * tx.gas_price)
@@ -716,7 +716,7 @@ from utils import *
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     callData = mockTarget.useGasCallDataAndAddrArrayVeri.encode_input(asc.BOB, [])
 #     asc.r.newRawReq(mockTarget, callData, True, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -733,7 +733,7 @@ from utils import *
 #         callData = mockTarget.useGasCallDataAndAddrArrayVeri.encode_input(asc.BOB, addrs[:i])
 #         asc.r.newRawReq(mockTarget, callData, True, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
 #         ethSpent = (tx.gas_used * tx.gas_price)
@@ -763,7 +763,7 @@ from utils import *
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     callData = mockTarget.useGasCallDataAndSpecificAddrArrayVeri.encode_input(asc.BOB, [], 0)
 #     asc.r.newRawReq(mockTarget, callData, True, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -780,7 +780,7 @@ from utils import *
 #         callData = mockTarget.useGasCallDataAndSpecificAddrArrayVeri.encode_input(asc.BOB, addrs, i)
 #         asc.r.newRawReq(mockTarget, callData, True, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
 #         ethSpent = (tx.gas_used * tx.gas_price)
@@ -810,7 +810,7 @@ from utils import *
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     callData = mockTarget.useGasCallDataAndAddrArrayMultipleVeri.encode_input(asc.BOB, [], 0)
 #     asc.r.newRawReq(mockTarget, callData, True, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -827,7 +827,7 @@ from utils import *
 #         callData = mockTarget.useGasCallDataAndAddrArrayMultipleVeri.encode_input(asc.BOB, addrs, i)
 #         asc.r.newRawReq(mockTarget, callData, True, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
 #         ethSpent = (tx.gas_used * tx.gas_price)
@@ -860,7 +860,7 @@ from utils import *
 #     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 #     callData = mockTarget.useGasWithArrayVeri.encode_input(asc.BOB, 0)
 #     asc.r.newRawReq(mockTarget, callData, True, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -876,9 +876,9 @@ from utils import *
 #         callData = mockTarget.useGasWithArrayVeri.encode_input(asc.BOB, i)
 #         asc.r.newRawReq(mockTarget, callData, True, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 
@@ -902,7 +902,7 @@ from utils import *
 #     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 #     callData = mockTarget.useGasWithCallDataVeri.encode_input(asc.BOB, [])
 #     asc.r.newRawReq(mockTarget, callData, True, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -919,9 +919,9 @@ from utils import *
 #         # print(callData)
 #         asc.r.newRawReq(mockTarget, callData, True, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 
@@ -945,7 +945,7 @@ from utils import *
 #     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 #     callData = mockTarget.useGasCallDataAndArrayVeri.encode_input(asc.BOB, [])
 #     asc.r.newRawReq(mockTarget, callData, True, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -962,9 +962,9 @@ from utils import *
 #         # print(callData)
 #         asc.r.newRawReq(mockTarget, callData, True, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 
@@ -990,7 +990,7 @@ from utils import *
 #     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 #     callData = mockTarget.useGasCallDataAndAddrArrayVeri.encode_input(asc.BOB, [])
 #     asc.r.newRawReq(mockTarget, callData, True, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -1007,9 +1007,9 @@ from utils import *
 #         # print(callData)
 #         asc.r.newRawReq(mockTarget, callData, True, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 
@@ -1035,7 +1035,7 @@ from utils import *
 #     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 #     callData = mockTarget.useGasCallDataAndSpecificAddrArrayVeri.encode_input(asc.BOB, [], 0)
 #     asc.r.newRawReq(mockTarget, callData, True, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -1052,9 +1052,9 @@ from utils import *
 #         # print(callData)
 #         asc.r.newRawReq(mockTarget, callData, True, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 
@@ -1081,7 +1081,7 @@ from utils import *
 #     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 #     callData = mockTarget.useGasCallDataAndAddrArrayMultipleVeri.encode_input(asc.BOB, [], 0)
 #     asc.r.newRawReq(mockTarget, callData, True, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -1098,9 +1098,9 @@ from utils import *
 #         # print(callData)
 #         asc.r.newRawReq(mockTarget, callData, True, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 

@@ -21,7 +21,7 @@ from utils import *
 #     reqHashBytes = addReqGetHashBytes(asc, req)
 #     asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
-#     tx = asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -42,9 +42,9 @@ from utils import *
 #         reqHashBytes = addReqGetHashBytes(asc, req)
 #         asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
-#         tx = asc.r.executeHashedReqUnveri(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeHashedReqUnveri(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 
@@ -71,7 +71,7 @@ from utils import *
 #     reqHashBytes = addReqGetHashBytes(asc, req)
 #     asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
-#     tx = asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -92,9 +92,9 @@ from utils import *
 #         reqHashBytes = addReqGetHashBytes(asc, req)
 #         asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
-#         tx = asc.r.executeHashedReqUnveri(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeHashedReqUnveri(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 
@@ -121,7 +121,7 @@ from utils import *
 #     reqHashBytes = addReqGetHashBytes(asc, req)
 #     asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
-#     tx = asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -139,9 +139,9 @@ from utils import *
 #         reqHashBytes = addReqGetHashBytes(asc, req)
 #         asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
-#         tx = asc.r.executeHashedReqUnveri(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeHashedReqUnveri(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 
@@ -170,7 +170,7 @@ from utils import *
 #     reqHashBytes = addReqGetHashBytes(asc, req)
 #     asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
-#     tx = asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -188,9 +188,9 @@ from utils import *
 #         reqHashBytes = addReqGetHashBytes(asc, req)
 #         asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
-#         tx = asc.r.executeHashedReqUnveri(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeHashedReqUnveri(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 
@@ -219,7 +219,7 @@ from utils import *
 #     reqHashBytes = addReqGetHashBytes(asc, req)
 #     asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
-#     tx = asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -240,9 +240,9 @@ from utils import *
 #         reqHashBytes = addReqGetHashBytes(asc, req)
 #         asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
-#         tx = asc.r.executeHashedReqUnveri(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeHashedReqUnveri(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 
@@ -272,7 +272,7 @@ from utils import *
 #     reqHashBytes = addReqGetHashBytes(asc, req)
 #     asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
-#     tx = asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -290,9 +290,9 @@ from utils import *
 #         reqHashBytes = addReqGetHashBytes(asc, req)
 #         asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
-#         tx = asc.r.executeHashedReqUnveri(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeHashedReqUnveri(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 

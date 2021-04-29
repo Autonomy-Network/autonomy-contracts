@@ -275,7 +275,6 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         } else {
             require(address(this).balance >= ethStartBal - r.initEthSent, "Reg: something fishy here");
         }
-        // emit Test(gasss - gasleft(), 0, 0, false);
     }
 
     /**
@@ -379,6 +378,9 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
             _referalCounts[r.referer] += 1;
         }
 
+        IOracle orac = _oracle;
+        uint gasPrice = orac.getGasPriceFast();
+
         uint numStorageRefunds = (gasUsedInDelete / 5000) - 1;
         
         uint callGasUsed = (startGas - gasleft());
@@ -395,8 +397,8 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
                 gasUsed -= gasRefunded;
             }
 
-            uint gasInASC = gasUsed * tx.gasprice * _oracle.getASCPerUSD() / _oracle.getETHPerUSD();
-            uint ASCNeeded = (_oracle.getASCPerUSD() * BASE_BOUNTY_USD) + gasInASC;
+            uint gasInASC = gasUsed * tx.gasprice * orac.getASCPerUSD() / orac.getETHPerUSD();
+            uint ASCNeeded = (orac.getASCPerUSD() * BASE_BOUNTY_USD) + gasInASC;
 
             // Send the executor their bounty
             require(_ASCoin.transferFrom(r.requester, msg.sender, ASCNeeded));
@@ -409,7 +411,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
                 gasUsed -= gasRefunded;
             }
 
-            uint ethNeeded = (gasUsed * tx.gasprice) + (3 * BASE_BOUNTY_USD * _oracle.getETHPerUSD());
+            uint ethNeeded = (gasUsed * tx.gasprice) + (3 * BASE_BOUNTY_USD * orac.getETHPerUSD());
             uint ethReceived = r.initEthSent - r.ethForCall;
 
             // Send the executor their bounty

@@ -16,7 +16,7 @@ from utils import *
 #     req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0, asc.DENICE.address)
 #     asc.r.newHashedReq(mockTarget, callData, False, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
-#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -37,7 +37,7 @@ from utils import *
 #         req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0, asc.DENICE.address)
 #         asc.r.newHashedReq(mockTarget, callData, False, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
-#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
 #         ethSpent = (tx.gas_used * tx.gas_price)
@@ -67,7 +67,7 @@ from utils import *
 #     req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0, asc.DENICE.address)
 #     asc.r.newHashedReq(mockTarget, callData, False, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
-#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -88,7 +88,7 @@ from utils import *
 #         req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0, asc.DENICE.address)
 #         asc.r.newHashedReq(mockTarget, callData, False, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
-#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
 #         ethSpent = (tx.gas_used * tx.gas_price)
@@ -118,7 +118,7 @@ from utils import *
 #     req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0, asc.DENICE.address)
 #     asc.r.newHashedReq(mockTarget, callData, False, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
-#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -139,7 +139,7 @@ from utils import *
 #         req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0, asc.DENICE.address)
 #         asc.r.newHashedReq(mockTarget, callData, False, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
-#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
 #         ethSpent = (tx.gas_used * tx.gas_price)
@@ -171,7 +171,7 @@ from utils import *
 #     req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0, asc.DENICE.address)
 #     asc.r.newHashedReq(mockTarget, callData, False, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
-#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -192,7 +192,7 @@ from utils import *
 #         req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0, asc.DENICE.address)
 #         asc.r.newHashedReq(mockTarget, callData, False, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
-#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
 #         ethSpent = (tx.gas_used * tx.gas_price)
@@ -224,7 +224,7 @@ from utils import *
 #     req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0, asc.DENICE.address)
 #     asc.r.newHashedReq(mockTarget, callData, False, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
-#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -245,7 +245,7 @@ from utils import *
 #         req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0, asc.DENICE.address)
 #         asc.r.newHashedReq(mockTarget, callData, False, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
-#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
 #         ethSpent = (tx.gas_used * tx.gas_price)
@@ -277,7 +277,7 @@ from utils import *
 #     req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0, asc.DENICE.address)
 #     asc.r.newHashedReq(mockTarget, callData, False, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
-#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -298,7 +298,7 @@ from utils import *
 #         req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0, asc.DENICE.address)
 #         asc.r.newHashedReq(mockTarget, callData, False, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
-#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
 #         ethSpent = (tx.gas_used * tx.gas_price)
@@ -333,7 +333,7 @@ from utils import *
 #     req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
 #     asc.r.newHashedReq(mockTarget, callData, False, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
-#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -353,9 +353,9 @@ from utils import *
 #         req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
 #         asc.r.newHashedReq(mockTarget, callData, False, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
-#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 
@@ -381,7 +381,7 @@ from utils import *
 #     req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
 #     asc.r.newHashedReq(mockTarget, callData, False, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
-#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -401,9 +401,9 @@ from utils import *
 #         req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
 #         asc.r.newHashedReq(mockTarget, callData, False, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
-#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 
@@ -429,7 +429,7 @@ from utils import *
 #     req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
 #     asc.r.newHashedReq(mockTarget, callData, False, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
-#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -446,9 +446,9 @@ from utils import *
 #         req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
 #         asc.r.newHashedReq(mockTarget, callData, False, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
-#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 
@@ -476,7 +476,7 @@ from utils import *
 #     req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
 #     asc.r.newHashedReq(mockTarget, callData, False, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
-#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -493,9 +493,9 @@ from utils import *
 #         req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
 #         asc.r.newHashedReq(mockTarget, callData, False, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
-#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 
@@ -523,7 +523,7 @@ from utils import *
 #     req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
 #     asc.r.newHashedReq(mockTarget, callData, False, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
-#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -543,9 +543,9 @@ from utils import *
 #         req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
 #         asc.r.newHashedReq(mockTarget, callData, False, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
-#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 
@@ -574,7 +574,7 @@ from utils import *
 #     req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
 #     asc.r.newHashedReq(mockTarget, callData, False, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
-#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -591,9 +591,9 @@ from utils import *
 #         req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
 #         asc.r.newHashedReq(mockTarget, callData, False, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
-#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 
@@ -640,7 +640,7 @@ from utils import *
 #     req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0, asc.DENICE.address)
 #     asc.r.newHashedReq(mockTarget, callData, True, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
-#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -661,7 +661,7 @@ from utils import *
 #         req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0, asc.DENICE.address)
 #         asc.r.newHashedReq(mockTarget, callData, True, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
-#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
 #         ethSpent = (tx.gas_used * tx.gas_price)
@@ -691,7 +691,7 @@ from utils import *
 #     req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0, asc.DENICE.address)
 #     asc.r.newHashedReq(mockTarget, callData, True, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
-#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -712,7 +712,7 @@ from utils import *
 #         req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0, asc.DENICE.address)
 #         asc.r.newHashedReq(mockTarget, callData, True, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
-#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
 #         ethSpent = (tx.gas_used * tx.gas_price)
@@ -742,7 +742,7 @@ from utils import *
 #     req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0, asc.DENICE.address)
 #     asc.r.newHashedReq(mockTarget, callData, True, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
-#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -763,7 +763,7 @@ from utils import *
 #         req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0, asc.DENICE.address)
 #         asc.r.newHashedReq(mockTarget, callData, True, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
-#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
 #         ethSpent = (tx.gas_used * tx.gas_price)
@@ -795,7 +795,7 @@ from utils import *
 #     req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0, asc.DENICE.address)
 #     asc.r.newHashedReq(mockTarget, callData, True, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
-#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -816,7 +816,7 @@ from utils import *
 #         req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0, asc.DENICE.address)
 #         asc.r.newHashedReq(mockTarget, callData, True, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
-#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
 #         ethSpent = (tx.gas_used * tx.gas_price)
@@ -848,7 +848,7 @@ from utils import *
 #     req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0, asc.DENICE.address)
 #     asc.r.newHashedReq(mockTarget, callData, True, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
-#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -869,7 +869,7 @@ from utils import *
 #         req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0, asc.DENICE.address)
 #         asc.r.newHashedReq(mockTarget, callData, True, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
-#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
 #         ethSpent = (tx.gas_used * tx.gas_price)
@@ -901,7 +901,7 @@ from utils import *
 #     req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0, asc.DENICE.address)
 #     asc.r.newHashedReq(mockTarget, callData, True, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
-#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -922,7 +922,7 @@ from utils import *
 #         req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0, asc.DENICE.address)
 #         asc.r.newHashedReq(mockTarget, callData, True, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
-#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
 #         ethSpent = (tx.gas_used * tx.gas_price)
@@ -956,7 +956,7 @@ from utils import *
 #     req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0, asc.DENICE.address)
 #     asc.r.newHashedReq(mockTarget, callData, True, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
-#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -976,9 +976,9 @@ from utils import *
 #         req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0, asc.DENICE.address)
 #         asc.r.newHashedReq(mockTarget, callData, True, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
-#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 
@@ -1004,7 +1004,7 @@ from utils import *
 #     req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0, asc.DENICE.address)
 #     asc.r.newHashedReq(mockTarget, callData, True, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
-#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -1024,9 +1024,9 @@ from utils import *
 #         req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0, asc.DENICE.address)
 #         asc.r.newHashedReq(mockTarget, callData, True, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
-#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 
@@ -1052,7 +1052,7 @@ from utils import *
 #     req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0, asc.DENICE.address)
 #     asc.r.newHashedReq(mockTarget, callData, True, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
-#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -1069,9 +1069,9 @@ from utils import *
 #         req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0, asc.DENICE.address)
 #         asc.r.newHashedReq(mockTarget, callData, True, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
-#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 
@@ -1099,7 +1099,7 @@ from utils import *
 #     req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0, asc.DENICE.address)
 #     asc.r.newHashedReq(mockTarget, callData, True, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
-#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -1116,9 +1116,9 @@ from utils import *
 #         req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0, asc.DENICE.address)
 #         asc.r.newHashedReq(mockTarget, callData, True, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
-#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 
@@ -1146,7 +1146,7 @@ from utils import *
 #     req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0, asc.DENICE.address)
 #     asc.r.newHashedReq(mockTarget, callData, True, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
-#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -1166,9 +1166,9 @@ from utils import *
 #         req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0, asc.DENICE.address)
 #         asc.r.newHashedReq(mockTarget, callData, True, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
-#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 
@@ -1197,7 +1197,7 @@ from utils import *
 #     req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0, asc.DENICE.address)
 #     asc.r.newHashedReq(mockTarget, callData, True, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
-#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -1214,9 +1214,9 @@ from utils import *
 #         req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0, asc.DENICE.address)
 #         asc.r.newHashedReq(mockTarget, callData, True, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
-#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': TEST_GAS_PRICE})
+#         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 

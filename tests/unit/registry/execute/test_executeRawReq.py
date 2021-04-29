@@ -33,11 +33,11 @@ def test_executeRawReq_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.ASC.balanceOf(asc.DENICE) == 0
     assert asc.ASC.balanceOf(asc.r) == 0
 
-    tx = asc.r.executeRawReq(id, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    tx = asc.r.executeRawReq(id, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
     # Should've changed
     # Eth bals
-    ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
+    ethForExec = getEthForExec(tx, INIT_ETH_PER_USD, INIT_GAS_PRICE_FAST)
     assert asc.ALICE.balance() == INIT_ETH_BAL + ethForExec - (tx.gas_used * tx.gas_price)
     assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall)) + msgValue - ethForExec
     assert asc.r.balance() == msgValue + (2 * ethForCall)
@@ -81,11 +81,11 @@ def test_executeRawReq_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.ASC.balanceOf(asc.DENICE) == 0
     assert asc.ASC.balanceOf(asc.r) == 0
 
-    tx = asc.r.executeRawReq(id, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    tx = asc.r.executeRawReq(id, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
     # Should've changed
     # Eth bals
-    ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
+    ethForExec = getEthForExec(tx, INIT_ETH_PER_USD, INIT_GAS_PRICE_FAST)
     assert asc.ALICE.balance() == INIT_ETH_BAL + ethForExec - (tx.gas_used * tx.gas_price)
     assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall)) + msgValue - ethForCall - ethForExec
     assert asc.r.balance() == msgValue + (2 * ethForCall)
@@ -129,7 +129,7 @@ def test_executeRawReq_pay_ASC(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.ASC.balanceOf(asc.DENICE) == 0
     assert asc.ASC.balanceOf(asc.r) == 0
 
-    tx = asc.r.executeRawReq(id, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    tx = asc.r.executeRawReq(id, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
     # Should've changed
     # Eth bals
@@ -138,7 +138,7 @@ def test_executeRawReq_pay_ASC(asc, stakedMin, mockTarget, reqsRaw):
     assert asc.r.balance() == (2 * msgValue) + (2 * ethForCall)
     assert mockTarget.balance() == 0
     # ASC bals
-    ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+    ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
     assert asc.ASC.balanceOf(asc.DENICE) == 0
@@ -177,7 +177,7 @@ def test_executeRawReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsR
     assert asc.ASC.balanceOf(asc.DENICE) == 0
     assert asc.ASC.balanceOf(asc.r) == 0
 
-    tx = asc.r.executeRawReq(id, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    tx = asc.r.executeRawReq(id, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
     # Should've changed
     # Eth bals
@@ -186,7 +186,7 @@ def test_executeRawReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsR
     assert asc.r.balance() == 2 * msgValue + ethForCall
     assert mockTarget.balance() == ethForCall
     # ASC bals
-    ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+    ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
     assert asc.ASC.balanceOf(asc.DENICE) == 0
@@ -227,7 +227,7 @@ def test_executeRawReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, 
     assert asc.ASC.balanceOf(asc.DENICE) == 0
     assert asc.ASC.balanceOf(asc.r) == 0
 
-    tx = asc.r.executeRawReq(id, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    tx = asc.r.executeRawReq(id, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
     # Should've changed
     # Eth bals
@@ -236,7 +236,7 @@ def test_executeRawReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, 
     assert asc.r.balance() == 2 * msgValue + ethForCall
     assert mockTarget.balance() == ethForCall
     # ASC bals
-    ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+    ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
     assert asc.ASC.balanceOf(asc.DENICE) == 0
@@ -265,15 +265,15 @@ def test_executeRawReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, 
 
 def test_executeRawReq_rev_already_executed(asc, stakedMin, reqsRaw):
     _, staker, __ = stakedMin
-    asc.r.executeRawReq(2, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    asc.r.executeRawReq(2, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
     with reverts(REV_MSG_ALREADY_EXECUTED):
-        asc.r.executeRawReq(2, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+        asc.r.executeRawReq(2, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeRawReq_rev_not_executor(asc, stakedMin, reqsRaw):
     with reverts(REV_MSG_NOT_EXEC):
-        asc.r.executeRawReq(2, {'from': asc.DENICE, 'gasPrice': TEST_GAS_PRICE})
+        asc.r.executeRawReq(2, {'from': asc.DENICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeRawReq_rev_noFish_pay_eth(asc, vulnerableRegistry, vulnerableReqsRaw, stakedMin):
@@ -282,7 +282,7 @@ def test_executeRawReq_rev_noFish_pay_eth(asc, vulnerableRegistry, vulnerableReq
     id = 0
 
     with reverts(REV_MSG_FISHY):
-        vulnerableRegistry.executeRawReq(id, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+        vulnerableRegistry.executeRawReq(id, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeRawReq_rev_noFish_payWithASC(asc, vulnerableRegistry, vulnerableReqsRaw, stakedMin):
@@ -291,4 +291,4 @@ def test_executeRawReq_rev_noFish_payWithASC(asc, vulnerableRegistry, vulnerable
     id = 1
 
     with reverts(REV_MSG_FISHY):
-        vulnerableRegistry.executeRawReq(id, {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+        vulnerableRegistry.executeRawReq(id, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})

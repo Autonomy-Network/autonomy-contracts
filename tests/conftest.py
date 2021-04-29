@@ -35,7 +35,7 @@ def deploy_initial_ASC_contracts(ASCoin, PriceOracle, Oracle, StakeManager, Regi
     chain.mine(BLOCKS_IN_EPOCH)
 
     asc.ASC = asc.DEPLOYER.deploy(ASCoin, "Active Smart Contract Protocol", "ASC")
-    asc.po = asc.DEPLOYER.deploy(PriceOracle, INIT_ASC_PER_USD, INIT_ETH_PER_USD)
+    asc.po = asc.DEPLOYER.deploy(PriceOracle, INIT_ASC_PER_USD, INIT_ETH_PER_USD, INIT_GAS_PRICE_FAST)
     asc.o = asc.DEPLOYER.deploy(Oracle, asc.po)
     asc.sm = asc.DEPLOYER.deploy(StakeManager, asc.o, asc.ASC)
     asc.vf = asc.DEPLOYER.deploy(Forwarder)

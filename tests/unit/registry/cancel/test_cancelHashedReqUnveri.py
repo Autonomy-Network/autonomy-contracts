@@ -80,7 +80,7 @@ def test_cancelHashedReqUnveri_rev_already_executed(asc, stakedMin, mockTarget, 
     _, staker, __ = stakedMin
     req, reqHashBytes = hashedReqUnveri
     id = 0
-    asc.r.executeHashedReqUnveri(id, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    asc.r.executeHashedReqUnveri(id, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
     with reverts(REV_MSG_NOT_SAME):
         asc.r.cancelHashedReqUnveri(id, req, *getIpfsMetaData(asc, req), asc.FR_BOB)

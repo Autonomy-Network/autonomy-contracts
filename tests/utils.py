@@ -120,13 +120,13 @@ def addReqGetHashBytes(asc, req):
 
 
 # No way for INIT_BASE_BOUNTY_USD to be changed
-def getEthForExec(tx, ethRate):
-    return (tx.return_value * tx.gas_price) + (3 * INIT_BASE_BOUNTY_USD * ethRate)
+def getEthForExec(tx, ethRate, gasPriceFast):
+    return (tx.return_value * gasPriceFast) + (3 * INIT_BASE_BOUNTY_USD * ethRate)
 
 
-def getASCForExec(asc, tx, ethRate, ascRate):
+def getASCForExec(asc, tx, ethRate, ascRate, gasPriceFast):
     # Need to account for differences in division between Python and Solidity
-    gasInASC = tx.return_value * tx.gas_price * asc.r.divAOverB(ascRate, ethRate)
+    gasInASC = tx.return_value * gasPriceFast * asc.r.divAOverB(ascRate, ethRate)
     return (INIT_BASE_BOUNTY_USD * ascRate) + int(gasInASC)
 
 

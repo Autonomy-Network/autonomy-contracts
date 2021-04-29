@@ -57,9 +57,9 @@ def test_executeHashedReq_validCalldata(asc, stakedMin, mockTarget, ethForCall, 
 
         if userAddr != sender:
             with reverts(REV_MSG_CALLDATA_NOT_VER):
-                asc.r.executeHashedReq(id, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+                asc.r.executeHashedReq(id, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
         else:
-            tx = asc.r.executeHashedReq(id, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+            tx = asc.r.executeHashedReq(id, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
             assert mockTarget.balance() == ethForCall
             if payWithASC:
@@ -67,14 +67,14 @@ def test_executeHashedReq_validCalldata(asc, stakedMin, mockTarget, ethForCall, 
                 assert asc.ALICE.balance() == INIT_ETH_BAL - (tx.gas_used * tx.gas_price)
                 assert sender.balance() == INIT_ETH_BAL - ethForCall
                 # ASC bals
-                ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+                ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
                 assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
                 assert asc.ASC.balanceOf(sender) - senderASCStartBal == -ASCForExec
                 assert asc.ASC.balanceOf(asc.DENICE) == 0
                 assert asc.ASC.balanceOf(asc.r) == 0
             else:
                 # Eth bals
-                ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
+                ethForExec = getEthForExec(tx, INIT_ETH_PER_USD, INIT_GAS_PRICE_FAST)
                 assert asc.ALICE.balance() == INIT_ETH_BAL + ethForExec - (tx.gas_used * tx.gas_price)
                 assert sender.balance() == INIT_ETH_BAL - ethForCall - ethForExec
                 # ASC bals
@@ -120,11 +120,11 @@ def test_executeHashedReq_no_ethForCall(asc, stakedMin, mockTarget, hashedReqs):
     assert asc.ASC.balanceOf(asc.DENICE) == 0
     assert asc.ASC.balanceOf(asc.r) == 0
 
-    tx = asc.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    tx = asc.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
-    ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
+    ethForExec = getEthForExec(tx, INIT_ETH_PER_USD, INIT_GAS_PRICE_FAST)
     assert asc.ALICE.balance() == INIT_ETH_BAL + ethForExec - (tx.gas_used * tx.gas_price)
     assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall)) + msgValue - ethForExec
     assert asc.r.balance() == msgValue + (2 * ethForCall)
@@ -170,11 +170,11 @@ def test_executeHashedReq_with_ethForCall(asc, stakedMin, mockTarget, hashedReqs
     assert asc.ASC.balanceOf(asc.DENICE) == 0
     assert asc.ASC.balanceOf(asc.r) == 0
 
-    tx = asc.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    tx = asc.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
-    ethForExec = getEthForExec(tx, INIT_ETH_PER_USD)
+    ethForExec = getEthForExec(tx, INIT_ETH_PER_USD, INIT_GAS_PRICE_FAST)
     assert asc.ALICE.balance() == INIT_ETH_BAL + ethForExec - (tx.gas_used * tx.gas_price)
     assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall)) + msgValue - ethForCall - ethForExec
     assert asc.r.balance() == msgValue + (2 * ethForCall)
@@ -224,7 +224,7 @@ def test_executeHashedReq_pay_ASC(asc, stakedMin, mockTarget, hashedReqs):
     assert asc.ASC.balanceOf(asc.DENICE) == 0
     assert asc.ASC.balanceOf(asc.r) == 0
 
-    tx = asc.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    tx = asc.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
@@ -233,7 +233,7 @@ def test_executeHashedReq_pay_ASC(asc, stakedMin, mockTarget, hashedReqs):
     assert asc.r.balance() == (2 * msgValue) + (2 * ethForCall)
     assert mockTarget.balance() == 0
     # ASC bals
-    ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+    ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
     assert asc.ASC.balanceOf(asc.DENICE) == 0
@@ -274,7 +274,7 @@ def test_executeHashedReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, ha
     assert asc.ASC.balanceOf(asc.DENICE) == 0
     assert asc.ASC.balanceOf(asc.r) == 0
 
-    tx = asc.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    tx = asc.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
@@ -283,7 +283,7 @@ def test_executeHashedReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, ha
     assert asc.r.balance() == 2 * msgValue + ethForCall
     assert mockTarget.balance() == ethForCall
     # ASC bals
-    ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+    ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
     assert asc.ASC.balanceOf(asc.DENICE) == 0
@@ -324,7 +324,7 @@ def test_executeHashedReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMi
     assert asc.ASC.balanceOf(asc.DENICE) == 0
     assert asc.ASC.balanceOf(asc.r) == 0
 
-    tx = asc.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    tx = asc.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
@@ -333,7 +333,7 @@ def test_executeHashedReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMi
     assert asc.r.balance() == 2 * msgValue + ethForCall
     assert mockTarget.balance() == ethForCall
     # ASC bals
-    ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD)
+    ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
     assert asc.ASC.balanceOf(asc.DENICE) == 0
@@ -362,7 +362,7 @@ def test_executeHashedReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMi
 def test_executeHashedReq_rev_not_executor(asc, stakedMin, hashedReqs):
     reqs, reqHashes, msgValue, ethForCall = hashedReqs
     with reverts(REV_MSG_NOT_EXEC):
-        asc.r.executeHashedReq(0, reqs[0], *getIpfsMetaData(asc, reqs[0]), {'from': asc.DENICE, 'gasPrice': TEST_GAS_PRICE})
+        asc.r.executeHashedReq(0, reqs[0], *getIpfsMetaData(asc, reqs[0]), {'from': asc.DENICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReq_rev_req_not_the_same(asc, stakedMin, hashedReqs):
@@ -371,17 +371,17 @@ def test_executeHashedReq_rev_req_not_the_same(asc, stakedMin, hashedReqs):
     invalidReq = list(reqs[0])
     invalidReq[6] = 1
     with reverts(REV_MSG_NOT_SAME):
-        asc.r.executeHashedReq(0, invalidReq, *getIpfsMetaData(asc, invalidReq), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+        asc.r.executeHashedReq(0, invalidReq, *getIpfsMetaData(asc, invalidReq), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReq_rev_already_executeHashedReqd(asc, stakedMin, hashedReqs):
     _, staker, __ = stakedMin
     reqs, reqHashes, msgValue, ethForCall = hashedReqs
 
-    asc.r.executeHashedReq(0, reqs[0], *getIpfsMetaData(asc, reqs[0]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+    asc.r.executeHashedReq(0, reqs[0], *getIpfsMetaData(asc, reqs[0]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
     with reverts(REV_MSG_NOT_SAME):
-        asc.r.executeHashedReq(0, reqs[0], *getIpfsMetaData(asc, reqs[0]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+        asc.r.executeHashedReq(0, reqs[0], *getIpfsMetaData(asc, reqs[0]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReq_rev_noFish_pay_eth(asc, vulnerableRegistry, vulnerableHashedReqs, stakedMin):
@@ -390,7 +390,7 @@ def test_executeHashedReq_rev_noFish_pay_eth(asc, vulnerableRegistry, vulnerable
     id = 0
 
     with reverts(REV_MSG_FISHY):
-        vulnerableRegistry.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+        vulnerableRegistry.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReq_rev_noFish_payWithASC(asc, vulnerableRegistry, vulnerableHashedReqs, stakedMin):
@@ -399,4 +399,4 @@ def test_executeHashedReq_rev_noFish_payWithASC(asc, vulnerableRegistry, vulnera
     id = 1
 
     with reverts(REV_MSG_FISHY):
-        vulnerableRegistry.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': TEST_GAS_PRICE})
+        vulnerableRegistry.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
