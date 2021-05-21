@@ -397,7 +397,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
                 gasUsed -= gasRefunded;
             }
 
-            uint gasInASC = gasUsed * tx.gasprice * orac.getASCPerUSD() / orac.getETHPerUSD();
+            uint gasInASC = gasUsed * gasPrice * orac.getASCPerUSD() / orac.getETHPerUSD();
             uint ASCNeeded = (orac.getASCPerUSD() * BASE_BOUNTY_USD) + gasInASC;
 
             // Send the executor their bounty
@@ -411,7 +411,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
                 gasUsed -= gasRefunded;
             }
 
-            uint ethNeeded = (gasUsed * tx.gasprice) + (3 * BASE_BOUNTY_USD * orac.getETHPerUSD());
+            uint ethNeeded = (gasUsed * gasPrice) + (3 * BASE_BOUNTY_USD * orac.getETHPerUSD());
             uint ethReceived = r.initEthSent - r.ethForCall;
 
             // Send the executor their bounty

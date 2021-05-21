@@ -92,21 +92,23 @@ contract StakeManager is IStakeManager, Shared {
         // If there're no stakes, allow anyone to be the executor so that a random
         // person can bootstrap the network and nobody needs to be sent any coins
         if (_stakes.length == 0) { return true; }
-        
+
         return false;
     }
 
     function getUpdatedExecRes() public view returns (uint epoch, uint randNum, uint idxOfExecutor, address exec) {
         epoch = getCurEpoch();
+        // So that the storage is only loaded once
+        address[] memory stakes = _stakes;
         // If the executor is out of date and the system already has stake,
         // choose a new executor. This will do nothing if the system is starting
         // and allow someone to stake without needing there to already be existing stakes
-        if (_executor.forEpoch != epoch && _stakes.length > 0) {
+        if (_executor.forEpoch != epoch && stakes.length > 0) {
             // -1 because blockhash(seed) in Oracle will return 0x00 if the
             // seed == this block's height
             randNum = _oracle.getRandNum(epoch - 1);
-            idxOfExecutor = getRemainder(randNum, _stakes.length);
-            exec = _stakes[idxOfExecutor];
+            idxOfExecutor = getRemainder(randNum, stakes.length);
+            exec = stakes[idxOfExecutor];
         }
     }
 
@@ -127,6 +129,7 @@ contract StakeManager is IStakeManager, Shared {
     }
 
     function isUpdatedExec(address addr) external override noFish returns (bool) {
+        // So that the storage is only loaded once
         Executor memory ex = _executor;
         if (ex.forEpoch == getCurEpoch() && ex.addr == addr) {
             return true;
@@ -144,11 +147,13 @@ contract StakeManager is IStakeManager, Shared {
     // game the staker selection algo
     function stake(uint numStakes) external nzUint(numStakes) updateExec noFish override {
         uint amount = numStakes * STAN_STAKE;
+        // So that the storage is only loaded once
+        IERC20 asCoin = _ASCoin;
         // Deposit the coins
-        uint balBefore = _ASCoin.balanceOf(address(this));
-        require(_ASCoin.transferFrom(msg.sender, address(this), amount), "SM: transfer failed");
+        uint balBefore = asCoin.balanceOf(address(this));
+        require(asCoin.transferFrom(msg.sender, address(this), amount), "SM: transfer failed");
         // This check is a bit unnecessary, but better to be paranoid than r3kt
-        require(_ASCoin.balanceOf(address(this)) - balBefore == amount, "SM: transfer bal check failed");
+        require(asCoin.balanceOf(address(this)) - balBefore == amount, "SM: transfer bal check failed");
 
         for (uint i; i < numStakes; i++) {
             _stakes.push(msg.sender);
