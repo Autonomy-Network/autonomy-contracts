@@ -129,6 +129,14 @@ contract MockTarget {
         }
     }
 
+    function revertWithMessage() external {
+        require(false, "You dun goofed boy");
+    }
+
+    function revertWithoutMessage() external {
+        require(false);
+    }
+
 
     modifier updateMsgSender() {
         _;

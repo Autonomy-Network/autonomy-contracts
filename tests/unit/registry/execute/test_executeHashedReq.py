@@ -28,6 +28,30 @@ def test_executeHashedReq_rev_nonReentrant(asc, mockTarget, mockReentrancyAttack
         asc.r.executeHashedReq(1, req2, *getIpfsMetaData(asc, req2))
 
 
+# Check that the revert message from the target contract is passed on correctly
+def test_executeHashedReq_returns_revert_message(asc, stakedMin, mockTarget):
+    _, staker, __ = stakedMin
+    
+    callData = mockTarget.revertWithMessage.encode_input()
+    req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0, asc.DENICE.address)
+    tx = asc.r.newHashedReq(mockTarget, callData, False, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
+
+    with reverts(REV_MSG_GOOFED):
+        asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+
+
+# Check that no revert message from the target contract is passed on correctly
+def test_executeHashedReq_returns_no_revert_message(asc, stakedMin, mockTarget):
+    _, staker, __ = stakedMin
+    
+    callData = mockTarget.revertWithoutMessage.encode_input()
+    req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0, asc.DENICE.address)
+    tx = asc.r.newHashedReq(mockTarget, callData, False, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
+
+    with reverts(''):
+        asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+
+
 # Randomly generate addresses for the sender and calldata input independently
 # to test validCalldata upon calling executeHashedReq
 @given(
@@ -103,8 +127,7 @@ def test_executeHashedReq_validCalldata(asc, stakedMin, mockTarget, ethForCall, 
             # Shouldn't've changed
             assert mockTarget.x() == 0
             assert asc.r.balance() == 0
-        
-                
+
 
 def test_executeHashedReq_no_ethForCall(asc, stakedMin, mockTarget, hashedReqs):
     _, staker, __ = stakedMin
@@ -153,7 +176,6 @@ def test_executeHashedReq_no_ethForCall(asc, stakedMin, mockTarget, hashedReqs):
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
-
 
 
 def test_executeHashedReq_with_ethForCall(asc, stakedMin, mockTarget, hashedReqs):
@@ -209,7 +231,6 @@ def test_executeHashedReq_with_ethForCall(asc, stakedMin, mockTarget, hashedReqs
     assert mockTarget.userAddr() == ADDR_0
 
 
-
 def test_executeHashedReq_pay_ASC(asc, stakedMin, mockTarget, hashedReqs):
     _, staker, __ = stakedMin
     reqs, reqHashes, msgValue, ethForCall = hashedReqs
@@ -259,7 +280,6 @@ def test_executeHashedReq_pay_ASC(asc, stakedMin, mockTarget, hashedReqs):
     assert mockTarget.userAddr() == ADDR_0
 
 
-
 def test_executeHashedReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, hashedReqs):
     _, staker, __ = stakedMin
     reqs, reqHashes, msgValue, ethForCall = hashedReqs
@@ -307,7 +327,6 @@ def test_executeHashedReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, ha
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
-
 
 
 def test_executeHashedReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, mockTarget, hashedReqs):

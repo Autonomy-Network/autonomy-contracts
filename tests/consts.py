@@ -97,3 +97,7 @@ ASCOIN_ADDR = "0x31E31e3703D367014BA5802B7C5E41d96E331723"
 
 REV_MSG_EXCEED_BAL = "ERC20: transfer amount exceeds balance"
 REV_MSG_EXCEED_ALLOWANCE = "ERC20: transfer amount exceeds allowance"
+
+
+# MockTarget
+REV_MSG_GOOFED = "You dun goofed boy"

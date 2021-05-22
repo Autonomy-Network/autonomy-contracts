@@ -21,6 +21,26 @@ def test_executeRawReq_rev_nonReentrant(asc, mockTarget, mockReentrancyAttack):
         asc.r.executeRawReq(1)
 
 
+def test_executeRawReq_returns_revert_message(asc, stakedMin, mockTarget):
+    _, staker, __ = stakedMin
+
+    callData = mockTarget.revertWithMessage.encode_input()
+    asc.r.newRawReq(mockTarget, callData, False, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
+
+    with reverts(REV_MSG_GOOFED):
+        asc.r.executeRawReq(0, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+
+
+def test_executeRawReq_returns_no_revert_message(asc, stakedMin, mockTarget):
+    _, staker, __ = stakedMin
+
+    callData = mockTarget.revertWithMessage.encode_input()
+    asc.r.newRawReq(mockTarget, callData, False, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
+
+    with reverts(''):
+        asc.r.executeRawReq(0, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+
+
 def test_executeRawReq_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     _, staker, __ = stakedMin
     reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender, msgValue, ethForCall = reqsRaw
@@ -66,7 +86,6 @@ def test_executeRawReq_no_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
-
 
 
 def test_executeRawReq_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
@@ -116,7 +135,6 @@ def test_executeRawReq_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
     assert mockTarget.userAddr() == ADDR_0
 
 
-
 def test_executeRawReq_pay_ASC(asc, stakedMin, mockTarget, reqsRaw):
     _, staker, __ = stakedMin
     reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender, msgValue, ethForCall = reqsRaw
@@ -162,7 +180,6 @@ def test_executeRawReq_pay_ASC(asc, stakedMin, mockTarget, reqsRaw):
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
-
 
 
 def test_executeRawReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsRaw):
@@ -212,7 +229,6 @@ def test_executeRawReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, reqsR
     assert mockTarget.userAddr() == ADDR_0
 
 
-
 def test_executeRawReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, mockTarget, reqsRaw):
     _, staker, __ = stakedMin
     reqNoEthForCall, reqEthForCall, reqPayASC, reqPayASCEthForCall, reqPayASCEthForCallVerifySender, msgValue, ethForCall = reqsRaw
@@ -260,7 +276,6 @@ def test_executeRawReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, 
 
     # Shouldn't've changed
     assert mockTarget.x() == 0
-
 
 
 def test_executeRawReq_rev_already_executed(asc, stakedMin, reqsRaw):

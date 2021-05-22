@@ -355,7 +355,9 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
             (success, returnData) = r.target.call{value: r.ethForCall}(r.callData);
         }
         // Need this if statement because if the call succeeds, the tx will revert
-        // with an EVM error because it can't decode 0x00
+        // with an EVM error because it can't decode 0x00. If a tx fails with no error
+        // message, maybe that's a problem? But if it failed without a message then it's
+        // gonna be hard to know what went wrong regardless
         if (!success) {
             revert(abi.decode(returnData, (string)));
         }

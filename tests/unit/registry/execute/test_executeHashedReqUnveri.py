@@ -30,8 +30,40 @@ def test_executeHashedReqUnveri_rev_nonReentrant(asc, mockTarget, mockReentrancy
 
     asc.r.newHashedReqUnveri(reqHashBytes2, {'from': asc.BOB})
 
+    print(asc.sm.getExecutor())
+    print(asc.sm.getStakes())
+    print(asc.sm.getUpdatedExecRes())
+
     with reverts(REV_MSG_REENTRANCY):
         asc.r.executeHashedReqUnveri(1, req2, *getIpfsMetaData(asc, req2))
+
+
+def test_executeHashedReqUnveri_returns_revert_message(asc, stakedMin, mockTarget):
+    _, staker, __ = stakedMin
+
+    asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
+    callData = mockTarget.revertWithMessage.encode_input()
+    req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+    reqHashBytes = addReqGetHashBytes(asc, req)
+
+    tx = asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
+
+    with reverts(REV_MSG_GOOFED):
+        asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+
+
+def test_executeHashedReqUnveri_returns_no_revert_message(asc, stakedMin, mockTarget):
+    _, staker, __ = stakedMin
+
+    asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
+    callData = mockTarget.revertWithoutMessage.encode_input()
+    req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+    reqHashBytes = addReqGetHashBytes(asc, req)
+
+    tx = asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
+
+    with reverts(''):
+        asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReqUnveri_rev_initEthSent(asc, mockTarget, stakedMin):
@@ -123,7 +155,6 @@ def test_executeHashedReqUnveri_pay_ASC(asc, stakedMin, mockTarget, hashedReqUnv
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
-
 
 
 def test_executeHashedReqUnveri_rev_target_is_registry(asc, mockTarget, stakedMin, hashedReqUnveri):
