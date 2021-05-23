@@ -44,15 +44,18 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     
     
     // This is defined in IRegistry. Here for convenience
+    // The address vars are 20b, total 60, calldata is 4b + n*32b usually, which
+    // has a factor of 32. uint120 since the current ETH supply of ~115m can fit
+    // into that and it's the highest such that 2 * uint120 + 2 * bool is < 256b
     // struct Request {
     //     address payable requester;
     //     address target;
+    //     address payable referer;
     //     bytes callData;
+    //     uint120 initEthSent;
+    //     uint120 ethForCall;
     //     bool verifySender;
     //     bool payWithASC;
-    //     uint initEthSent;
-    //     uint ethForCall;
-    //     address payable referer;
     // }
 
     event RawReqAdded(uint indexed id);
@@ -84,11 +87,11 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     
     function newRawReq(
         address target,
+        address payable referer,
         bytes calldata callData,
+        uint120 ethForCall,
         bool verifySender,
-        bool payWithASC,
-        uint ethForCall,
-        address payable referer
+        bool payWithASC
     )
         external
         payable
@@ -106,7 +109,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
 
         id = _rawReqs.length;
         emit RawReqAdded(id);
-        _rawReqs.push(Request(payable(msg.sender), target, callData, verifySender, payWithASC, msg.value, ethForCall, referer));
+        _rawReqs.push(Request(payable(msg.sender), target, referer, callData, uint120(msg.value), ethForCall, verifySender, payWithASC));
     }
 
     function getRawReqs() external view override returns (Request[] memory) {
@@ -141,11 +144,11 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
 
     function newHashedReq(
         address target,
+        address payable referer,
         bytes calldata callData,
+        uint120 ethForCall,
         bool verifySender,
         bool payWithASC,
-        uint ethForCall,
-        address payable referer,
         bytes memory dataPrefix,
         bytes memory dataSuffix
     // Stack too deep with the extra nz checks
@@ -158,7 +161,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         validEth(payWithASC, ethForCall)
         returns (uint id)
     {
-        Request memory r = Request(payable(msg.sender), target, callData, verifySender, payWithASC, msg.value, ethForCall, referer);
+        Request memory r = Request(payable(msg.sender), target, referer, callData, uint120(msg.value), ethForCall, verifySender, payWithASC);
         bytes32 hashedIpfsReq = getHashedIpfsReq(dataPrefix, getReqBytes(r), dataSuffix);
 
         id = _hashedReqs.length;
@@ -228,8 +231,8 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     }
 
     function getIpfsReqBytes(
-        bytes memory dataPrefix,
         bytes memory r,
+        bytes memory dataPrefix,
         bytes memory dataPostfix
     ) public pure override returns (bytes memory) {
         return abi.encodePacked(
@@ -240,8 +243,8 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     }
 
     function getHashedIpfsReq(
-        bytes memory dataPrefix,
         bytes memory r,
+        bytes memory dataPrefix,
         bytes memory dataPostfix
     ) public pure override returns (bytes32) {
         return sha256(getIpfsReqBytes(dataPrefix, r, dataPostfix));

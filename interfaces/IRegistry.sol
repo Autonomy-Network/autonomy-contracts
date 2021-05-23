@@ -6,15 +6,18 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 interface IRegistry {
     
+    // The address vars are 20b, total 60, calldata is 4b + n*32b usually, which
+    // has a factor of 32. uint120 since the current ETH supply of ~115m can fit
+    // into that and it's the highest such that 2 * uint120 + 2 * bool is < 256b
     struct Request {
         address payable requester;
         address target;
+        address payable referer;
         bytes callData;
+        uint120 initEthSent;
+        uint120 ethForCall;
         bool verifySender;
         bool payWithASC;
-        uint initEthSent;
-        uint ethForCall;
-        address payable referer;
     }
 
 
@@ -26,11 +29,11 @@ interface IRegistry {
     
     function newRawReq(
         address target,
+        address payable referer,
         bytes calldata callData,
+        uint120 ethForCall,
         bool verifySender,
-        bool payWithASC,
-        uint ethForCall,
-        address payable referer
+        bool payWithASC
     ) external payable returns (uint id);
 
     function getRawReqs() external view returns (Request[] memory);
@@ -48,11 +51,11 @@ interface IRegistry {
 
     function newHashedReq(
         address target,
+        address payable referer,
         bytes calldata callData,
+        uint120 ethForCall,
         bool verifySender,
         bool payWithASC,
-        uint ethForCall,
-        address payable referer,
         bytes memory dataPrefix,
         bytes memory dataSuffix
     ) external payable returns (uint id);
@@ -88,14 +91,14 @@ interface IRegistry {
     function getReqBytes(Request memory r) external pure returns (bytes memory);
 
     function getIpfsReqBytes(
-        bytes memory dataPrefix,
         bytes memory r,
+        bytes memory dataPrefix,
         bytes memory dataPostfix
     ) external pure returns (bytes memory);
 
     function getHashedIpfsReq(
-        bytes memory dataPrefix,
         bytes memory r,
+        bytes memory dataPrefix,
         bytes memory dataPostfix
     ) external pure returns (bytes32);
 

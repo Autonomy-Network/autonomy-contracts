@@ -218,12 +218,12 @@ def reqsRaw(asc, mockTarget):
     msgValue = 1.5 * ethForCall
 
     callData = mockTarget.setX.encode_input(5)
-    asc.r.newRawReq(mockTarget, callData, False, False, 0, asc.DENICE, {'from': asc.BOB, 'value': msgValue})
-    reqNoEthForCall = (asc.BOB.address, mockTarget.address, callData, False, False, msgValue, 0, asc.DENICE.address)
+    asc.r.newRawReq(mockTarget, asc.DENICE, callData, 0, False, False, {'from': asc.BOB, 'value': msgValue})
+    reqNoEthForCall = (asc.BOB.address, mockTarget.address, asc.DENICE, callData, msgValue, 0, False, False)
 
     callData = mockTarget.setXPay.encode_input(5)
-    asc.r.newRawReq(mockTarget, callData, False, False, ethForCall, asc.DENICE, {'from': asc.BOB, 'value': msgValue})
-    reqEthForCall = (asc.BOB.address, mockTarget.address, callData, False, False, msgValue, ethForCall, asc.DENICE.address)
+    asc.r.newRawReq(mockTarget, asc.DENICE, callData, ethForCall, False, False, {'from': asc.BOB, 'value': msgValue})
+    reqEthForCall = (asc.BOB.address, mockTarget.address, asc.DENICE, callData, msgValue, ethForCall, False, False)
 
     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 
