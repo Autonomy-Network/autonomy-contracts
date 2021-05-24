@@ -44,7 +44,7 @@ from utils import *
 
 #         tx = asc.r.executeHashedReqUnveri(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
+#         ASCForExec = getASCForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 
@@ -94,7 +94,7 @@ from utils import *
 
 #         tx = asc.r.executeHashedReqUnveri(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
+#         ASCForExec = getASCForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 
@@ -141,7 +141,7 @@ from utils import *
 
 #         tx = asc.r.executeHashedReqUnveri(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
+#         ASCForExec = getASCForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 
@@ -190,7 +190,7 @@ from utils import *
 
 #         tx = asc.r.executeHashedReqUnveri(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
+#         ASCForExec = getASCForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 
@@ -242,7 +242,7 @@ from utils import *
 
 #         tx = asc.r.executeHashedReqUnveri(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
+#         ASCForExec = getASCForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 
@@ -292,7 +292,7 @@ from utils import *
 
 #         tx = asc.r.executeHashedReqUnveri(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
+#         ASCForExec = getASCForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
 #         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
 #         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
 

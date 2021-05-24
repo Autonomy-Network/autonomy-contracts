@@ -35,7 +35,7 @@ def deploy_initial_ASC_contracts(ASCoin, PriceOracle, Oracle, StakeManager, Regi
     chain.mine(BLOCKS_IN_EPOCH)
 
     asc.ASC = asc.DEPLOYER.deploy(ASCoin, "Active Smart Contract Protocol", "ASC")
-    asc.po = asc.DEPLOYER.deploy(PriceOracle, INIT_ASC_PER_USD, INIT_ETH_PER_USD, INIT_GAS_PRICE_FAST)
+    asc.po = asc.DEPLOYER.deploy(PriceOracle, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
     asc.o = asc.DEPLOYER.deploy(Oracle, asc.po)
     asc.sm = asc.DEPLOYER.deploy(StakeManager, asc.o, asc.ASC)
     asc.vf = asc.DEPLOYER.deploy(Forwarder)
@@ -130,15 +130,15 @@ def stakedMultiSmall(asc, stakedMin):
     prevExec = asc.sm.getExecutor()
     prevStakes = asc.sm.getStakes()
     updateExecReturn = asc.sm.updateExecutor().return_value
-    updateExecReturn = (prevExec, prevStakes, updateExecReturn, web3.eth.blockNumber, asc.sm.getTotalStaked(), asc.sm.getExecutor(), asc.sm.getStakes())
+    updateExecReturn = (prevExec, prevStakes, updateExecReturn, web3.eth.block_number, asc.sm.getTotalStaked(), asc.sm.getExecutor(), asc.sm.getStakes())
 
     totalNumStakes = 7
     stakes = [asc.ALICE, asc.BOB, asc.BOB, asc.CHARLIE, asc.CHARLIE, asc.BOB, asc.BOB]
 
     assert asc.sm.getTotalStaked() == totalNumStakes * STAN_STAKE
     assert asc.sm.getStakes() == stakes
-    assert asc.sm.getCurEpoch() == getEpoch(web3.eth.blockNumber)
-    newExec, epoch = getExecutor(asc, web3.eth.blockNumber + 1, stakes)
+    assert asc.sm.getCurEpoch() == getEpoch(web3.eth.block_number)
+    newExec, epoch = getExecutor(asc, web3.eth.block_number + 1, stakes)
     assert asc.sm.isUpdatedExec(newExec).return_value
     assert asc.sm.getExecutor() == (newExec, epoch)
     for addr in a:
@@ -208,6 +208,15 @@ def mockTarget(asc, MockTarget, vulnerableRegistry):
 def mockReentrancyAttack(asc, MockReentrancyAttack):
     return asc.DEPLOYER.deploy(MockReentrancyAttack, asc.r)
 
+
+# Need to test gas usage with the exact same rounding profile that Solidity
+# uses vs Python
+@pytest.fixture(scope="module")
+def evmMaths(asc, EVMMaths):
+    x = asc.DEPLOYER.deploy(EVMMaths)
+    print(x)
+    print(type(x))
+    return x
 
 
 # Need to have some raw requests to test executeRawReq. Need a request that has ethForCall

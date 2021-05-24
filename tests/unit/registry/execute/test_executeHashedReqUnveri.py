@@ -110,7 +110,7 @@ def test_executeHashedReqUnveri_rev_verifySender(asc, mockTarget, stakedMin):
         asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
-def test_executeHashedReqUnveri_pay_ASC(asc, stakedMin, mockTarget, hashedReqUnveri):
+def test_executeHashedReqUnveri_pay_ASC(asc, evmMaths, stakedMin, mockTarget, hashedReqUnveri):
     _, staker, __ = stakedMin
     req, reqHashBytes = hashedReqUnveri
     id = 0
@@ -131,7 +131,7 @@ def test_executeHashedReqUnveri_pay_ASC(asc, stakedMin, mockTarget, hashedReqUnv
     assert asc.r.balance() == 0
     assert mockTarget.balance() == 0
     # ASC bals
-    ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
+    ASCForExec = getASCForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
     assert asc.ASC.balanceOf(asc.DENICE) == 0

@@ -22,9 +22,9 @@ def unstakeTest(
     with reverts():
         asc.sm.getStakesSlice(0, len(startStakes) + 1)
     assert asc.sm.getStakesSlice(0, len(startStakes)) == startStakes
-    assert asc.sm.getCurEpoch() == getEpoch(web3.eth.blockNumber)
-    assert asc.sm.getExecutor() == getExecutor(asc, web3.eth.blockNumber, startStakes)
-    if web3.eth.blockNumber % BLOCKS_IN_EPOCH != BLOCKS_IN_EPOCH - 1:
+    assert asc.sm.getCurEpoch() == getEpoch(web3.eth.block_number)
+    assert asc.sm.getExecutor() == getExecutor(asc, web3.eth.block_number, startStakes)
+    if web3.eth.block_number % BLOCKS_IN_EPOCH != BLOCKS_IN_EPOCH - 1:
         assert asc.sm.isUpdatedExec(staker).return_value
     for addr in a:
         assert asc.sm.isCurExec(addr) == (addr == curExec)
@@ -48,10 +48,10 @@ def unstakeTest(
         with reverts():
             asc.sm.getStakesSlice(0, len(newStakes) + 1)
         assert asc.sm.getStakesSlice(0, len(newStakes)) == newStakes
-        assert asc.sm.getCurEpoch() == getEpoch(web3.eth.blockNumber)
-        newExec, epoch = getExecutor(asc, web3.eth.blockNumber, startStakes)
+        assert asc.sm.getCurEpoch() == getEpoch(web3.eth.block_number)
+        newExec, epoch = getExecutor(asc, web3.eth.block_number, startStakes)
         assert asc.sm.getExecutor() == (newExec, epoch)
-        if web3.eth.blockNumber % BLOCKS_IN_EPOCH != BLOCKS_IN_EPOCH - 1:
+        if web3.eth.block_number % BLOCKS_IN_EPOCH != BLOCKS_IN_EPOCH - 1:
             assert asc.sm.isUpdatedExec(newExec).return_value
         for addr in a:
             # If all stakes are unstaked, it'll return true for any address
@@ -93,10 +93,10 @@ def test_unstake_7(asc, stakedHigh):
     with reverts():
         asc.sm.getStakesSlice(0, len(stakes) + 1)
     assert asc.sm.getStakesSlice(0, len(stakes)) == stakes
-    assert asc.sm.getCurEpoch() == getEpoch(web3.eth.blockNumber)
-    newExec, epoch = getExecutor(asc, web3.eth.blockNumber, [staker] * startNumStakes)
+    assert asc.sm.getCurEpoch() == getEpoch(web3.eth.block_number)
+    newExec, epoch = getExecutor(asc, web3.eth.block_number, [staker] * startNumStakes)
     assert asc.sm.getExecutor() == (newExec, epoch)
-    if web3.eth.blockNumber % BLOCKS_IN_EPOCH != BLOCKS_IN_EPOCH - 1:
+    if web3.eth.block_number % BLOCKS_IN_EPOCH != BLOCKS_IN_EPOCH - 1:
         assert asc.sm.isUpdatedExec(newExec).return_value
     for addr in a:
         assert asc.sm.isCurExec(addr) == (addr == newExec)

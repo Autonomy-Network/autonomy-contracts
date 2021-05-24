@@ -24,12 +24,8 @@ contract Oracle is IOracle, Ownable {
         return _priceOracle;
     }
 
-    function getASCPerUSD() external override view returns (uint) {
-        return _priceOracle.getASCPerUSD();
-    }
-
-    function getETHPerUSD() external override view returns (uint) {
-        return _priceOracle.getETHPerUSD();
+    function getAUTOPerETH() external override view returns (uint) {
+        return _priceOracle.getAUTOPerETH();
     }
 
     function getGasPriceFast() external override view returns (uint) {

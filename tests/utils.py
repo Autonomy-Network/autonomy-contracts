@@ -10,7 +10,7 @@ def getEpoch(blockNum):
 
 
 def getRandNum(seed):
-    return web3.toInt(web3.eth.getBlock(seed).hash)
+    return web3.toInt(web3.eth.get_block(seed).hash)
 
 
 def getExecutor(asc, blockNum, stakes):
@@ -25,7 +25,7 @@ def getExecutor(asc, blockNum, stakes):
 
 
 def getUpdateExecResult(asc, curHeight, stakes):
-    epoch = getEpoch(web3.eth.blockNumber)
+    epoch = getEpoch(web3.eth.block_number)
     randNum = getRandNum(epoch - 1)
     idx = asc.sm.getRemainder(randNum, len(stakes))
 
@@ -119,15 +119,16 @@ def addReqGetHashBytes(asc, req):
     return getHashBytesFromCID(addToIpfs(asc, req))
 
 
-# No way for INIT_BASE_BOUNTY_USD to be changed
-def getEthForExec(tx, ethRate, gasPriceFast):
-    return (tx.return_value * gasPriceFast) + (3 * INIT_BASE_BOUNTY_USD * ethRate)
+def getEthForExec(tx, gasPriceFast):
+    return int(tx.return_value * gasPriceFast * PAY_ETH_FACTOR)
 
 
-def getASCForExec(asc, tx, ethRate, ascRate, gasPriceFast):
+def getASCForExec(evmMaths, tx, AUTOPerETH, gasPriceFast):
+    print(evmMaths)
+    print(type(evmMaths))
     # Need to account for differences in division between Python and Solidity
-    gasInASC = tx.return_value * gasPriceFast * asc.r.divAOverB(ascRate, ethRate)
-    return (INIT_BASE_BOUNTY_USD * ascRate) + int(gasInASC)
+    print(tx.return_value * gasPriceFast * AUTOPerETH * PAY_AUTO_BPS, BASE_BPS * E_18)
+    return evmMaths.mul4Div2(tx.return_value, gasPriceFast, AUTOPerETH, PAY_AUTO_BPS, BASE_BPS, E_18)
 
 
 def checkAreCallers(asc, addrs, callers):

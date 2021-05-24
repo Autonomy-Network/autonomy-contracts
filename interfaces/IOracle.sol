@@ -10,9 +10,7 @@ interface IOracle {
 
     function getPriceOracle() external view returns (IPriceOracle);
 
-    function getASCPerUSD() external view returns (uint);
-
-    function getETHPerUSD() external view returns (uint);
+    function getAUTOPerETH() external view returns (uint);
 
     function getGasPriceFast() external view returns (uint);
 }

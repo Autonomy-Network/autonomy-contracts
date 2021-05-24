@@ -15,8 +15,9 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     // Constant public
     uint public constant GAS_OVERHEAD_ASCOIN = 70500;
     uint public constant GAS_OVERHEAD_ETH = 47000;
-    uint public constant BASE_BOUNTY_USD = 5;
-    uint public constant ETH_BOUNTY_MULTIPLIER = 3;
+    uint public constant BASE_BPS = 10000;
+    uint public constant PAY_AUTO_BPS = 11000;
+    uint public constant PAY_ETH_BPS = 13000;
 
     // Constant private
     bytes private constant _EMPTY_BYTES = "";
@@ -401,12 +402,11 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
                 gasUsed += (numStorageRefunds * 855);
                 gasUsed -= gasRefunded;
             }
-
-            uint gasInASC = gasUsed * gasPrice * orac.getASCPerUSD() / orac.getETHPerUSD();
-            uint ASCNeeded = (orac.getASCPerUSD() * BASE_BOUNTY_USD) + gasInASC;
+            emit Test(gasUsed * gasPrice * orac.getAUTOPerETH() * PAY_AUTO_BPS, BASE_BPS * _E_18);
+            uint totalAUTO = gasUsed * gasPrice * orac.getAUTOPerETH() * PAY_AUTO_BPS / (BASE_BPS * _E_18);
 
             // Send the executor their bounty
-            require(_ASCoin.transferFrom(r.requester, msg.sender, ASCNeeded));
+            require(_ASCoin.transferFrom(r.requester, msg.sender, totalAUTO));
         } else {
             gasUsed += GAS_OVERHEAD_ETH;
             if (gasRefunded > gasUsed / 2) {
@@ -416,20 +416,21 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
                 gasUsed -= gasRefunded;
             }
 
-            uint ethNeeded = (gasUsed * gasPrice) + (3 * BASE_BOUNTY_USD * orac.getETHPerUSD());
+            uint totalETH = gasUsed * gasPrice * PAY_ETH_BPS / BASE_BPS;
             uint ethReceived = r.initEthSent - r.ethForCall;
 
             // Send the executor their bounty
-            require(ethReceived >= ethNeeded, "Reg: not enough eth sent");
-            payable(msg.sender).transfer(ethNeeded);
+            require(ethReceived >= totalETH, "Reg: not enough eth sent");
+            payable(msg.sender).transfer(totalETH);
 
             // Refund excess to the requester
-            uint excess = ethReceived - ethNeeded;
+            uint excess = ethReceived - totalETH;
             if (excess > 0) {
                 r.requester.transfer(excess);
             }
         }
     }
+    event Test(uint a, uint b);
 
     //////////////////////////////////////////////////////////////
     //                                                          //
@@ -521,10 +522,6 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     
     function getReferalCountOf(address addr) external view override returns (uint) {
         return _referalCounts[addr];
-    }
-
-    function divAOverB(uint a, uint b) external pure override returns (uint) {
-        return a / b;
     }
 
     function _getBytes32Slice(bytes32[] memory arr, uint startIdx, uint endIdx) private pure returns (bytes32[] memory) {

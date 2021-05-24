@@ -36,12 +36,12 @@ def test_isUpdatedExec_true(a, asc, stakedMin):
     assert asc.sm.getTotalStaked() == totalNumStakes * STAN_STAKE
     assert asc.sm.getStakesLength() == totalNumStakes
     assert asc.sm.getStakesSlice(0, totalNumStakes) == stakes
-    assert asc.sm.getExecutor() == (exec, getEpoch(web3.eth.blockNumber))
+    assert asc.sm.getExecutor() == (exec, getEpoch(web3.eth.block_number))
 
     chain.mine(BLOCKS_IN_EPOCH)
 
     for i in range(5 * BLOCKS_IN_EPOCH):
-        exec, epoch = getExecutor(asc, web3.eth.blockNumber + 1, stakes)
+        exec, epoch = getExecutor(asc, web3.eth.block_number + 1, stakes)
         assert asc.sm.isUpdatedExec(exec).return_value
         assert asc.sm.isCurExec(exec)
 
@@ -56,12 +56,12 @@ def test_isUpdatedExec_false(a, asc, stakedMin):
     assert asc.sm.getTotalStaked() == totalNumStakes * STAN_STAKE
     assert asc.sm.getStakesLength() == totalNumStakes
     assert asc.sm.getStakesSlice(0, totalNumStakes) == stakes
-    assert asc.sm.getExecutor() == (exec, getEpoch(web3.eth.blockNumber))
+    assert asc.sm.getExecutor() == (exec, getEpoch(web3.eth.block_number))
 
     chain.mine(BLOCKS_IN_EPOCH)
 
     for i in range(5 * BLOCKS_IN_EPOCH):
-        exec, epoch = getExecutor(asc, web3.eth.blockNumber + 1, stakes)
+        exec, epoch = getExecutor(asc, web3.eth.block_number + 1, stakes)
         addr = choice(a)
         if addr != exec:
             assert not asc.sm.isUpdatedExec(addr).return_value
@@ -80,7 +80,7 @@ def test_isUpdatedExec_after_all_unstaked(a, asc, stakedMin):
     with reverts():
         asc.sm.getStakesSlice(0, 1)
     assert asc.sm.getStakesSlice(0, 0) == []
-    assert asc.sm.getExecutor() == (exec, getEpoch(web3.eth.blockNumber))
+    assert asc.sm.getExecutor() == (exec, getEpoch(web3.eth.block_number))
 
     for addr in a:
         assert asc.sm.isUpdatedExec(addr).return_value

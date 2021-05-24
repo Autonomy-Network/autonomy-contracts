@@ -8,31 +8,21 @@ import "../interfaces/IPriceOracle.sol";
 contract PriceOracle is IPriceOracle, Ownable {
 
 
-    uint private _ASCPerUSD;
-    uint private _ETHPerUSD;
+    uint private _AUTOPerETH;
     uint private _gasPrice;
 
 
-    constructor(uint ASCPerUSD, uint ETHPerUSD, uint gasPrice) Ownable() {
-        _ASCPerUSD = ASCPerUSD;
-        _ETHPerUSD = ETHPerUSD;
+    constructor(uint AUTOPerETH, uint gasPrice) Ownable() {
+        _AUTOPerETH = AUTOPerETH;
         _gasPrice = gasPrice;
     }
 
-    function getASCPerUSD() external override view returns (uint) {
-        return _ASCPerUSD;
+    function getAUTOPerETH() external override view returns (uint) {
+        return _AUTOPerETH;
     }
 
-    function updateASCPerUSD(uint ASCPerUSD) external onlyOwner {
-        _ASCPerUSD = ASCPerUSD;
-    }
-
-    function getETHPerUSD() external override view returns (uint) {
-        return _ETHPerUSD;
-    }
-
-    function updateETHPerUSD(uint ETHPerUSD) external onlyOwner {
-        _ETHPerUSD = ETHPerUSD;
+    function updateAUTOPerETH(uint AUTOPerETH) external onlyOwner {
+        _AUTOPerETH = AUTOPerETH;
     }
 
     function getGasPriceFast() external override view returns (uint) {

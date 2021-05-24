@@ -28,7 +28,7 @@ def test_stake_multi(asc, stakedMulti):
         cumNumStanStakes += n
         assert tx.events["Staked"][0].values() == [s, n * STAN_STAKE]
     
-    exec, epoch = getExecutor(asc, web3.eth.blockNumber + 1, stakes)
+    exec, epoch = getExecutor(asc, web3.eth.block_number + 1, stakes)
     assert asc.sm.isUpdatedExec(exec).return_value
     for s in stakerToNum:
         assert asc.sm.getStake(s) == stakerToNum[s] * STAN_STAKE

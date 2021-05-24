@@ -60,7 +60,7 @@ def test_executeHashedReq_returns_no_revert_message(asc, stakedMin, mockTarget):
     userAddr=strategy('address'),
     sender=strategy('address')
 )
-def test_executeHashedReq_validCalldata(asc, stakedMin, mockTarget, ethForCall, payWithASC, userAddr, sender):
+def test_executeHashedReq_validCalldata(asc, evmMaths, stakedMin, mockTarget, ethForCall, payWithASC, userAddr, sender):
     # It's gonna be a pain in the ass to do the accounting if they're equal
     if sender != asc.ALICE and sender != asc.DENICE:
         _, staker, __ = stakedMin
@@ -91,14 +91,14 @@ def test_executeHashedReq_validCalldata(asc, stakedMin, mockTarget, ethForCall, 
                 assert asc.ALICE.balance() == INIT_ETH_BAL - (tx.gas_used * tx.gas_price)
                 assert sender.balance() == INIT_ETH_BAL - ethForCall
                 # ASC bals
-                ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
+                ASCForExec = getASCForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
                 assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
                 assert asc.ASC.balanceOf(sender) - senderASCStartBal == -ASCForExec
                 assert asc.ASC.balanceOf(asc.DENICE) == 0
                 assert asc.ASC.balanceOf(asc.r) == 0
             else:
                 # Eth bals
-                ethForExec = getEthForExec(tx, INIT_ETH_PER_USD, INIT_GAS_PRICE_FAST)
+                ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
                 assert asc.ALICE.balance() == INIT_ETH_BAL + ethForExec - (tx.gas_used * tx.gas_price)
                 assert sender.balance() == INIT_ETH_BAL - ethForCall - ethForExec
                 # ASC bals
@@ -147,7 +147,7 @@ def test_executeHashedReq_no_ethForCall(asc, stakedMin, mockTarget, hashedReqs):
     
     # Should've changed
     # Eth bals
-    ethForExec = getEthForExec(tx, INIT_ETH_PER_USD, INIT_GAS_PRICE_FAST)
+    ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
     assert asc.ALICE.balance() == INIT_ETH_BAL + ethForExec - (tx.gas_used * tx.gas_price)
     assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall)) + msgValue - ethForExec
     assert asc.r.balance() == msgValue + (2 * ethForCall)
@@ -196,7 +196,7 @@ def test_executeHashedReq_with_ethForCall(asc, stakedMin, mockTarget, hashedReqs
     
     # Should've changed
     # Eth bals
-    ethForExec = getEthForExec(tx, INIT_ETH_PER_USD, INIT_GAS_PRICE_FAST)
+    ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
     assert asc.ALICE.balance() == INIT_ETH_BAL + ethForExec - (tx.gas_used * tx.gas_price)
     assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall)) + msgValue - ethForCall - ethForExec
     assert asc.r.balance() == msgValue + (2 * ethForCall)
@@ -231,7 +231,7 @@ def test_executeHashedReq_with_ethForCall(asc, stakedMin, mockTarget, hashedReqs
     assert mockTarget.userAddr() == ADDR_0
 
 
-def test_executeHashedReq_pay_ASC(asc, stakedMin, mockTarget, hashedReqs):
+def test_executeHashedReq_pay_ASC(asc, evmMaths, stakedMin, mockTarget, hashedReqs):
     _, staker, __ = stakedMin
     reqs, reqHashes, msgValue, ethForCall = hashedReqs
     # reqHashes will modify the original even after this test has finished otherwise since it's a reference
@@ -254,7 +254,7 @@ def test_executeHashedReq_pay_ASC(asc, stakedMin, mockTarget, hashedReqs):
     assert asc.r.balance() == (2 * msgValue) + (2 * ethForCall)
     assert mockTarget.balance() == 0
     # ASC bals
-    ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
+    ASCForExec = getASCForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
     assert asc.ASC.balanceOf(asc.DENICE) == 0
@@ -280,7 +280,7 @@ def test_executeHashedReq_pay_ASC(asc, stakedMin, mockTarget, hashedReqs):
     assert mockTarget.userAddr() == ADDR_0
 
 
-def test_executeHashedReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, hashedReqs):
+def test_executeHashedReq_pay_ASC_with_ethForCall(asc, evmMaths, stakedMin, mockTarget, hashedReqs):
     _, staker, __ = stakedMin
     reqs, reqHashes, msgValue, ethForCall = hashedReqs
     # reqHashes will modify the original even after this test has finished otherwise since it's a reference
@@ -303,7 +303,7 @@ def test_executeHashedReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, ha
     assert asc.r.balance() == 2 * msgValue + ethForCall
     assert mockTarget.balance() == ethForCall
     # ASC bals
-    ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
+    ASCForExec = getASCForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
     assert asc.ASC.balanceOf(asc.DENICE) == 0
@@ -329,7 +329,7 @@ def test_executeHashedReq_pay_ASC_with_ethForCall(asc, stakedMin, mockTarget, ha
     assert mockTarget.userAddr() == ADDR_0
 
 
-def test_executeHashedReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMin, mockTarget, hashedReqs):
+def test_executeHashedReq_pay_ASC_with_ethForCall_and_verifySender(asc, evmMaths, stakedMin, mockTarget, hashedReqs):
     _, staker, __ = stakedMin
     reqs, reqHashes, msgValue, ethForCall = hashedReqs
     # reqHashes will modify the original even after this test has finished otherwise since it's a reference
@@ -352,7 +352,7 @@ def test_executeHashedReq_pay_ASC_with_ethForCall_and_verifySender(asc, stakedMi
     assert asc.r.balance() == 2 * msgValue + ethForCall
     assert mockTarget.balance() == ethForCall
     # ASC bals
-    ASCForExec = getASCForExec(asc, tx, INIT_ETH_PER_USD, INIT_ASC_PER_USD, INIT_GAS_PRICE_FAST)
+    ASCForExec = getASCForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
     assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
     assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
     assert asc.ASC.balanceOf(asc.DENICE) == 0

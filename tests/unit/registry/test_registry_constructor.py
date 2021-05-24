@@ -4,12 +4,11 @@ from brownie import reverts
 
 def test_constructor(asc):
     assert asc.r.getASCoin() == asc.ASC
-    # assert asc.r.EXEC_GAS_OVERHEAD_NO_REF() == EXEC_GAS_OVERHEAD_NO_REF
-    # assert asc.r.EXEC_GAS_OVERHEAD_REF() == EXEC_GAS_OVERHEAD_REF
     assert asc.r.GAS_OVERHEAD_ASCOIN() == GAS_OVERHEAD_ASCOIN
     assert asc.r.GAS_OVERHEAD_ETH() == GAS_OVERHEAD_ETH
-    assert asc.r.BASE_BOUNTY_USD() == INIT_BASE_BOUNTY_USD
-    assert asc.r.ETH_BOUNTY_MULTIPLIER() == INIT_ETH_BOUNTY_MULTIPLIER
+    assert asc.r.BASE_BPS() == BASE_BPS
+    assert asc.r.PAY_AUTO_BPS() == PAY_AUTO_BPS
+    assert asc.r.PAY_ETH_BPS() == PAY_ETH_BPS
     assert asc.r.getASCoin() == asc.ASC
     assert asc.r.getStakeManager() == asc.sm
 

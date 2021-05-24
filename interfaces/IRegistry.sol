@@ -173,6 +173,4 @@ interface IRegistry {
     function getExecCountOf(address addr) external view returns (uint);
     
     function getReferalCountOf(address addr) external view returns (uint);
-
-    function divAOverB(uint a, uint b) external view returns (uint);
 }
