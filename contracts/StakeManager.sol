@@ -107,13 +107,9 @@ contract StakeManager is IStakeManager, Shared {
             // -1 because blockhash(seed) in Oracle will return 0x00 if the
             // seed == this block's height
             randNum = _oracle.getRandNum(epoch - 1);
-            idxOfExecutor = getRemainder(randNum, stakes.length);
+            idxOfExecutor = randNum % stakes.length;
             exec = stakes[idxOfExecutor];
         }
-    }
-
-    function getRemainder(uint a, uint b) public pure returns (uint) {
-        return a % b;
     }
 
 
@@ -123,7 +119,6 @@ contract StakeManager is IStakeManager, Shared {
     //                                                          //
     //////////////////////////////////////////////////////////////
 
-    // Calls updateExec()
     function updateExecutor() external override noFish returns (uint, uint, uint, address) {
         return _updateExecutor();
     }

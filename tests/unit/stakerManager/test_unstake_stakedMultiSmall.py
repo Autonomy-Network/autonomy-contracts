@@ -11,7 +11,7 @@ from brownie.test import given, strategy
 
 # Unstake 3 from the 4th staker in stakedMultiSmall
 # For some reason, having this test below the others in this file causes some to fail
-def test_unstake_3_of_4th_staker_from_stakedMultiSmall(asc, stakedMultiSmall):
+def test_unstake_3_of_4th_staker_from_stakedMultiSmall(asc, evmMaths, stakedMultiSmall):
     nums, stakers, startStakes, _ = stakedMultiSmall
     assert len(startStakes) == 7
     assert asc.sm.getStakes() == [asc.ALICE, asc.BOB, asc.BOB, asc.CHARLIE, asc.CHARLIE, asc.BOB, asc.BOB]
@@ -40,7 +40,7 @@ def test_unstake_3_of_4th_staker_from_stakedMultiSmall(asc, stakedMultiSmall):
         asc.sm.getStakesSlice(0, len(newStakes) + 1)
     assert asc.sm.getStakesSlice(0, len(newStakes)) == newStakes
     assert asc.sm.getCurEpoch() == getEpoch(web3.eth.block_number)
-    newExec, epoch = getExecutor(asc, web3.eth.block_number, startStakes)
+    newExec, epoch = getExecutor(evmMaths, web3.eth.block_number, startStakes)
     assert asc.sm.getExecutor() == (newExec, epoch)
     if web3.eth.block_number % BLOCKS_IN_EPOCH != BLOCKS_IN_EPOCH - 1:
         assert asc.sm.isUpdatedExec(newExec).return_value
@@ -50,7 +50,7 @@ def test_unstake_3_of_4th_staker_from_stakedMultiSmall(asc, stakedMultiSmall):
 
 
 # Unstake 1 from the 2nd staker in stakedMultiSmall
-def test_unstake_1_of_2nd_staker_from_stakedMultiSmall(asc, stakedMultiSmall):
+def test_unstake_1_of_2nd_staker_from_stakedMultiSmall(asc, evmMaths, stakedMultiSmall):
     nums, stakers, startStakes, _ = stakedMultiSmall
     assert len(startStakes) == 7
     assert asc.sm.getStakes() == startStakes
@@ -78,7 +78,7 @@ def test_unstake_1_of_2nd_staker_from_stakedMultiSmall(asc, stakedMultiSmall):
         asc.sm.getStakesSlice(0, len(newStakes) + 1)
     assert asc.sm.getStakesSlice(0, len(newStakes)) == newStakes
     assert asc.sm.getCurEpoch() == getEpoch(web3.eth.block_number)
-    newExec, epoch = getExecutor(asc, web3.eth.block_number, startStakes)
+    newExec, epoch = getExecutor(evmMaths, web3.eth.block_number, startStakes)
     assert asc.sm.getExecutor() == (newExec, epoch)
     if web3.eth.block_number % BLOCKS_IN_EPOCH != BLOCKS_IN_EPOCH - 1:
         assert asc.sm.isUpdatedExec(newExec).return_value
@@ -88,7 +88,7 @@ def test_unstake_1_of_2nd_staker_from_stakedMultiSmall(asc, stakedMultiSmall):
 
 
 # Unstake 2 from the 3rd staker in stakedMultiSmall
-def test_unstake_2_of_3rd_staker_from_stakedMultiSmall(asc, stakedMultiSmall):
+def test_unstake_2_of_3rd_staker_from_stakedMultiSmall(asc, evmMaths, stakedMultiSmall):
     nums, stakers, startStakes, updateExecReturn = stakedMultiSmall
     assert len(startStakes) == 7
     assert asc.sm.getStakes() == [asc.ALICE, asc.BOB, asc.BOB, asc.CHARLIE, asc.CHARLIE, asc.BOB, asc.BOB]
@@ -117,7 +117,7 @@ def test_unstake_2_of_3rd_staker_from_stakedMultiSmall(asc, stakedMultiSmall):
         asc.sm.getStakesSlice(0, len(newStakes) + 1)
     assert asc.sm.getStakesSlice(0, len(newStakes)) == newStakes
     assert asc.sm.getCurEpoch() == getEpoch(web3.eth.block_number)
-    newExec, epoch = getExecutor(asc, web3.eth.block_number, startStakes)
+    newExec, epoch = getExecutor(evmMaths, web3.eth.block_number, startStakes)
     assert asc.sm.getExecutor() == (newExec, epoch)
     if web3.eth.block_number % BLOCKS_IN_EPOCH != BLOCKS_IN_EPOCH - 1:
         assert asc.sm.isUpdatedExec(newExec).return_value

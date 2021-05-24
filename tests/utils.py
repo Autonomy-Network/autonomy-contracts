@@ -13,21 +13,21 @@ def getRandNum(seed):
     return web3.toInt(web3.eth.get_block(seed).hash)
 
 
-def getExecutor(asc, blockNum, stakes):
+def getExecutor(evmMaths, blockNum, stakes):
     epoch = getEpoch(blockNum)
     # -1 because blockhash(seed) in Oracle will return 0x00 if the
     # seed == this block's height
     randNum = getRandNum(epoch - 1)
     # i = randNum % len(stakes)
-    i = asc.sm.getRemainder(randNum, len(stakes))
+    i = evmMaths.getRemainder(randNum, len(stakes))
     # print(randNum, epoch, i, stakes[i], stakes)
     return stakes[i], epoch
 
 
-def getUpdateExecResult(asc, curHeight, stakes):
+def getUpdatedExecResult(evmMaths, curHeight, stakes):
     epoch = getEpoch(web3.eth.block_number)
     randNum = getRandNum(epoch - 1)
-    idx = asc.sm.getRemainder(randNum, len(stakes))
+    idx = evmMaths.getRemainder(randNum, len(stakes))
 
     return (epoch, randNum, idx, stakes[idx])
 
@@ -124,10 +124,7 @@ def getEthForExec(tx, gasPriceFast):
 
 
 def getASCForExec(evmMaths, tx, AUTOPerETH, gasPriceFast):
-    print(evmMaths)
-    print(type(evmMaths))
     # Need to account for differences in division between Python and Solidity
-    print(tx.return_value * gasPriceFast * AUTOPerETH * PAY_AUTO_BPS, BASE_BPS * E_18)
     return evmMaths.mul4Div2(tx.return_value, gasPriceFast, AUTOPerETH, PAY_AUTO_BPS, BASE_BPS, E_18)
 
 

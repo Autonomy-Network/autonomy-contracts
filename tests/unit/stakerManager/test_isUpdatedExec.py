@@ -27,7 +27,7 @@ def test_isUpdatedExec_no_stakes(a, asc):
 # as input for a given block height, so we'll have this test to test inputing
 # the executor returns true for every block that it should, and 
 # test_isUpdatedExec_false for testing inputs that aren't the executor fail
-def test_isUpdatedExec_true(a, asc, stakedMin):
+def test_isUpdatedExec_true(a, asc, evmMaths, stakedMin):
     numStanStakes, exec, tx = stakedMin
     asc.sm.stake(1, asc.FR_BOB)
     asc.sm.stake(1, asc.FR_CHARLIE)
@@ -41,12 +41,12 @@ def test_isUpdatedExec_true(a, asc, stakedMin):
     chain.mine(BLOCKS_IN_EPOCH)
 
     for i in range(5 * BLOCKS_IN_EPOCH):
-        exec, epoch = getExecutor(asc, web3.eth.block_number + 1, stakes)
+        exec, epoch = getExecutor(evmMaths, web3.eth.block_number + 1, stakes)
         assert asc.sm.isUpdatedExec(exec).return_value
         assert asc.sm.isCurExec(exec)
 
 
-def test_isUpdatedExec_false(a, asc, stakedMin):
+def test_isUpdatedExec_false(a, asc, evmMaths, stakedMin):
     a = list(a)
     numStanStakes, exec, tx = stakedMin
     asc.sm.stake(1, asc.FR_BOB)
@@ -61,7 +61,7 @@ def test_isUpdatedExec_false(a, asc, stakedMin):
     chain.mine(BLOCKS_IN_EPOCH)
 
     for i in range(5 * BLOCKS_IN_EPOCH):
-        exec, epoch = getExecutor(asc, web3.eth.block_number + 1, stakes)
+        exec, epoch = getExecutor(evmMaths, web3.eth.block_number + 1, stakes)
         addr = choice(a)
         if addr != exec:
             assert not asc.sm.isUpdatedExec(addr).return_value

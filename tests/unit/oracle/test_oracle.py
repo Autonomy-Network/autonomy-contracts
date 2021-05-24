@@ -20,13 +20,13 @@ def test_getRandNum(asc):
 # Test with a new price oracle so we can test that getAUTOPerETH
 # properly reads the new price
 def test_setPriceOracle(asc, PriceOracle):
-    newAUTOPerETHRate = 17
+    newRate = 17
     newGasPriceFast = 3 * 10**9
-    newPriceOracle = asc.DEPLOYER.deploy(PriceOracle, newAUTOPerETHRate, newGasPriceFast)
+    newPriceOracle = asc.DEPLOYER.deploy(PriceOracle, newRate, newGasPriceFast)
 
     asc.o.setPriceOracle(newPriceOracle, asc.FR_DEPLOYER)
     
-    assert asc.o.getAUTOPerETH() == newASCRate
+    assert asc.o.getAUTOPerETH() == newRate
     assert asc.o.getGasPriceFast() == newGasPriceFast
     assert asc.o.owner() == asc.DEPLOYER
 

@@ -109,7 +109,7 @@ def stakedHigh(asc):
 
 
 @pytest.fixture(scope="module")
-def stakedMultiSmall(asc, stakedMin):
+def stakedMultiSmall(asc, evmMaths, stakedMin):
     _, staker0, tx0 = stakedMin
     num0 = 1
 
@@ -138,7 +138,7 @@ def stakedMultiSmall(asc, stakedMin):
     assert asc.sm.getTotalStaked() == totalNumStakes * STAN_STAKE
     assert asc.sm.getStakes() == stakes
     assert asc.sm.getCurEpoch() == getEpoch(web3.eth.block_number)
-    newExec, epoch = getExecutor(asc, web3.eth.block_number + 1, stakes)
+    newExec, epoch = getExecutor(evmMaths, web3.eth.block_number + 1, stakes)
     assert asc.sm.isUpdatedExec(newExec).return_value
     assert asc.sm.getExecutor() == (newExec, epoch)
     for addr in a:

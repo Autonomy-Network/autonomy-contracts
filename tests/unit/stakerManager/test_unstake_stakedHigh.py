@@ -6,6 +6,7 @@ from brownie.test import given, strategy
 
 def unstakeTest(
     asc,
+    evmMaths,
     web3,
     numUnstakes,
     staker,
@@ -23,7 +24,7 @@ def unstakeTest(
         asc.sm.getStakesSlice(0, len(startStakes) + 1)
     assert asc.sm.getStakesSlice(0, len(startStakes)) == startStakes
     assert asc.sm.getCurEpoch() == getEpoch(web3.eth.block_number)
-    assert asc.sm.getExecutor() == getExecutor(asc, web3.eth.block_number, startStakes)
+    assert asc.sm.getExecutor() == getExecutor(evmMaths, web3.eth.block_number, startStakes)
     if web3.eth.block_number % BLOCKS_IN_EPOCH != BLOCKS_IN_EPOCH - 1:
         assert asc.sm.isUpdatedExec(staker).return_value
     for addr in a:
@@ -49,7 +50,7 @@ def unstakeTest(
             asc.sm.getStakesSlice(0, len(newStakes) + 1)
         assert asc.sm.getStakesSlice(0, len(newStakes)) == newStakes
         assert asc.sm.getCurEpoch() == getEpoch(web3.eth.block_number)
-        newExec, epoch = getExecutor(asc, web3.eth.block_number, startStakes)
+        newExec, epoch = getExecutor(evmMaths, web3.eth.block_number, startStakes)
         assert asc.sm.getExecutor() == (newExec, epoch)
         if web3.eth.block_number % BLOCKS_IN_EPOCH != BLOCKS_IN_EPOCH - 1:
             assert asc.sm.isUpdatedExec(newExec).return_value
@@ -60,10 +61,11 @@ def unstakeTest(
 
 
 @given(numUnstakes=strategy('uint256', max_value=INIT_NUM_STAKES + 20))
-def test_unstake(asc, stakedHigh, numUnstakes):
+def test_unstake(asc, evmMaths, stakedHigh, numUnstakes):
     startNumStakes, staker, __ = stakedHigh
     unstakeTest(
         asc,
+        evmMaths,
         web3,
         numUnstakes,
         staker,
@@ -77,7 +79,7 @@ def test_unstake(asc, stakedHigh, numUnstakes):
 # Want to have some tests with specific, manual values because it's
 # possible that some of the slightly more complex algorithms in StakeManager have
 # errors and I've just replicated those errors in things like getModStakes()
-def test_unstake_7(asc, stakedHigh):
+def test_unstake_7(asc, evmMaths, stakedHigh):
     chain.mine(BLOCKS_IN_EPOCH)
     startNumStakes, staker, = 100, asc.ALICE
     idxs = [0, 0, 0, 0, 0, 0, 0]
@@ -94,7 +96,7 @@ def test_unstake_7(asc, stakedHigh):
         asc.sm.getStakesSlice(0, len(stakes) + 1)
     assert asc.sm.getStakesSlice(0, len(stakes)) == stakes
     assert asc.sm.getCurEpoch() == getEpoch(web3.eth.block_number)
-    newExec, epoch = getExecutor(asc, web3.eth.block_number, [staker] * startNumStakes)
+    newExec, epoch = getExecutor(evmMaths, web3.eth.block_number, [staker] * startNumStakes)
     assert asc.sm.getExecutor() == (newExec, epoch)
     if web3.eth.block_number % BLOCKS_IN_EPOCH != BLOCKS_IN_EPOCH - 1:
         assert asc.sm.isUpdatedExec(newExec).return_value

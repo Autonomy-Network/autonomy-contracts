@@ -402,7 +402,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
                 gasUsed += (numStorageRefunds * 855);
                 gasUsed -= gasRefunded;
             }
-            emit Test(gasUsed * gasPrice * orac.getAUTOPerETH() * PAY_AUTO_BPS, BASE_BPS * _E_18);
+            
             uint totalAUTO = gasUsed * gasPrice * orac.getAUTOPerETH() * PAY_AUTO_BPS / (BASE_BPS * _E_18);
 
             // Send the executor their bounty
@@ -430,7 +430,6 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
             }
         }
     }
-    event Test(uint a, uint b);
 
     //////////////////////////////////////////////////////////////
     //                                                          //
