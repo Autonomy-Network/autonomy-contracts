@@ -12,17 +12,17 @@ from utils import *
 def test_cancelHashedReq_rev_nonReentrant(asc, mockTarget, mockReentrancyAttack):
     # Create request to call in reentrance
     callData = mockTarget.setX.encode_input(5)
-    req1 = (asc.BOB.address, mockReentrancyAttack.address, callData, False, True, 0, 0, asc.DENICE.address)
+    req1 = (asc.BOB.address, mockReentrancyAttack.address, asc.DENICE, callData, False, True, 0, 0)
     addToIpfs(asc, req1)
 
-    asc.r.newHashedReq(mockTarget, callData, False, True, 0, asc.DENICE, *getIpfsMetaData(asc, req1), {'from': asc.BOB})
+    asc.r.newHashedReq(mockTarget, asc.DENICE, callData, 0, False, True, *getIpfsMetaData(asc, req1), {'from': asc.BOB})
 
     # Create request to be executed directly
     callData = mockReentrancyAttack.callCancelHashedReq.encode_input(0, req1, *getIpfsMetaData(asc, req1))
-    req2 = (asc.BOB.address, mockReentrancyAttack.address, callData, False, True, 0, 0, asc.DENICE.address)
+    req2 = (asc.BOB.address, mockReentrancyAttack.address, asc.DENICE, callData, 0, 0, False, True)
     addToIpfs(asc, req2)
 
-    asc.r.newHashedReq(mockReentrancyAttack, callData, False, True, 0, asc.DENICE, *getIpfsMetaData(asc, req2), {'from': asc.BOB})
+    asc.r.newHashedReq(mockReentrancyAttack, asc.DENICE, callData, 0, False, True, *getIpfsMetaData(asc, req2), {'from': asc.BOB})
 
     with reverts(REV_MSG_REENTRANCY):
         asc.r.executeHashedReq(1, req2, *getIpfsMetaData(asc, req2))

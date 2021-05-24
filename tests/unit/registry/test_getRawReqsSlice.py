@@ -18,8 +18,8 @@ def test_getRawReqsSlice(asc, mockTarget, requesters, startIdxs, endIdxs):
     callData = mockTarget.setX.encode_input(5)
     reqs = []
     for requester in requesters:
-        asc.r.newRawReq(mockTarget, callData, False, False, 0, asc.DENICE, {'from': requester})
-        reqs.append((requester.address, mockTarget.address, callData, False, False, 0, 0, asc.DENICE.address))
+        asc.r.newRawReq(mockTarget, asc.DENICE, callData, 0, False, False, {'from': requester})
+        reqs.append((requester.address, mockTarget.address, asc.DENICE, callData, 0, 0, False, False))
     
     assert asc.r.getRawReqsSlice(0, len(requesters)) == reqs
     assert asc.r.getRawReqsSlice(0, len(requesters)) == asc.r.getRawReqs()

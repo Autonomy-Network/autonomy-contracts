@@ -162,7 +162,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         returns (uint id)
     {
         Request memory r = Request(payable(msg.sender), target, referer, callData, uint120(msg.value), ethForCall, verifySender, payWithASC);
-        bytes32 hashedIpfsReq = getHashedIpfsReq(dataPrefix, getReqBytes(r), dataSuffix);
+        bytes32 hashedIpfsReq = getHashedIpfsReq(getReqBytes(r), dataPrefix, dataSuffix);
 
         id = _hashedReqs.length;
         emit HashedReqAdded(id);
@@ -247,7 +247,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         bytes memory dataPrefix,
         bytes memory dataPostfix
     ) public pure override returns (bytes32) {
-        return sha256(getIpfsReqBytes(dataPrefix, r, dataPostfix));
+        return sha256(getIpfsReqBytes(r, dataPrefix, dataPostfix));
     }
 
     function getReqFromBytes(bytes memory rBytes) public pure override returns (Request memory r) {
@@ -598,7 +598,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         bytes32[] storage hashedIpfsReqs
     ) {
         require(
-            getHashedIpfsReq(dataPrefix, getReqBytes(r), dataSuffix) == hashedIpfsReqs[id], 
+            getHashedIpfsReq(getReqBytes(r), dataPrefix, dataSuffix) == hashedIpfsReqs[id], 
             "Reg: request not the same"
         );
         _;

@@ -11,10 +11,10 @@ from brownie.test import given, strategy
 def test_cancelRawReq_rev_nonReentrant(asc, mockTarget, mockReentrancyAttack):
     # Create request to call in reentrance
     callData = mockTarget.setX.encode_input(5)
-    asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB})
+    asc.r.newRawReq(mockTarget, asc.DENICE, callData, 0, False, True, {'from': asc.BOB})
     # Create request to be executed directly
     callData = mockReentrancyAttack.callCancelRawReq.encode_input(0)
-    asc.r.newRawReq(mockReentrancyAttack, callData, False, True, 0, asc.DENICE, {'from': asc.BOB})
+    asc.r.newRawReq(mockReentrancyAttack, asc.DENICE, callData, 0, False, True, {'from': asc.BOB})
 
     with reverts(REV_MSG_REENTRANCY):
         asc.r.executeRawReq(1)

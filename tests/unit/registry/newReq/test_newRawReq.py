@@ -8,9 +8,9 @@ from brownie.test import given, strategy
 
 def test_newRawReq_no_eth(asc, mockTarget):
     callData = mockTarget.setX.encode_input(5)
-    tx = asc.r.newRawReq(mockTarget, callData, False, False, 0, asc.DENICE, asc.FR_BOB)
+    tx = asc.r.newRawReq(mockTarget, asc.DENICE, callData, 0, False, False, asc.FR_BOB)
 
-    request = (asc.BOB.address, mockTarget.address, callData, False, False, 0, 0, asc.DENICE.address)
+    request = (asc.BOB.address, mockTarget.address, asc.DENICE, callData, 0, 0, False, False)
     # Should've changed
     reqs = [request]
     assert asc.r.getRawReqs() == reqs
@@ -61,9 +61,9 @@ def test_newRawReq_no_eth(asc, mockTarget):
 
 def test_newRawReq_pay_with_ASCoin(asc, mockTarget):
     callData = mockTarget.setX.encode_input(5)
-    tx = asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, asc.FR_BOB)
+    tx = asc.r.newRawReq(mockTarget, asc.DENICE, callData, 0, False, True, asc.FR_BOB)
 
-    request = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+    request = (asc.BOB.address, mockTarget.address, asc.DENICE, callData, 0, 0, False, True)
     # Should've changed
     reqs = [request]
     assert asc.r.getRawReqs() == reqs
@@ -119,9 +119,9 @@ def test_newRawReq_pay_with_ASCoin(asc, mockTarget):
 def test_newRawReq_with_eth_and_pay_ASCoin(asc, mockTarget, ethForCall, payWithASC):
     msgValue = ethForCall
     callData = mockTarget.setX.encode_input(5)
-    tx = asc.r.newRawReq(mockTarget, callData, False, payWithASC, ethForCall, asc.DENICE, {'from': asc.BOB, 'value': msgValue})
+    tx = asc.r.newRawReq(mockTarget, asc.DENICE, callData, ethForCall, False, payWithASC, {'from': asc.BOB, 'value': msgValue})
 
-    request = (asc.BOB.address, mockTarget.address, callData, False, payWithASC, msgValue, ethForCall, asc.DENICE.address)
+    request = (asc.BOB.address, mockTarget.address, asc.DENICE, callData, msgValue, ethForCall, False, payWithASC)
     # Should've changed
     reqs = [request]
     assert asc.r.getRawReqs() == reqs
@@ -183,11 +183,11 @@ def test_newRawReq_verifySender(asc, mockTarget, ethForCall, payWithASC, userAdd
 
     if userAddr != sender:
         with reverts(REV_MSG_CALLDATA_NOT_VER):
-            asc.r.newRawReq(mockTarget, callData, True, payWithASC, ethForCall, asc.DENICE, {'from': sender, 'value': msgValue})
+            asc.r.newRawReq(mockTarget, asc.DENICE, callData, ethForCall, True, payWithASC, {'from': sender, 'value': msgValue})
     else:
-        tx = asc.r.newRawReq(mockTarget, callData, True, payWithASC, ethForCall, asc.DENICE, {'from': sender, 'value': msgValue})
+        tx = asc.r.newRawReq(mockTarget, asc.DENICE, callData, ethForCall, True, payWithASC, {'from': sender, 'value': msgValue})
 
-        request = (sender.address, mockTarget.address, callData, True, payWithASC, ethForCall, ethForCall, asc.DENICE.address)
+        request = (sender.address, mockTarget.address, asc.DENICE, callData, msgValue, ethForCall, True, payWithASC)
         # Should've changed
         reqs = [request]
         assert asc.r.getRawReqs() == reqs
@@ -239,19 +239,19 @@ def test_newRawReq_verifySender(asc, mockTarget, ethForCall, payWithASC, userAdd
 def test_newRawReq_rev_target_empty(asc, mockTarget):
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_NZ_ADDR):
-        asc.r.newRawReq(ADDR_0, callData, False, False, 0, asc.DENICE, asc.FR_BOB)
+        asc.r.newRawReq(ADDR_0, asc.DENICE, callData, 0, False, False, asc.FR_BOB)
 
 
 def test_newRawReq_rev_target_is_registry(asc, mockTarget):
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_TARGET):
-        asc.r.newRawReq(asc.r, callData, False, False, 0, asc.DENICE, asc.FR_BOB)
+        asc.r.newRawReq(asc.r, asc.DENICE, callData, 0, False, False, asc.FR_BOB)
 
 
 def test_newRawReq_rev_target_is_ASCoin(asc, mockTarget):
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_TARGET):
-        asc.r.newRawReq(asc.ASC, callData, False, False, 0, asc.DENICE, asc.FR_BOB)
+        asc.r.newRawReq(asc.ASC, asc.DENICE, callData, 0, False, False, asc.FR_BOB)
 
 
 @given(
@@ -262,7 +262,7 @@ def test_newRawReq_rev_validEth_payWithASC(asc, mockTarget, ethForCall, msgValue
     callData = mockTarget.setX.encode_input(5)
     if ethForCall != msgValue:
         with reverts(REV_MSG_ETHFORCALL_NOT_MSGVALUE):
-            asc.r.newRawReq(mockTarget, callData, False, True, ethForCall, asc.DENICE, {'from': asc.BOB, 'value': msgValue})
+            asc.r.newRawReq(mockTarget, asc.DENICE, callData, ethForCall, False, True, {'from': asc.BOB, 'value': msgValue})
 
 
 @given(
@@ -273,10 +273,10 @@ def test_newRawReq_rev_validEth_no_payWithASC(asc, mockTarget, ethForCall, msgVa
     callData = mockTarget.setX.encode_input(5)
     if ethForCall > msgValue:
         with reverts(REV_MSG_ETHFORCALL_HIGH):
-            asc.r.newRawReq(mockTarget, callData, False, False, ethForCall, asc.DENICE, {'from': asc.BOB, 'value': msgValue})
+            asc.r.newRawReq(mockTarget, asc.DENICE, callData, ethForCall, False, False, {'from': asc.BOB, 'value': msgValue})
 
 
 def test_newRawReq_rev_verifySender_calldata_invalid(asc, mockTarget):
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_CALLDATA_NOT_VER):
-        asc.r.newRawReq(mockTarget, callData, True, False, 0, asc.DENICE, asc.FR_BOB)
+        asc.r.newRawReq(mockTarget, asc.DENICE, callData, 0, True, False, asc.FR_BOB)

@@ -17,7 +17,7 @@ from utils import *
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 #     callData = mockTarget.useGasWithArray.encode_input(0)
-#     req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+#     req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0)
 #     reqHashBytes = addReqGetHashBytes(asc, req)
 #     asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
@@ -38,7 +38,7 @@ from utils import *
 #         execStartBal = asc.ASC.balanceOf(asc.ALICE)
 #         # Create request
 #         callData = mockTarget.useGasWithArray.encode_input(i)
-#         req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+#         req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0)
 #         reqHashBytes = addReqGetHashBytes(asc, req)
 #         asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
@@ -67,7 +67,7 @@ from utils import *
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 #     callData = mockTarget.useGasWithCallData.encode_input([])
-#     req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+#     req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0)
 #     reqHashBytes = addReqGetHashBytes(asc, req)
 #     asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
@@ -88,7 +88,7 @@ from utils import *
 #         execStartBal = asc.ASC.balanceOf(asc.ALICE)
 #         # Create request
 #         callData = mockTarget.useGasWithCallData.encode_input([i for i in range(i)] * 5)
-#         req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+#         req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0)
 #         reqHashBytes = addReqGetHashBytes(asc, req)
 #         asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
@@ -117,7 +117,7 @@ from utils import *
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 #     callData = mockTarget.useGasCallDataAndArray.encode_input([])
-#     req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+#     req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0)
 #     reqHashBytes = addReqGetHashBytes(asc, req)
 #     asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
@@ -135,7 +135,7 @@ from utils import *
 #         execStartBal = asc.ASC.balanceOf(asc.ALICE)
 #         # Create request
 #         callData = mockTarget.useGasCallDataAndArray.encode_input([i for i in range(i)])
-#         req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+#         req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0)
 #         reqHashBytes = addReqGetHashBytes(asc, req)
 #         asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
@@ -166,7 +166,7 @@ from utils import *
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 #     callData = mockTarget.useGasCallDataAndAddrArray.encode_input([])
-#     req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+#     req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0)
 #     reqHashBytes = addReqGetHashBytes(asc, req)
 #     asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
@@ -184,7 +184,7 @@ from utils import *
 #         execStartBal = asc.ASC.balanceOf(asc.ALICE)
 #         # Create request
 #         callData = mockTarget.useGasCallDataAndAddrArray.encode_input(addrs[:i])
-#         req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+#         req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0)
 #         reqHashBytes = addReqGetHashBytes(asc, req)
 #         asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
@@ -215,7 +215,7 @@ from utils import *
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 #     callData = mockTarget.useGasCallDataAndSpecificAddrArray.encode_input([], 0)
-#     req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+#     req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0)
 #     reqHashBytes = addReqGetHashBytes(asc, req)
 #     asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
@@ -236,7 +236,7 @@ from utils import *
 #         execStartBal = asc.ASC.balanceOf(asc.ALICE)
 #         # Create request
 #         callData = mockTarget.useGasCallDataAndSpecificAddrArray.encode_input(addrs, i)
-#         req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+#         req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0)
 #         reqHashBytes = addReqGetHashBytes(asc, req)
 #         asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
@@ -268,7 +268,7 @@ from utils import *
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 #     callData = mockTarget.useGasCallDataAndAddrArrayMultiple.encode_input([], 0)
-#     req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+#     req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0)
 #     reqHashBytes = addReqGetHashBytes(asc, req)
 #     asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
@@ -286,7 +286,7 @@ from utils import *
 #         execStartBal = asc.ASC.balanceOf(asc.ALICE)
 #         # Create request
 #         callData = mockTarget.useGasCallDataAndAddrArrayMultiple.encode_input(addrs, i)
-#         req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+#         req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0)
 #         reqHashBytes = addReqGetHashBytes(asc, req)
 #         asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 

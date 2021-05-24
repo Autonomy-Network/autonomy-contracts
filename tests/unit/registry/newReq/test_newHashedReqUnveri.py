@@ -59,7 +59,7 @@ def test_newHashedReqUnveri(asc, mockTarget, hashedIpfsReq, sender):
 
 def test_newHashedReqUnveri_real(asc, mockTarget):
     callData = mockTarget.setX.encode_input(5)
-    req = (asc.BOB.address, mockTarget, callData, False, True, 0, 0, asc.DENICE)
+    req = (asc.BOB.address, mockTarget, asc.DENICE, callData, 0, 0, False, True)
     reqBytes = asc.r.getReqBytes(req)
 
     with ipfshttpclient.connect() as client:
@@ -120,7 +120,7 @@ def test_newHashedReqUnveri_real(asc, mockTarget):
     dataPrefix = ipfsBlock[:reqBytesIdx]
     dataSuffix = ipfsBlock[reqBytesIdx + len(reqBytes) : ]
 
-    tx2 = asc.r.newHashedReq(mockTarget, callData, False, True, 0, asc.DENICE, dataPrefix, dataSuffix, asc.FR_BOB)
+    tx2 = asc.r.newHashedReq(mockTarget, asc.DENICE, callData, 0, False, True, dataPrefix, dataSuffix, asc.FR_BOB)
 
     assert asc.r.getHashedReq(0) == hash
 

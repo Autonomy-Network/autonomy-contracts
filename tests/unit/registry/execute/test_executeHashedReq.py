@@ -12,17 +12,17 @@ from utils import *
 def test_executeHashedReq_rev_nonReentrant(asc, mockTarget, mockReentrancyAttack):
     # Create request to call in reentrance
     callData = mockTarget.setX.encode_input(5)
-    req1 = (asc.BOB.address, mockReentrancyAttack.address, callData, False, True, 0, 0, asc.DENICE.address)
+    req1 = (asc.BOB.address, mockReentrancyAttack.address, asc.DENICE, callData, 0, 0, False, True)
     addToIpfs(asc, req1)
 
-    asc.r.newHashedReq(mockTarget, callData, False, True, 0, asc.DENICE, *getIpfsMetaData(asc, req1), {'from': asc.BOB})
+    asc.r.newHashedReq(mockTarget, asc.DENICE, callData, 0, False, True, *getIpfsMetaData(asc, req1), {'from': asc.BOB})
 
     # Create request to be executed directly
     callData = mockReentrancyAttack.callExecuteHashedReq.encode_input(0, req1, *getIpfsMetaData(asc, req1))
-    req2 = (asc.BOB.address, mockReentrancyAttack.address, callData, False, True, 0, 0, asc.DENICE.address)
+    req2 = (asc.BOB.address, mockReentrancyAttack.address, asc.DENICE, callData, 0, 0, False, True)
     addToIpfs(asc, req2)
 
-    asc.r.newHashedReq(mockReentrancyAttack, callData, False, True, 0, asc.DENICE, *getIpfsMetaData(asc, req2), {'from': asc.BOB})
+    asc.r.newHashedReq(mockReentrancyAttack, asc.DENICE, callData, 0, False, True, *getIpfsMetaData(asc, req2), {'from': asc.BOB})
 
     with reverts(REV_MSG_REENTRANCY):
         asc.r.executeHashedReq(1, req2, *getIpfsMetaData(asc, req2))
@@ -33,8 +33,8 @@ def test_executeHashedReq_returns_revert_message(asc, stakedMin, mockTarget):
     _, staker, __ = stakedMin
     
     callData = mockTarget.revertWithMessage.encode_input()
-    req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0, asc.DENICE.address)
-    tx = asc.r.newHashedReq(mockTarget, callData, False, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
+    req = (asc.BOB.address, mockTarget.address, asc.DENICE, callData, E_18, 0, False, False)
+    tx = asc.r.newHashedReq(mockTarget, asc.DENICE, callData, 0, False, False, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
     with reverts(REV_MSG_GOOFED):
         asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -45,8 +45,8 @@ def test_executeHashedReq_returns_no_revert_message(asc, stakedMin, mockTarget):
     _, staker, __ = stakedMin
     
     callData = mockTarget.revertWithoutMessage.encode_input()
-    req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0, asc.DENICE.address)
-    tx = asc.r.newHashedReq(mockTarget, callData, False, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
+    req = (asc.BOB.address, mockTarget.address, asc.DENICE, callData, E_18, 0, False, False)
+    tx = asc.r.newHashedReq(mockTarget, asc.DENICE, callData, 0, False, False, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
     with reverts(''):
         asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -71,13 +71,13 @@ def test_executeHashedReq_validCalldata(asc, stakedMin, mockTarget, ethForCall, 
 
         id = 0
         callData = mockTarget.setAddrPayVerified.encode_input(userAddr)
-        req = (sender.address, mockTarget.address, callData, True, payWithASC, msgValue, ethForCall, asc.DENICE.address)
+        req = (sender.address, mockTarget.address, asc.DENICE, callData, msgValue, ethForCall, True, payWithASC)
         addToIpfs(asc, req)
 
         asc.ASC.approve(asc.r, MAX_TEST_STAKE, {'from': sender})
         asc.ASC.transfer(sender, MAX_TEST_STAKE, asc.FR_DEPLOYER)
         senderASCStartBal = asc.ASC.balanceOf(sender)
-        asc.r.newHashedReq(mockTarget, callData, True, payWithASC, ethForCall, asc.DENICE, *getIpfsMetaData(asc, req), {'from': sender, 'value': msgValue})
+        asc.r.newHashedReq(mockTarget, asc.DENICE, callData, ethForCall, True, payWithASC, *getIpfsMetaData(asc, req), {'from': sender, 'value': msgValue})
 
         if userAddr != sender:
             with reverts(REV_MSG_CALLDATA_NOT_VER):
@@ -388,7 +388,7 @@ def test_executeHashedReq_rev_req_not_the_same(asc, stakedMin, hashedReqs):
     _, staker, __ = stakedMin
     reqs, reqHashes, msgValue, ethForCall = hashedReqs
     invalidReq = list(reqs[0])
-    invalidReq[6] = 1
+    invalidReq[4] = 1
     with reverts(REV_MSG_NOT_SAME):
         asc.r.executeHashedReq(0, invalidReq, *getIpfsMetaData(asc, invalidReq), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 

@@ -228,16 +228,16 @@ def reqsRaw(asc, mockTarget):
     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 
     callData = mockTarget.setX.encode_input(5)
-    asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB})
-    reqPayASCNoEthForCall = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+    asc.r.newRawReq(mockTarget, asc.DENICE, callData, 0, False, True, {'from': asc.BOB})
+    reqPayASCNoEthForCall = (asc.BOB.address, mockTarget.address, asc.DENICE.address, callData, 0, 0, False, True)
 
     callData = mockTarget.setXPay.encode_input(5)
-    asc.r.newRawReq(mockTarget, callData, False, True, ethForCall, asc.DENICE, {'from': asc.BOB, 'value': ethForCall})
-    reqPayASCEthForCall = (asc.BOB.address, mockTarget.address, callData, False, True, ethForCall, ethForCall, asc.DENICE.address)
+    asc.r.newRawReq(mockTarget, asc.DENICE, callData, ethForCall, False, True, {'from': asc.BOB, 'value': ethForCall})
+    reqPayASCEthForCall = (asc.BOB.address, mockTarget.address, asc.DENICE, callData, ethForCall, ethForCall, False, True)
 
     callData = mockTarget.setAddrPayVerified.encode_input(asc.BOB)
-    asc.r.newRawReq(mockTarget, callData, True, True, ethForCall, asc.DENICE, {'from': asc.BOB, 'value': ethForCall})
-    reqPayASCEthForCallVerifySender = (asc.BOB.address, mockTarget.address, callData, True, True, ethForCall, ethForCall, asc.DENICE.address)
+    asc.r.newRawReq(mockTarget, asc.DENICE, callData, ethForCall, True, True, {'from': asc.BOB, 'value': ethForCall})
+    reqPayASCEthForCallVerifySender = (asc.BOB.address, mockTarget.address, asc.DENICE, callData, ethForCall, ethForCall, True, True)
 
     return reqNoEthForCall, reqEthForCall, reqPayASCNoEthForCall, reqPayASCEthForCall, reqPayASCEthForCallVerifySender, msgValue, ethForCall
 
@@ -250,26 +250,26 @@ def hashedReqs(asc, mockTarget):
     msgValue = 1.5 * ethForCall
 
     callData = mockTarget.setX.encode_input(5)
-    reqNoEthForCall = (asc.BOB.address, mockTarget.address, callData, False, False, msgValue, 0, asc.DENICE.address)
-    tx = asc.r.newHashedReq(mockTarget, callData, False, False, 0, asc.DENICE, *getIpfsMetaData(asc, reqNoEthForCall), {'from': asc.BOB, 'value': msgValue})
+    reqNoEthForCall = (asc.BOB.address, mockTarget.address, asc.DENICE, callData, msgValue, 0, False, False)
+    tx = asc.r.newHashedReq(mockTarget, asc.DENICE, callData, 0, False, False, *getIpfsMetaData(asc, reqNoEthForCall), {'from': asc.BOB, 'value': msgValue})
 
     callData = mockTarget.setXPay.encode_input(5)
-    reqEthForCall = (asc.BOB.address, mockTarget.address, callData, False, False, msgValue, ethForCall, asc.DENICE.address)
-    tx = asc.r.newHashedReq(mockTarget, callData, False, False, ethForCall, asc.DENICE, *getIpfsMetaData(asc, reqEthForCall), {'from': asc.BOB, 'value': msgValue})
+    reqEthForCall = (asc.BOB.address, mockTarget.address, asc.DENICE, callData, msgValue, ethForCall, False, False)
+    tx = asc.r.newHashedReq(mockTarget, asc.DENICE, callData, ethForCall, False, False, *getIpfsMetaData(asc, reqEthForCall), {'from': asc.BOB, 'value': msgValue})
 
     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
     
     callData = mockTarget.setX.encode_input(5)
-    reqPayASCNoEthForCall = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
-    tx = asc.r.newHashedReq(mockTarget, callData, False, True, 0, asc.DENICE, *getIpfsMetaData(asc, reqPayASCNoEthForCall), {'from': asc.BOB, 'value': 0})
+    reqPayASCNoEthForCall = (asc.BOB.address, mockTarget.address, asc.DENICE, callData, 0, 0, False, True)
+    tx = asc.r.newHashedReq(mockTarget, asc.DENICE, callData, 0, False, True, *getIpfsMetaData(asc, reqPayASCNoEthForCall), {'from': asc.BOB, 'value': 0})
 
     callData = mockTarget.setXPay.encode_input(5)
-    reqPayASCEthForCall = (asc.BOB.address, mockTarget.address, callData, False, True, ethForCall, ethForCall, asc.DENICE.address)
-    tx = asc.r.newHashedReq(mockTarget, callData, False, True, ethForCall, asc.DENICE, *getIpfsMetaData(asc, reqPayASCEthForCall), {'from': asc.BOB, 'value': ethForCall})
+    reqPayASCEthForCall = (asc.BOB.address, mockTarget.address, asc.DENICE, callData, ethForCall, ethForCall, False, True)
+    tx = asc.r.newHashedReq(mockTarget, asc.DENICE, callData, ethForCall, False, True, *getIpfsMetaData(asc, reqPayASCEthForCall), {'from': asc.BOB, 'value': ethForCall})
 
     callData = mockTarget.setAddrPayVerified.encode_input(asc.BOB)
-    reqPayASCEthForCallVerifySender = (asc.BOB.address, mockTarget.address, callData, True, True, ethForCall, ethForCall, asc.DENICE.address)
-    tx = asc.r.newHashedReq(mockTarget, callData, True, True, ethForCall, asc.DENICE, *getIpfsMetaData(asc, reqPayASCEthForCall), {'from': asc.BOB, 'value': ethForCall})
+    reqPayASCEthForCallVerifySender = (asc.BOB.address, mockTarget.address, asc.DENICE, callData, ethForCall, ethForCall, True, True)
+    tx = asc.r.newHashedReq(mockTarget, asc.DENICE, callData, ethForCall, True, True, *getIpfsMetaData(asc, reqPayASCEthForCall), {'from': asc.BOB, 'value': ethForCall})
 
     reqs = [reqNoEthForCall, reqEthForCall, reqPayASCNoEthForCall, reqPayASCEthForCall, reqPayASCEthForCallVerifySender]
     reqHashes = [bytesToHex(addReqGetHashBytes(asc, r)) for r in reqs]
@@ -283,7 +283,7 @@ def hashedReqs(asc, mockTarget):
 def hashedReqUnveri(asc, mockTarget):
     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
     callData = mockTarget.setX.encode_input(5)
-    req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+    req = (asc.BOB.address, mockTarget.address, asc.DENICE, callData, 0, 0, False, True)
     reqHashBytes = addReqGetHashBytes(asc, req)
 
     tx = asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
@@ -299,13 +299,13 @@ def vulnerableReqsRaw(asc, mockTarget, vulnerableRegistry, stakedMin):
     msgValue = 1.5 * ethForCall
 
     callData = mockTarget.callVulnerableTransfer.encode_input(asc.DENICE, 1)
-    vulnerableRegistry.newRawReq(mockTarget, callData, False, False, ethForCall, asc.DENICE, {'from': asc.BOB, 'value': msgValue})
-    reqEthForCall = (asc.BOB.address, mockTarget.address, callData, False, False, msgValue, ethForCall, asc.DENICE.address)
+    vulnerableRegistry.newRawReq(mockTarget, asc.DENICE, callData, ethForCall, False, False, {'from': asc.BOB, 'value': msgValue})
+    reqEthForCall = (asc.BOB.address, mockTarget.address, asc.DENICE, callData, msgValue, ethForCall, False, False)
 
     asc.ASC.approve(vulnerableRegistry, MAX_TEST_STAKE, asc.FR_BOB)
 
-    vulnerableRegistry.newRawReq(mockTarget, callData, False, True, ethForCall, asc.DENICE, {'from': asc.BOB, 'value': ethForCall})
-    reqPayASCEthForCall = (asc.BOB.address, mockTarget.address, callData, False, True, ethForCall, ethForCall, asc.DENICE.address)
+    vulnerableRegistry.newRawReq(mockTarget, asc.DENICE, callData, ethForCall, False, True, {'from': asc.BOB, 'value': ethForCall})
+    reqPayASCEthForCall = (asc.BOB.address, mockTarget.address, asc.DENICE, callData, ethForCall, ethForCall, False, True)
 
     return reqEthForCall, reqPayASCEthForCall, msgValue, ethForCall
 
@@ -318,13 +318,13 @@ def vulnerableHashedReqs(asc, mockTarget, vulnerableRegistry, stakedMin):
     msgValue = 1.5 * ethForCall
 
     callData = mockTarget.callVulnerableTransfer.encode_input(asc.DENICE, 1)
-    reqEthForCall = (asc.BOB.address, mockTarget.address, callData, False, False, msgValue, ethForCall, asc.DENICE.address)
-    tx = vulnerableRegistry.newHashedReq(mockTarget, callData, False, False, ethForCall, asc.DENICE, *getIpfsMetaData(asc, reqEthForCall), {'from': asc.BOB, 'value': msgValue})
+    reqEthForCall = (asc.BOB.address, mockTarget.address, asc.DENICE, callData, msgValue, ethForCall, False, False)
+    tx = vulnerableRegistry.newHashedReq(mockTarget, asc.DENICE, callData, ethForCall, False, False, *getIpfsMetaData(asc, reqEthForCall), {'from': asc.BOB, 'value': msgValue})
 
     asc.ASC.approve(vulnerableRegistry, MAX_TEST_STAKE, asc.FR_BOB)
 
-    reqPayASCEthForCall = (asc.BOB.address, mockTarget.address, callData, False, True, ethForCall, ethForCall, asc.DENICE.address)
-    tx = vulnerableRegistry.newHashedReq(mockTarget, callData, False, True, ethForCall, asc.DENICE, *getIpfsMetaData(asc, reqPayASCEthForCall), {'from': asc.BOB, 'value': ethForCall})
+    reqPayASCEthForCall = (asc.BOB.address, mockTarget.address, asc.DENICE, callData, ethForCall, ethForCall, False, True)
+    tx = vulnerableRegistry.newHashedReq(mockTarget, asc.DENICE, callData, ethForCall, False, True, *getIpfsMetaData(asc, reqPayASCEthForCall), {'from': asc.BOB, 'value': ethForCall})
 
     reqs = [reqEthForCall, reqPayASCEthForCall]
     reqHashes = [bytesToHex(addReqGetHashBytes(asc, r)) for r in reqs]
@@ -340,7 +340,7 @@ def vulnerableHashedReqUnveri(asc, mockTarget, vulnerableRegistry, stakedMin):
     asc.DEPLOYER.transfer(vulnerableRegistry, 1)
     asc.ASC.approve(vulnerableRegistry, MAX_TEST_STAKE, asc.FR_BOB)
     callData = mockTarget.callVulnerableTransfer.encode_input(asc.DENICE, 1)
-    req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+    req = (asc.BOB.address, mockTarget.address, asc.DENICE, callData, 0, 0, False, True)
     reqHashBytes = addReqGetHashBytes(asc, req)
 
     tx = vulnerableRegistry.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})

@@ -12,14 +12,14 @@ from utils import *
 def test_cancelHashedReqUnveri_rev_nonReentrant(asc, mockTarget, mockReentrancyAttack):
     # Create request to call in reentrance
     callData = mockTarget.setX.encode_input(5)
-    req1 = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+    req1 = (asc.BOB.address, mockTarget.address, asc.DENICE.address, callData, False, True, 0, 0)
     reqHashBytes1 = addReqGetHashBytes(asc, req1)
 
     asc.r.newHashedReqUnveri(reqHashBytes1, {'from': asc.BOB})
 
     # Create request to be executed directly
     callData = mockReentrancyAttack.callCancelHashedReqUnveri.encode_input(0, req1, *getIpfsMetaData(asc, req1))
-    req2 = (asc.BOB.address, mockReentrancyAttack.address, callData, False, True, 0, 0, asc.DENICE.address)
+    req2 = (asc.BOB.address, mockReentrancyAttack.address, asc.DENICE.address, callData, 0, 0, False, True)
     reqHashBytes2 = addReqGetHashBytes(asc, req2)
 
     asc.r.newHashedReqUnveri(reqHashBytes2, {'from': asc.BOB})

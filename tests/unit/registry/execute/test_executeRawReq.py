@@ -12,10 +12,10 @@ from utils import *
 def test_executeRawReq_rev_nonReentrant(asc, mockTarget, mockReentrancyAttack):
     # Create request to call in reentrance
     callData = mockTarget.setX.encode_input(5)
-    asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB})
+    asc.r.newRawReq(mockTarget, asc.DENICE, callData, 0, False, True, {'from': asc.BOB})
     # Create request to be executed directly
     callData = mockReentrancyAttack.callExecuteRawReq.encode_input(0)
-    asc.r.newRawReq(mockReentrancyAttack, callData, False, True, 0, asc.DENICE, {'from': asc.BOB})
+    asc.r.newRawReq(mockReentrancyAttack, asc.DENICE, callData, 0, False, True, {'from': asc.BOB})
 
     with reverts(REV_MSG_REENTRANCY):
         asc.r.executeRawReq(1)
@@ -25,7 +25,7 @@ def test_executeRawReq_returns_revert_message(asc, stakedMin, mockTarget):
     _, staker, __ = stakedMin
 
     callData = mockTarget.revertWithMessage.encode_input()
-    asc.r.newRawReq(mockTarget, callData, False, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
+    asc.r.newRawReq(mockTarget, asc.DENICE, callData, 0, False, False, {'from': asc.BOB, 'value': E_18})
 
     with reverts(REV_MSG_GOOFED):
         asc.r.executeRawReq(0, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -35,7 +35,7 @@ def test_executeRawReq_returns_no_revert_message(asc, stakedMin, mockTarget):
     _, staker, __ = stakedMin
 
     callData = mockTarget.revertWithMessage.encode_input()
-    asc.r.newRawReq(mockTarget, callData, False, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
+    asc.r.newRawReq(mockTarget, asc.DENICE, callData, 0, False, False, {'from': asc.BOB, 'value': E_18})
 
     with reverts(''):
         asc.r.executeRawReq(0, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})

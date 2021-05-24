@@ -18,7 +18,7 @@ def test_getAvailableMiningRewards(asc, mockTarget, ethForCall, requester):
         
         callData = mockTarget.setAddrPayVerified.encode_input(requester)
         msgValue = ethForCall + int(0.5 * E_18)
-        asc.r.newRawReq(mockTarget, callData, True, False, ethForCall, asc.DENICE, {'from': requester, 'value': msgValue})
+        asc.r.newRawReq(mockTarget, asc.DENICE, callData, ethForCall, True, False, {'from': requester, 'value': msgValue})
         asc.r.executeRawReq(0, asc.FR_ALICE)
 
         # Should've changed
@@ -41,12 +41,12 @@ def test_getAvailableMiningRewards(asc, mockTarget, ethForCall, requester):
 
 
 @given(
+    referer=strategy('address'),
     ethForCall=strategy('uint256', max_value=E_18),
     requester=strategy('address'),
-    executor=strategy('address'),
-    referer=strategy('address')
+    executor=strategy('address')
 )
-def test_getAvailableMiningRewards_all_parties_random(asc, mockTarget, ethForCall, requester, executor, referer):
+def test_getAvailableMiningRewards_all_parties_random(asc, mockTarget, referer, ethForCall, requester, executor):
     addrs = [requester, executor, referer]
     reqCount = {addr: 1 if addr == requester else 0 for addr in addrs}
     execCount = {addr: 1 if addr == executor else 0 for addr in addrs}
@@ -61,7 +61,7 @@ def test_getAvailableMiningRewards_all_parties_random(asc, mockTarget, ethForCal
     
     callData = mockTarget.setAddrPayVerified.encode_input(requester)
     msgValue = ethForCall + int(0.5 * E_18)
-    asc.r.newRawReq(mockTarget, callData, True, False, ethForCall, referer, {'from': requester, 'value': msgValue})
+    asc.r.newRawReq(mockTarget, referer, callData, ethForCall, True, False, {'from': requester, 'value': msgValue})
     asc.r.executeRawReq(0, {'from': executor})
 
     # Should've changed
@@ -97,7 +97,7 @@ def test_getAvailableMiningRewards_requester_executor_referer_same(asc, mockTarg
     ethForCall = 0
     msgValue = E_18
     asc.ASC.approve(asc.r, MAX_TEST_STAKE, {'from': asc.ALICE})
-    asc.r.newRawReq(mockTarget, callData, True, False, ethForCall, asc.ALICE, {'from': asc.ALICE, 'value': msgValue})
+    asc.r.newRawReq(mockTarget, asc.ALICE, callData, ethForCall, True, False, {'from': asc.ALICE, 'value': msgValue})
     asc.r.executeRawReq(0, asc.FR_ALICE)
 
     # Should've changed

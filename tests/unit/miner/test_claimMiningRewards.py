@@ -4,12 +4,12 @@ from brownie import reverts
 
 
 @given(
+    referer=strategy('address'),
     ethForCall=strategy('uint256', max_value=E_18),
     requester=strategy('address'),
-    executor=strategy('address'),
-    referer=strategy('address')
+    executor=strategy('address')
 )
-def test_claimMiningRewards_requester(asc, mockTarget, ethForCall, requester, executor, referer):
+def test_claimMiningRewards_requester(asc, mockTarget, referer, ethForCall, requester, executor):
     addrs = [requester, executor, referer]
     reqCount = {addr: 1 if addr == requester else 0 for addr in addrs}
     execCount = {addr: 1 if addr == executor else 0 for addr in addrs}
@@ -17,7 +17,7 @@ def test_claimMiningRewards_requester(asc, mockTarget, ethForCall, requester, ex
     
     callData = mockTarget.setAddrPayVerified.encode_input(requester)
     msgValue = ethForCall + int(0.5 * E_18)
-    asc.r.newRawReq(mockTarget, callData, True, False, ethForCall, referer, {'from': requester, 'value': msgValue})
+    asc.r.newRawReq(mockTarget, referer, callData, ethForCall, True, False, {'from': requester, 'value': msgValue})
     asc.r.executeRawReq(0, {'from': executor})
 
     startBals = {addr: asc.ASC.balanceOf(addr) for addr in addrs}
@@ -67,12 +67,12 @@ def test_claimMiningRewards_requester(asc, mockTarget, ethForCall, requester, ex
 
 
 @given(
+    referer=strategy('address'),
     ethForCall=strategy('uint256', max_value=E_18),
     requester=strategy('address'),
-    executor=strategy('address'),
-    referer=strategy('address')
+    executor=strategy('address')
 )
-def test_claimMiningRewards_executor(asc, mockTarget, ethForCall, requester, executor, referer):
+def test_claimMiningRewards_executor(asc, mockTarget, referer, ethForCall, requester, executor):
     addrs = [requester, executor, referer]
     reqCount = {addr: 1 if addr == requester else 0 for addr in addrs}
     execCount = {addr: 1 if addr == executor else 0 for addr in addrs}
@@ -80,7 +80,7 @@ def test_claimMiningRewards_executor(asc, mockTarget, ethForCall, requester, exe
     
     callData = mockTarget.setAddrPayVerified.encode_input(requester)
     msgValue = ethForCall + int(0.5 * E_18)
-    asc.r.newRawReq(mockTarget, callData, True, False, ethForCall, referer, {'from': requester, 'value': msgValue})
+    asc.r.newRawReq(mockTarget, referer, callData, ethForCall, True, False, {'from': requester, 'value': msgValue})
     asc.r.executeRawReq(0, {'from': executor})
 
     startBals = {addr: asc.ASC.balanceOf(addr) for addr in addrs}
@@ -130,12 +130,12 @@ def test_claimMiningRewards_executor(asc, mockTarget, ethForCall, requester, exe
 
 
 @given(
+    referer=strategy('address'),
     ethForCall=strategy('uint256', max_value=E_18),
     requester=strategy('address'),
-    executor=strategy('address'),
-    referer=strategy('address')
+    executor=strategy('address')
 )
-def test_claimMiningRewards_referer(asc, mockTarget, ethForCall, requester, executor, referer):
+def test_claimMiningRewards_referer(asc, mockTarget, referer, ethForCall, requester, executor):
     addrs = [requester, executor, referer]
     reqCount = {addr: 1 if addr == requester else 0 for addr in addrs}
     execCount = {addr: 1 if addr == executor else 0 for addr in addrs}
@@ -143,7 +143,7 @@ def test_claimMiningRewards_referer(asc, mockTarget, ethForCall, requester, exec
     
     callData = mockTarget.setAddrPayVerified.encode_input(requester)
     msgValue = ethForCall + int(0.5 * E_18)
-    asc.r.newRawReq(mockTarget, callData, True, False, ethForCall, referer, {'from': requester, 'value': msgValue})
+    asc.r.newRawReq(mockTarget, referer, callData, ethForCall, True, False, {'from': requester, 'value': msgValue})
     asc.r.executeRawReq(0, {'from': executor})
 
     startBals = {addr: asc.ASC.balanceOf(addr) for addr in addrs}

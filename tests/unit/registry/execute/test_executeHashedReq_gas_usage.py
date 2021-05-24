@@ -13,7 +13,7 @@ from utils import *
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     callData = mockTarget.useGasWithArray.encode_input(0)
-#     req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0, asc.DENICE.address)
+#     req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0)
 #     asc.r.newHashedReq(mockTarget, callData, False, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
 #     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -34,7 +34,7 @@ from utils import *
 #         execStartBal = asc.ALICE.balance()
 #         # Create request
 #         callData = mockTarget.useGasWithArray.encode_input(i)
-#         req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0, asc.DENICE.address)
+#         req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0)
 #         asc.r.newHashedReq(mockTarget, callData, False, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
 #         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -64,7 +64,7 @@ from utils import *
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     callData = mockTarget.useGasWithCallData.encode_input([])
-#     req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0, asc.DENICE.address)
+#     req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0)
 #     asc.r.newHashedReq(mockTarget, callData, False, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
 #     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -85,7 +85,7 @@ from utils import *
 #         execStartBal = asc.ALICE.balance()
 #         # Create request
 #         callData = mockTarget.useGasWithCallData.encode_input([i for i in range(i)])
-#         req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0, asc.DENICE.address)
+#         req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0)
 #         asc.r.newHashedReq(mockTarget, callData, False, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
 #         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -115,7 +115,7 @@ from utils import *
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     callData = mockTarget.useGasCallDataAndArray.encode_input([])
-#     req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0, asc.DENICE.address)
+#     req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0)
 #     asc.r.newHashedReq(mockTarget, callData, False, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
 #     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -136,7 +136,7 @@ from utils import *
 #         execStartBal = asc.ALICE.balance()
 #         # Create request
 #         callData = mockTarget.useGasCallDataAndArray.encode_input([i for i in range(i)])
-#         req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0, asc.DENICE.address)
+#         req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0)
 #         asc.r.newHashedReq(mockTarget, callData, False, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
 #         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -168,7 +168,7 @@ from utils import *
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     callData = mockTarget.useGasCallDataAndAddrArray.encode_input([])
-#     req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0, asc.DENICE.address)
+#     req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0)
 #     asc.r.newHashedReq(mockTarget, callData, False, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
 #     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -189,7 +189,7 @@ from utils import *
 #         execStartBal = asc.ALICE.balance()
 #         # Create request
 #         callData = mockTarget.useGasCallDataAndAddrArray.encode_input(addrs[:i])
-#         req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0, asc.DENICE.address)
+#         req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0)
 #         asc.r.newHashedReq(mockTarget, callData, False, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
 #         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -221,7 +221,7 @@ from utils import *
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     callData = mockTarget.useGasCallDataAndSpecificAddrArray.encode_input([], 0)
-#     req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0, asc.DENICE.address)
+#     req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0)
 #     asc.r.newHashedReq(mockTarget, callData, False, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
 #     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -242,7 +242,7 @@ from utils import *
 #         execStartBal = asc.ALICE.balance()
 #         # Create request
 #         callData = mockTarget.useGasCallDataAndSpecificAddrArray.encode_input(addrs, i)
-#         req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0, asc.DENICE.address)
+#         req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0)
 #         asc.r.newHashedReq(mockTarget, callData, False, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
 #         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -274,7 +274,7 @@ from utils import *
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     callData = mockTarget.useGasCallDataAndAddrArrayMultiple.encode_input([], 0)
-#     req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0, asc.DENICE.address)
+#     req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0)
 #     asc.r.newHashedReq(mockTarget, callData, False, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
 #     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -295,7 +295,7 @@ from utils import *
 #         execStartBal = asc.ALICE.balance()
 #         # Create request
 #         callData = mockTarget.useGasCallDataAndAddrArrayMultiple.encode_input(addrs, i)
-#         req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0, asc.DENICE.address)
+#         req = (asc.BOB.address, mockTarget.address, callData, False, False, E_18, 0)
 #         asc.r.newHashedReq(mockTarget, callData, False, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
 #         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -330,7 +330,7 @@ from utils import *
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 #     callData = mockTarget.useGasWithArray.encode_input(0)
-#     req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+#     req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0)
 #     asc.r.newHashedReq(mockTarget, callData, False, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
 #     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -350,7 +350,7 @@ from utils import *
 #         execStartBal = asc.ASC.balanceOf(asc.ALICE)
 #         # Create request
 #         callData = mockTarget.useGasWithArray.encode_input(i)
-#         req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+#         req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0)
 #         asc.r.newHashedReq(mockTarget, callData, False, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
 #         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -378,7 +378,7 @@ from utils import *
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 #     callData = mockTarget.useGasWithCallData.encode_input([])
-#     req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+#     req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0)
 #     asc.r.newHashedReq(mockTarget, callData, False, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
 #     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -398,7 +398,7 @@ from utils import *
 #         execStartBal = asc.ASC.balanceOf(asc.ALICE)
 #         # Create request
 #         callData = mockTarget.useGasWithCallData.encode_input([i for i in range(i)] * 5)
-#         req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+#         req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0)
 #         asc.r.newHashedReq(mockTarget, callData, False, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
 #         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -426,7 +426,7 @@ from utils import *
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 #     callData = mockTarget.useGasCallDataAndArray.encode_input([])
-#     req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+#     req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0)
 #     asc.r.newHashedReq(mockTarget, callData, False, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
 #     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -443,7 +443,7 @@ from utils import *
 #         execStartBal = asc.ASC.balanceOf(asc.ALICE)
 #         # Create request
 #         callData = mockTarget.useGasCallDataAndArray.encode_input([i for i in range(i)])
-#         req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+#         req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0)
 #         asc.r.newHashedReq(mockTarget, callData, False, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
 #         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -473,7 +473,7 @@ from utils import *
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 #     callData = mockTarget.useGasCallDataAndAddrArray.encode_input([])
-#     req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+#     req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0)
 #     asc.r.newHashedReq(mockTarget, callData, False, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
 #     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -490,7 +490,7 @@ from utils import *
 #         execStartBal = asc.ASC.balanceOf(asc.ALICE)
 #         # Create request
 #         callData = mockTarget.useGasCallDataAndAddrArray.encode_input(addrs[:i])
-#         req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+#         req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0)
 #         asc.r.newHashedReq(mockTarget, callData, False, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
 #         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -520,7 +520,7 @@ from utils import *
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 #     callData = mockTarget.useGasCallDataAndSpecificAddrArray.encode_input([], 0)
-#     req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+#     req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0)
 #     asc.r.newHashedReq(mockTarget, callData, False, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
 #     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -540,7 +540,7 @@ from utils import *
 #         execStartBal = asc.ASC.balanceOf(asc.ALICE)
 #         # Create request
 #         callData = mockTarget.useGasCallDataAndSpecificAddrArray.encode_input(addrs, i)
-#         req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+#         req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0)
 #         asc.r.newHashedReq(mockTarget, callData, False, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
 #         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -571,7 +571,7 @@ from utils import *
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 #     callData = mockTarget.useGasCallDataAndAddrArrayMultiple.encode_input([], 0)
-#     req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+#     req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0)
 #     asc.r.newHashedReq(mockTarget, callData, False, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
 #     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -588,7 +588,7 @@ from utils import *
 #         execStartBal = asc.ASC.balanceOf(asc.ALICE)
 #         # Create request
 #         callData = mockTarget.useGasCallDataAndAddrArrayMultiple.encode_input(addrs, i)
-#         req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+#         req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0)
 #         asc.r.newHashedReq(mockTarget, callData, False, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
 #         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -637,7 +637,7 @@ from utils import *
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     callData = mockTarget.useGasWithArrayVeri.encode_input(asc.BOB, 0)
-#     req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0, asc.DENICE.address)
+#     req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0)
 #     asc.r.newHashedReq(mockTarget, callData, True, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
 #     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -658,7 +658,7 @@ from utils import *
 #         execStartBal = asc.ALICE.balance()
 #         # Create request
 #         callData = mockTarget.useGasWithArrayVeri.encode_input(asc.BOB, i)
-#         req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0, asc.DENICE.address)
+#         req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0)
 #         asc.r.newHashedReq(mockTarget, callData, True, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
 #         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -688,7 +688,7 @@ from utils import *
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     callData = mockTarget.useGasWithCallDataVeri.encode_input(asc.BOB, [])
-#     req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0, asc.DENICE.address)
+#     req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0)
 #     asc.r.newHashedReq(mockTarget, callData, True, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
 #     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -709,7 +709,7 @@ from utils import *
 #         execStartBal = asc.ALICE.balance()
 #         # Create request
 #         callData = mockTarget.useGasWithCallDataVeri.encode_input(asc.BOB, [i for i in range(i)])
-#         req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0, asc.DENICE.address)
+#         req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0)
 #         asc.r.newHashedReq(mockTarget, callData, True, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
 #         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -739,7 +739,7 @@ from utils import *
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     callData = mockTarget.useGasCallDataAndArrayVeri.encode_input(asc.BOB, [])
-#     req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0, asc.DENICE.address)
+#     req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0)
 #     asc.r.newHashedReq(mockTarget, callData, True, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
 #     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -760,7 +760,7 @@ from utils import *
 #         execStartBal = asc.ALICE.balance()
 #         # Create request
 #         callData = mockTarget.useGasCallDataAndArrayVeri.encode_input(asc.BOB, [i for i in range(i)])
-#         req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0, asc.DENICE.address)
+#         req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0)
 #         asc.r.newHashedReq(mockTarget, callData, True, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
 #         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -792,7 +792,7 @@ from utils import *
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     callData = mockTarget.useGasCallDataAndAddrArrayVeri.encode_input(asc.BOB, [])
-#     req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0, asc.DENICE.address)
+#     req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0)
 #     asc.r.newHashedReq(mockTarget, callData, True, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
 #     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -813,7 +813,7 @@ from utils import *
 #         execStartBal = asc.ALICE.balance()
 #         # Create request
 #         callData = mockTarget.useGasCallDataAndAddrArrayVeri.encode_input(asc.BOB, addrs[:i])
-#         req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0, asc.DENICE.address)
+#         req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0)
 #         asc.r.newHashedReq(mockTarget, callData, True, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
 #         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -845,7 +845,7 @@ from utils import *
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     callData = mockTarget.useGasCallDataAndSpecificAddrArrayVeri.encode_input(asc.BOB, [], 0)
-#     req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0, asc.DENICE.address)
+#     req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0)
 #     asc.r.newHashedReq(mockTarget, callData, True, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
 #     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -866,7 +866,7 @@ from utils import *
 #         execStartBal = asc.ALICE.balance()
 #         # Create request
 #         callData = mockTarget.useGasCallDataAndSpecificAddrArrayVeri.encode_input(asc.BOB, addrs, i)
-#         req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0, asc.DENICE.address)
+#         req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0)
 #         asc.r.newHashedReq(mockTarget, callData, True, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
 #         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -898,7 +898,7 @@ from utils import *
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     callData = mockTarget.useGasCallDataAndAddrArrayMultipleVeri.encode_input(asc.BOB, [], 0)
-#     req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0, asc.DENICE.address)
+#     req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0)
 #     asc.r.newHashedReq(mockTarget, callData, True, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
 #     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -919,7 +919,7 @@ from utils import *
 #         execStartBal = asc.ALICE.balance()
 #         # Create request
 #         callData = mockTarget.useGasCallDataAndAddrArrayMultipleVeri.encode_input(asc.BOB, addrs, i)
-#         req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0, asc.DENICE.address)
+#         req = (asc.BOB.address, mockTarget.address, callData, True, False, E_18, 0)
 #         asc.r.newHashedReq(mockTarget, callData, True, False, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
 
 #         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -953,7 +953,7 @@ from utils import *
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 #     callData = mockTarget.useGasWithArrayVeri.encode_input(asc.BOB, 0)
-#     req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0, asc.DENICE.address)
+#     req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0)
 #     asc.r.newHashedReq(mockTarget, callData, True, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
 #     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -973,7 +973,7 @@ from utils import *
 #         execStartBal = asc.ASC.balanceOf(asc.ALICE)
 #         # Create request
 #         callData = mockTarget.useGasWithArrayVeri.encode_input(asc.BOB, i)
-#         req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0, asc.DENICE.address)
+#         req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0)
 #         asc.r.newHashedReq(mockTarget, callData, True, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
 #         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -1001,7 +1001,7 @@ from utils import *
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 #     callData = mockTarget.useGasWithCallDataVeri.encode_input(asc.BOB, [])
-#     req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0, asc.DENICE.address)
+#     req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0)
 #     asc.r.newHashedReq(mockTarget, callData, True, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
 #     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -1021,7 +1021,7 @@ from utils import *
 #         execStartBal = asc.ASC.balanceOf(asc.ALICE)
 #         # Create request
 #         callData = mockTarget.useGasWithCallDataVeri.encode_input(asc.BOB, [i for i in range(i)] * 5)
-#         req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0, asc.DENICE.address)
+#         req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0)
 #         asc.r.newHashedReq(mockTarget, callData, True, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
 #         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -1049,7 +1049,7 @@ from utils import *
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 #     callData = mockTarget.useGasCallDataAndArrayVeri.encode_input(asc.BOB, [])
-#     req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0, asc.DENICE.address)
+#     req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0)
 #     asc.r.newHashedReq(mockTarget, callData, True, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
 #     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -1066,7 +1066,7 @@ from utils import *
 #         execStartBal = asc.ASC.balanceOf(asc.ALICE)
 #         # Create request
 #         callData = mockTarget.useGasCallDataAndArrayVeri.encode_input(asc.BOB, [i for i in range(i)])
-#         req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0, asc.DENICE.address)
+#         req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0)
 #         asc.r.newHashedReq(mockTarget, callData, True, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
 #         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -1096,7 +1096,7 @@ from utils import *
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 #     callData = mockTarget.useGasCallDataAndAddrArrayVeri.encode_input(asc.BOB, [])
-#     req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0, asc.DENICE.address)
+#     req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0)
 #     asc.r.newHashedReq(mockTarget, callData, True, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
 #     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -1113,7 +1113,7 @@ from utils import *
 #         execStartBal = asc.ASC.balanceOf(asc.ALICE)
 #         # Create request
 #         callData = mockTarget.useGasCallDataAndAddrArrayVeri.encode_input(asc.BOB, addrs[:i])
-#         req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0, asc.DENICE.address)
+#         req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0)
 #         asc.r.newHashedReq(mockTarget, callData, True, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
 #         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -1143,7 +1143,7 @@ from utils import *
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 #     callData = mockTarget.useGasCallDataAndSpecificAddrArrayVeri.encode_input(asc.BOB, [], 0)
-#     req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0, asc.DENICE.address)
+#     req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0)
 #     asc.r.newHashedReq(mockTarget, callData, True, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
 #     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -1163,7 +1163,7 @@ from utils import *
 #         execStartBal = asc.ASC.balanceOf(asc.ALICE)
 #         # Create request
 #         callData = mockTarget.useGasCallDataAndSpecificAddrArrayVeri.encode_input(asc.BOB, addrs, i)
-#         req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0, asc.DENICE.address)
+#         req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0)
 #         asc.r.newHashedReq(mockTarget, callData, True, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
 #         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -1194,7 +1194,7 @@ from utils import *
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
 #     callData = mockTarget.useGasCallDataAndAddrArrayMultipleVeri.encode_input(asc.BOB, [], 0)
-#     req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0, asc.DENICE.address)
+#     req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0)
 #     asc.r.newHashedReq(mockTarget, callData, True, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
 #     tx = asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -1211,7 +1211,7 @@ from utils import *
 #         execStartBal = asc.ASC.balanceOf(asc.ALICE)
 #         # Create request
 #         callData = mockTarget.useGasCallDataAndAddrArrayMultipleVeri.encode_input(asc.BOB, addrs, i)
-#         req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0, asc.DENICE.address)
+#         req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0)
 #         asc.r.newHashedReq(mockTarget, callData, True, True, 0, asc.DENICE, *getIpfsMetaData(asc, req), {'from': asc.BOB})
 
 #         tx = asc.r.executeHashedReq(i+1, req, *getIpfsMetaData(asc, req), {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})

@@ -18,14 +18,14 @@ from utils import *
 def test_executeHashedReqUnveri_rev_nonReentrant(asc, mockTarget, mockReentrancyAttack):
     # Create request to call in reentrance
     callData = mockTarget.setX.encode_input(5)
-    req1 = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+    req1 = (asc.BOB.address, mockTarget.address, asc.DENICE, callData, 0, 0, False, True)
     reqHashBytes1 = addReqGetHashBytes(asc, req1)
 
     asc.r.newHashedReqUnveri(reqHashBytes1, {'from': asc.BOB})
 
     # Create request to be executed directly
     callData = mockReentrancyAttack.callExecuteHashedReqUnveri.encode_input(0, req1, *getIpfsMetaData(asc, req1))
-    req2 = (asc.BOB.address, mockReentrancyAttack.address, callData, False, True, 0, 0, asc.DENICE.address)
+    req2 = (asc.BOB.address, mockReentrancyAttack.address, asc.DENICE, callData, 0, 0, False, True)
     reqHashBytes2 = addReqGetHashBytes(asc, req2)
 
     asc.r.newHashedReqUnveri(reqHashBytes2, {'from': asc.BOB})
@@ -43,7 +43,7 @@ def test_executeHashedReqUnveri_returns_revert_message(asc, stakedMin, mockTarge
 
     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
     callData = mockTarget.revertWithMessage.encode_input()
-    req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+    req = (asc.BOB.address, mockTarget.address, asc.DENICE, callData, 0, 0, False, True)
     reqHashBytes = addReqGetHashBytes(asc, req)
 
     tx = asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
@@ -57,7 +57,7 @@ def test_executeHashedReqUnveri_returns_no_revert_message(asc, stakedMin, mockTa
 
     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
     callData = mockTarget.revertWithoutMessage.encode_input()
-    req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 0, asc.DENICE.address)
+    req = (asc.BOB.address, mockTarget.address, asc.DENICE, callData, 0, 0, False, True)
     reqHashBytes = addReqGetHashBytes(asc, req)
 
     tx = asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
@@ -69,7 +69,7 @@ def test_executeHashedReqUnveri_returns_no_revert_message(asc, stakedMin, mockTa
 def test_executeHashedReqUnveri_rev_initEthSent(asc, mockTarget, stakedMin):
     _, staker, __ = stakedMin
     callData = mockTarget.setX.encode_input(5)
-    req = (asc.BOB.address, mockTarget.address, callData, False, True, 1, 0, asc.DENICE.address)
+    req = (asc.BOB.address, mockTarget.address, asc.DENICE, callData, 1, 0, False, True)
     reqHashBytes = addReqGetHashBytes(asc, req)
     asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
@@ -80,7 +80,7 @@ def test_executeHashedReqUnveri_rev_initEthSent(asc, mockTarget, stakedMin):
 def test_executeHashedReqUnveri_rev_ethForCall(asc, mockTarget, stakedMin):
     _, staker, __ = stakedMin
     callData = mockTarget.setX.encode_input(5)
-    req = (asc.BOB.address, mockTarget.address, callData, False, True, 0, 1, asc.DENICE.address)
+    req = (asc.BOB.address, mockTarget.address, asc.DENICE, callData, 0, 1, False, True)
     reqHashBytes = addReqGetHashBytes(asc, req)
     asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
@@ -91,7 +91,7 @@ def test_executeHashedReqUnveri_rev_ethForCall(asc, mockTarget, stakedMin):
 def test_executeHashedReqUnveri_rev_payWithASC(asc, mockTarget, stakedMin):
     _, staker, __ = stakedMin
     callData = mockTarget.setX.encode_input(5)
-    req = (asc.BOB.address, mockTarget.address, callData, False, False, 0, 0, asc.DENICE.address)
+    req = (asc.BOB.address, mockTarget.address, asc.DENICE, callData, 0, 0, False, False)
     reqHashBytes = addReqGetHashBytes(asc, req)
     asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
@@ -102,7 +102,7 @@ def test_executeHashedReqUnveri_rev_payWithASC(asc, mockTarget, stakedMin):
 def test_executeHashedReqUnveri_rev_verifySender(asc, mockTarget, stakedMin):
     _, staker, __ = stakedMin
     callData = mockTarget.setX.encode_input(5)
-    req = (asc.BOB.address, mockTarget.address, callData, True, True, 0, 0, asc.DENICE.address)
+    req = (asc.BOB.address, mockTarget.address, asc.DENICE, callData, 0, 0, True, True)
     reqHashBytes = addReqGetHashBytes(asc, req)
     asc.r.newHashedReqUnveri(reqHashBytes, {'from': asc.BOB, 'value': 0})
 
@@ -160,7 +160,7 @@ def test_executeHashedReqUnveri_pay_ASC(asc, stakedMin, mockTarget, hashedReqUnv
 def test_executeHashedReqUnveri_rev_target_is_registry(asc, mockTarget, stakedMin, hashedReqUnveri):
     _, staker, __ = stakedMin
     callData = mockTarget.setX.encode_input(5)
-    req = (asc.BOB.address, asc.r.address, callData, False, True, 0, 0, asc.DENICE.address)
+    req = (asc.BOB.address, asc.r.address, asc.DENICE, callData, 0, 0, False, True)
 
     with reverts(REV_MSG_TARGET):
         asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -169,7 +169,7 @@ def test_executeHashedReqUnveri_rev_target_is_registry(asc, mockTarget, stakedMi
 def test_executeHashedReqUnveri_rev_target_is_ASCoin(asc, mockTarget, stakedMin, hashedReqUnveri):
     _, staker, __ = stakedMin
     callData = mockTarget.setX.encode_input(5)
-    req = (asc.BOB.address, asc.ASC.address, callData, False, True, 0, 0, asc.DENICE.address)
+    req = (asc.BOB.address, asc.ASC.address, asc.DENICE, callData, 0, 0, False, True)
 
     with reverts(REV_MSG_TARGET):
         asc.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
