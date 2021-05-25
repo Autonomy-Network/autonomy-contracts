@@ -4,46 +4,46 @@ from brownie.test import given, strategy
 from utils import *
 
 
-def test_constructor(asc):
-    assert asc.o.getPriceOracle() == asc.po
-    assert asc.o.getAUTOPerETH() == INIT_AUTO_PER_ETH
-    assert asc.o.getGasPriceFast() == INIT_GAS_PRICE_FAST
-    assert asc.o.owner() == asc.DEPLOYER
+def test_constructor(auto):
+    assert auto.o.getPriceOracle() == auto.po
+    assert auto.o.getAUTOPerETH() == INIT_AUTO_PER_ETH
+    assert auto.o.getGasPriceFast() == INIT_GAS_PRICE_FAST
+    assert auto.o.owner() == auto.DEPLOYER
 
 
-def test_getRandNum(asc):
+def test_getRandNum(auto):
     for i in range(1000):
         chain.mine(1)
-        assert getRandNum(i) == asc.o.getRandNum(i)
+        assert getRandNum(i) == auto.o.getRandNum(i)
 
 
 # Test with a new price oracle so we can test that getAUTOPerETH
 # properly reads the new price
-def test_setPriceOracle(asc, PriceOracle):
+def test_setPriceOracle(auto, PriceOracle):
     newRate = 17
     newGasPriceFast = 3 * 10**9
-    newPriceOracle = asc.DEPLOYER.deploy(PriceOracle, newRate, newGasPriceFast)
+    newPriceOracle = auto.DEPLOYER.deploy(PriceOracle, newRate, newGasPriceFast)
 
-    asc.o.setPriceOracle(newPriceOracle, asc.FR_DEPLOYER)
+    auto.o.setPriceOracle(newPriceOracle, auto.FR_DEPLOYER)
     
-    assert asc.o.getAUTOPerETH() == newRate
-    assert asc.o.getGasPriceFast() == newGasPriceFast
-    assert asc.o.owner() == asc.DEPLOYER
+    assert auto.o.getAUTOPerETH() == newRate
+    assert auto.o.getGasPriceFast() == newGasPriceFast
+    assert auto.o.owner() == auto.DEPLOYER
 
 
 @given(newPriceOracle=strategy('address'))
-def test_setPriceOracle_rand(asc, newPriceOracle):
-    asc.o.setPriceOracle(newPriceOracle, asc.FR_DEPLOYER)
+def test_setPriceOracle_rand(auto, newPriceOracle):
+    auto.o.setPriceOracle(newPriceOracle, auto.FR_DEPLOYER)
     
-    assert asc.o.getPriceOracle() == newPriceOracle
-    assert asc.o.owner() == asc.DEPLOYER
+    assert auto.o.getPriceOracle() == newPriceOracle
+    assert auto.o.owner() == auto.DEPLOYER
 
 
 @given(
     newPriceOracle=strategy('address'),
     sender=strategy('address')
 )
-def test_setPriceOracle_rev_owner(asc, newPriceOracle, sender):
-    if sender != asc.DEPLOYER:
+def test_setPriceOracle_rev_owner(auto, newPriceOracle, sender):
+    if sender != auto.DEPLOYER:
         with reverts(REV_MSG_OWNER):
-            asc.o.setPriceOracle(newPriceOracle, {'from': sender})
+            auto.o.setPriceOracle(newPriceOracle, {'from': sender})

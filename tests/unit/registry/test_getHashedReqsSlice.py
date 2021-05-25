@@ -15,20 +15,20 @@ NUM_SLICE_TESTS = 100
     endIdxs=strategy(f'uint[{NUM_SLICE_TESTS}]', max_value=MAX_ARR_LEN)
 )
 @settings(max_examples=10)
-def test_getHashedReqsSlice(asc, mockTarget, requesters, startIdxs, endIdxs):
+def test_getHashedReqsSlice(auto, mockTarget, requesters, startIdxs, endIdxs):
     callData = mockTarget.setX.encode_input(5)
     hashedReqs = []
     for requester in requesters:
-        req = (requester.address, mockTarget.address, asc.DENICE, callData, 0, 0, False, False)
-        cid = addToIpfs(asc, req)
-        asc.r.newHashedReq(mockTarget, asc.DENICE, callData, 0, False, False, *getIpfsMetaData(asc, req), {'from': requester})
+        req = (requester.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, False)
+        cid = addToIpfs(auto, req)
+        auto.r.newHashedReq(mockTarget, auto.DENICE, callData, 0, False, False, *getIpfsMetaData(auto, req), {'from': requester})
         hashedReqs.append(getHashFromCID(cid))
     
-    assert asc.r.getHashedReqsSlice(0, len(requesters)) == hashedReqs
-    assert asc.r.getHashedReqsSlice(0, len(requesters)) == asc.r.getHashedReqs()
+    assert auto.r.getHashedReqsSlice(0, len(requesters)) == hashedReqs
+    assert auto.r.getHashedReqsSlice(0, len(requesters)) == auto.r.getHashedReqs()
     for si, ei in zip(startIdxs, endIdxs):
         if ei < si or (ei > len(requesters) and si != ei):
             with reverts():
-                asc.r.getHashedReqsSlice(si, ei)
+                auto.r.getHashedReqsSlice(si, ei)
         else:
-            assert asc.r.getHashedReqsSlice(si, ei) == hashedReqs[si:ei]
+            assert auto.r.getHashedReqsSlice(si, ei) == hashedReqs[si:ei]

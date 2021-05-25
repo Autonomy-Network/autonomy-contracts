@@ -94,15 +94,15 @@ def getHashFromCID(CID):
     return bytesToHex(b58.b58decode(CID)[2:])
 
 
-def addToIpfs(asc, req):
-    reqBytes = asc.r.getReqBytes(req)
+def addToIpfs(auto, req):
+    reqBytes = auto.r.getReqBytes(req)
 
     with ipfshttpclient.connect() as client:
         return client.add_bytes(reqBytes)
 
 
-def getIpfsMetaData(asc, req):
-    reqBytes = asc.r.getReqBytes(req)
+def getIpfsMetaData(auto, req):
+    reqBytes = auto.r.getReqBytes(req)
 
     with ipfshttpclient.connect() as client:
         ipfsCID = client.add_bytes(reqBytes)
@@ -115,22 +115,22 @@ def getIpfsMetaData(asc, req):
     return dataPrefix, dataSuffix
 
 
-def addReqGetHashBytes(asc, req):
-    return getHashBytesFromCID(addToIpfs(asc, req))
+def addReqGetHashBytes(auto, req):
+    return getHashBytesFromCID(addToIpfs(auto, req))
 
 
 def getEthForExec(tx, gasPriceFast):
     return int(tx.return_value * gasPriceFast * PAY_ETH_FACTOR)
 
 
-def getASCForExec(evmMaths, tx, AUTOPerETH, gasPriceFast):
+def getAUTOForExec(evmMaths, tx, AUTOPerETH, gasPriceFast):
     # Need to account for differences in division between Python and Solidity
     return evmMaths.mul4Div2(tx.return_value, gasPriceFast, AUTOPerETH, PAY_AUTO_BPS, BASE_BPS, E_18)
 
 
-def checkAreCallers(asc, addrs, callers):
+def checkAreCallers(auto, addrs, callers):
     print()
     print(callers)
     for addr in addrs:
-        print(addr, asc.vf.canCall(addr), addr in callers)
-        assert asc.vf.canCall(addr) == (addr in callers)
+        print(addr, auto.vf.canCall(addr), addr in callers)
+        assert auto.vf.canCall(addr) == (addr in callers)

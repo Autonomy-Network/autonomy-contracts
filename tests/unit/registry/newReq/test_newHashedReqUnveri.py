@@ -11,56 +11,56 @@ import base58 as b58
     hashedIpfsReq=strategy('bytes32', exclude=bytes(32)),
     sender=strategy('address')
 )
-def test_newHashedReqUnveri(asc, mockTarget, hashedIpfsReq, sender):
-    tx = asc.r.newHashedReqUnveri(hashedIpfsReq)
+def test_newHashedReqUnveri(auto, mockTarget, hashedIpfsReq, sender):
+    tx = auto.r.newHashedReqUnveri(hashedIpfsReq)
 
     assert tx.events["HashedReqUnveriAdded"][0].values() == [0]
     assert tx.return_value == 0
-    hashedIpfsReqs = [convert.to_bytes(hash, 'bytes') for hash in asc.r.getHashedReqsUnveri()]
+    hashedIpfsReqs = [convert.to_bytes(hash, 'bytes') for hash in auto.r.getHashedReqsUnveri()]
     # Should revert when using indexes above the length
     with reverts():
-        asc.r.getHashedReqsUnveriSlice(0, len(hashedIpfsReqs) + 1)
-    assert [convert.to_bytes(hash, 'bytes') for hash in asc.r.getHashedReqsUnveriSlice(0, len(hashedIpfsReqs))] == hashedIpfsReqs
+        auto.r.getHashedReqsUnveriSlice(0, len(hashedIpfsReqs) + 1)
+    assert [convert.to_bytes(hash, 'bytes') for hash in auto.r.getHashedReqsUnveriSlice(0, len(hashedIpfsReqs))] == hashedIpfsReqs
     assert hashedIpfsReqs == [hashedIpfsReq]
-    assert asc.r.getHashedReqsUnveriLen() == 1
-    assert asc.r.getHashedReqUnveri(0) == bytesToHex(hashedIpfsReq)
+    assert auto.r.getHashedReqsUnveriLen() == 1
+    assert auto.r.getHashedReqUnveri(0) == bytesToHex(hashedIpfsReq)
 
-    assert asc.r.getRawReqs() == []
+    assert auto.r.getRawReqs() == []
     # Should revert when using indexes above the length
     with reverts():
-        asc.r.getRawReqsSlice(0, 1)
-    assert asc.r.getRawReqsSlice(0, 0) == []
-    assert asc.r.getRawReqLen() == 0
+        auto.r.getRawReqsSlice(0, 1)
+    assert auto.r.getRawReqsSlice(0, 0) == []
+    assert auto.r.getRawReqLen() == 0
     with reverts():
-        asc.r.getRawReq(0)
+        auto.r.getRawReq(0)
     
-    assert asc.r.getHashedReqs() == []
+    assert auto.r.getHashedReqs() == []
     # Should revert when using indexes above the length
     with reverts():
-        asc.r.getHashedReqsSlice(0, 1)
-    assert asc.r.getHashedReqsSlice(0, 0) == []
-    assert asc.r.getHashedReqsLen() == 0
+        auto.r.getHashedReqsSlice(0, 1)
+    assert auto.r.getHashedReqsSlice(0, 0) == []
+    assert auto.r.getHashedReqsLen() == 0
     with reverts():
-        asc.r.getHashedReq(0)
+        auto.r.getHashedReq(0)
 
-    assert asc.BOB.balance() == INIT_ETH_BAL
-    assert asc.DENICE.balance() == INIT_ETH_BAL
+    assert auto.BOB.balance() == INIT_ETH_BAL
+    assert auto.DENICE.balance() == INIT_ETH_BAL
     assert mockTarget.balance() == 0
-    assert asc.r.balance() == 0
+    assert auto.r.balance() == 0
 
-    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
-    assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(mockTarget) == 0
-    assert asc.ASC.balanceOf(asc.r) == 0
+    assert auto.AUTO.balanceOf(auto.BOB) == MAX_TEST_STAKE
+    assert auto.AUTO.balanceOf(auto.DENICE) == 0
+    assert auto.AUTO.balanceOf(mockTarget) == 0
+    assert auto.AUTO.balanceOf(auto.r) == 0
 
-    assert asc.r.getReqCountOf(asc.BOB) == 0
-    assert asc.r.getExecCountOf(asc.ALICE) == 0
-    assert asc.r.getReferalCountOf(asc.DENICE) == 0
+    assert auto.r.getReqCountOf(auto.BOB) == 0
+    assert auto.r.getExecCountOf(auto.ALICE) == 0
+    assert auto.r.getReferalCountOf(auto.DENICE) == 0
 
-def test_newHashedReqUnveri_real(asc, mockTarget):
+def test_newHashedReqUnveri_real(auto, mockTarget):
     callData = mockTarget.setX.encode_input(5)
-    req = (asc.BOB.address, mockTarget, asc.DENICE, callData, 0, 0, False, True)
-    reqBytes = asc.r.getReqBytes(req)
+    req = (auto.BOB.address, mockTarget, auto.DENICE, callData, 0, 0, False, True)
+    reqBytes = auto.r.getReqBytes(req)
 
     with ipfshttpclient.connect() as client:
         ipfsCID = client.add_bytes(reqBytes)
@@ -68,50 +68,50 @@ def test_newHashedReqUnveri_real(asc, mockTarget):
     
     hash = getHashFromCID(ipfsCID)
 
-    tx = asc.r.newHashedReqUnveri(hash)
+    tx = auto.r.newHashedReqUnveri(hash)
 
     assert tx.events["HashedReqUnveriAdded"][0].values() == [0]
     assert tx.return_value == 0
     reqHashesUnveri = [hash]
-    assert asc.r.getHashedReqsUnveri() == reqHashesUnveri
+    assert auto.r.getHashedReqsUnveri() == reqHashesUnveri
     # Should revert when using indexes above the length
     with reverts():
-        asc.r.getHashedReqsUnveriSlice(0, len(reqHashesUnveri) + 1)
-    assert asc.r.getHashedReqsUnveriSlice(0, len(reqHashesUnveri)) == reqHashesUnveri
-    assert asc.r.getHashedReqsUnveriLen() == 1
-    assert asc.r.getHashedReqUnveri(0) == getHashFromCID(ipfsCID)
+        auto.r.getHashedReqsUnveriSlice(0, len(reqHashesUnveri) + 1)
+    assert auto.r.getHashedReqsUnveriSlice(0, len(reqHashesUnveri)) == reqHashesUnveri
+    assert auto.r.getHashedReqsUnveriLen() == 1
+    assert auto.r.getHashedReqUnveri(0) == getHashFromCID(ipfsCID)
 
-    assert asc.r.getRawReqs() == []
+    assert auto.r.getRawReqs() == []
     # Should revert when using indexes above the length
     with reverts():
-        asc.r.getRawReqsSlice(0, 1)
-    assert asc.r.getRawReqsSlice(0, 0) == []
-    assert asc.r.getRawReqLen() == 0
+        auto.r.getRawReqsSlice(0, 1)
+    assert auto.r.getRawReqsSlice(0, 0) == []
+    assert auto.r.getRawReqLen() == 0
     with reverts():
-        asc.r.getRawReq(0)
+        auto.r.getRawReq(0)
     
-    assert asc.r.getHashedReqs() == []
+    assert auto.r.getHashedReqs() == []
     # Should revert when using indexes above the length
     with reverts():
-        asc.r.getHashedReqsSlice(0, 1)
-    assert asc.r.getHashedReqsSlice(0, 0) == []
-    assert asc.r.getHashedReqsLen() == 0
+        auto.r.getHashedReqsSlice(0, 1)
+    assert auto.r.getHashedReqsSlice(0, 0) == []
+    assert auto.r.getHashedReqsLen() == 0
     with reverts():
-        asc.r.getHashedReq(0)
+        auto.r.getHashedReq(0)
 
-    assert asc.BOB.balance() == INIT_ETH_BAL
-    assert asc.DENICE.balance() == INIT_ETH_BAL
+    assert auto.BOB.balance() == INIT_ETH_BAL
+    assert auto.DENICE.balance() == INIT_ETH_BAL
     assert mockTarget.balance() == 0
-    assert asc.r.balance() == 0
+    assert auto.r.balance() == 0
 
-    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
-    assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(mockTarget) == 0
-    assert asc.ASC.balanceOf(asc.r) == 0
+    assert auto.AUTO.balanceOf(auto.BOB) == MAX_TEST_STAKE
+    assert auto.AUTO.balanceOf(auto.DENICE) == 0
+    assert auto.AUTO.balanceOf(mockTarget) == 0
+    assert auto.AUTO.balanceOf(auto.r) == 0
 
-    assert asc.r.getReqCountOf(asc.BOB) == 0
-    assert asc.r.getExecCountOf(asc.ALICE) == 0
-    assert asc.r.getReferalCountOf(asc.DENICE) == 0
+    assert auto.r.getReqCountOf(auto.BOB) == 0
+    assert auto.r.getExecCountOf(auto.ALICE) == 0
+    assert auto.r.getReferalCountOf(auto.DENICE) == 0
 
 
     # Ensure that the hash used with newHashedReqUnveri is the same as 
@@ -120,44 +120,44 @@ def test_newHashedReqUnveri_real(asc, mockTarget):
     dataPrefix = ipfsBlock[:reqBytesIdx]
     dataSuffix = ipfsBlock[reqBytesIdx + len(reqBytes) : ]
 
-    tx2 = asc.r.newHashedReq(mockTarget, asc.DENICE, callData, 0, False, True, dataPrefix, dataSuffix, asc.FR_BOB)
+    tx2 = auto.r.newHashedReq(mockTarget, auto.DENICE, callData, 0, False, True, dataPrefix, dataSuffix, auto.FR_BOB)
 
-    assert asc.r.getHashedReq(0) == hash
+    assert auto.r.getHashedReq(0) == hash
 
 
-def test_newHashedReqUnveri_rev_empty_hashedIpfsReq(asc, mockTarget):
+def test_newHashedReqUnveri_rev_empty_hashedIpfsReq(auto, mockTarget):
     with reverts(REV_MSG_NZ_BYTES32):
-        asc.r.newHashedReqUnveri("")
+        auto.r.newHashedReqUnveri("")
 
 
 # import time
 # # Ensure that everything still works
-# def test_newHashedReqUnveri_spam(asc):
+# def test_newHashedReqUnveri_spam(auto):
 #     t0 = time.time()
 #     for i in range(1, 100001):
 #         t1 = time.time()
 #         # print(i)
 
 #         t2 = time.time()
-#         asc.r.newHashedReqUnveri(i)
+#         auto.r.newHashedReqUnveri(i)
 #         # print(f'newHashedReqUnveri = {(time.time()-t2)}')
 
 #         if i % 1000 == 0:
 #             print(f'i = {i}')
 #             t2 = time.time()
-#             # asc.r.getHashedReqsUnveri()
+#             # auto.r.getHashedReqsUnveri()
 #             # print(f'getHashedReqsUnveri = {(time.time()-t2)}')
 
 #             reqs = []
-#             for i in range(asc.r.getHashedReqsUnveriLen()):
-#                 reqs.append(asc.r.getHashedReqUnveri(i))
+#             for i in range(auto.r.getHashedReqsUnveriLen()):
+#                 reqs.append(auto.r.getHashedReqUnveri(i))
 #             # print(reqs)
 #             print(f'getHashedReqUnveri total = {(time.time()-t2)}')
 #             print(f'getHashedReqsUnveri per req  = {(time.time()-t2) / i}')
 #             print()
 
 #         # t2 = time.time()
-#         # asc.r.getHashedReqsUnveriLen()
+#         # auto.r.getHashedReqsUnveriLen()
 #         # print(f'getHashedReqsUnveriLen = {(time.time()-t2)}')
 
 #         # print(f'totalRate = {(time.time()-t0)/i}')

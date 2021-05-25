@@ -13,7 +13,7 @@ import "./abstract/Shared.sol";
 contract Registry is IRegistry, Shared, ReentrancyGuard {
     
     // Constant public
-    uint public constant GAS_OVERHEAD_ASCOIN = 70500;
+    uint public constant GAS_OVERHEAD_AUTO = 70500;
     uint public constant GAS_OVERHEAD_ETH = 47000;
     uint public constant BASE_BPS = 10000;
     uint public constant PAY_AUTO_BPS = 11000;
@@ -22,7 +22,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     // Constant private
     bytes private constant _EMPTY_BYTES = "";
     
-    IERC20 private _ASCoin;
+    IERC20 private _AUTO;
     IStakeManager private _stakeMan;
     IOracle private _oracle;
     IForwarder private _veriForwarder;
@@ -56,7 +56,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     //     uint120 initEthSent;
     //     uint120 ethForCall;
     //     bool verifySender;
-    //     bool payWithASC;
+    //     bool payWithAUTO;
     // }
 
     event RawReqAdded(uint indexed id);
@@ -68,12 +68,12 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
 
 
     constructor(
-        IERC20 ASCoin,
+        IERC20 AUTO,
         IStakeManager staker,
         IOracle oracle,
         IForwarder veriForwarder
     ) ReentrancyGuard() {
-        _ASCoin = ASCoin;
+        _AUTO = AUTO;
         _stakeMan = staker;
         _oracle = oracle;
         _veriForwarder = veriForwarder;
@@ -92,14 +92,14 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         bytes calldata callData,
         uint120 ethForCall,
         bool verifySender,
-        bool payWithASC
+        bool payWithAUTO
     )
         external
         payable
         override
         nzAddr(target)
         targetNotThis(target)
-        validEth(payWithASC, ethForCall)
+        validEth(payWithAUTO, ethForCall)
         returns (uint id)
     {
         // Annoyingly, this has to be pasted from validCalldata because of
@@ -110,7 +110,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
 
         id = _rawReqs.length;
         emit RawReqAdded(id);
-        _rawReqs.push(Request(payable(msg.sender), target, referer, callData, uint120(msg.value), ethForCall, verifySender, payWithASC));
+        _rawReqs.push(Request(payable(msg.sender), target, referer, callData, uint120(msg.value), ethForCall, verifySender, payWithAUTO));
     }
 
     function getRawReqs() external view override returns (Request[] memory) {
@@ -149,7 +149,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         bytes calldata callData,
         uint120 ethForCall,
         bool verifySender,
-        bool payWithASC,
+        bool payWithAUTO,
         bytes memory dataPrefix,
         bytes memory dataSuffix
     // Stack too deep with the extra nz checks
@@ -159,10 +159,10 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         payable
         override
         targetNotThis(target)
-        validEth(payWithASC, ethForCall)
+        validEth(payWithAUTO, ethForCall)
         returns (uint id)
     {
-        Request memory r = Request(payable(msg.sender), target, referer, callData, uint120(msg.value), ethForCall, verifySender, payWithASC);
+        Request memory r = Request(payable(msg.sender), target, referer, callData, uint120(msg.value), ethForCall, verifySender, payWithAUTO);
         bytes32 hashedIpfsReq = getHashedIpfsReq(getReqBytes(r), dataPrefix, dataSuffix);
 
         id = _hashedReqs.length;
@@ -274,7 +274,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         
         emit RawReqRemoved(id, true);
 
-        if (r.payWithASC) {
+        if (r.payWithAUTO) {
             require(address(this).balance >= ethStartBal - r.ethForCall, "Reg: something fishy here");
         } else {
             require(address(this).balance >= ethStartBal - r.initEthSent, "Reg: something fishy here");
@@ -334,7 +334,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         require(
             r.initEthSent == 0 &&
             r.ethForCall == 0 &&
-            r.payWithASC == true &&
+            r.payWithAUTO == true &&
             r.verifySender == false,
             "Reg: cannot verify. Nice try ;)"
         );
@@ -367,13 +367,13 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         }
         // require(success, string(returnData));
         
-        // Store ASCoin rewards
+        // Store AUTO rewards
         // It's cheaper to store the cumulative rewards than it is to send
-        // an ASCoin transfer directly since the former changes 1 storage
+        // an AUTO transfer directly since the former changes 1 storage
         // slot whereas the latter changes 2. The rewards are actually stored
         // in a different contract that reads the reward storage of this contract
-        // because of the danger of someone using call to call to ASCoin and transfer
-        // out tokens. It could be prevented by preventing r.target being set to ASCoin,
+        // because of the danger of someone using call to call to AUTO and transfer
+        // out tokens. It could be prevented by preventing r.target being set to AUTO,
         // but it's better to be paranoid and totally separate the contracts.
         // Need to include these storages in the gas cost that the user pays since
         // they benefit from part of it and the costs can vary depending on whether
@@ -394,19 +394,19 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
 
         uint gasRefunded = numStorageRefunds * 15000;
 
-        if (r.payWithASC) {
-            gasUsed += GAS_OVERHEAD_ASCOIN;
+        if (r.payWithAUTO) {
+            gasUsed += GAS_OVERHEAD_AUTO;
             if (gasRefunded > gasUsed / 2) {
                 gasUsed = (gasUsed / 2) + (numStorageRefunds * 700);
             } else {
                 gasUsed += (numStorageRefunds * 855);
                 gasUsed -= gasRefunded;
             }
-            
+
             uint totalAUTO = gasUsed * gasPrice * orac.getAUTOPerETH() * PAY_AUTO_BPS / (BASE_BPS * _E_18);
 
             // Send the executor their bounty
-            require(_ASCoin.transferFrom(r.requester, msg.sender, totalAUTO));
+            require(_AUTO.transferFrom(r.requester, msg.sender, totalAUTO));
         } else {
             gasUsed += GAS_OVERHEAD_ETH;
             if (gasRefunded > gasUsed / 2) {
@@ -499,8 +499,8 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     //                                                          //
     //////////////////////////////////////////////////////////////
     
-    function getASCoin() external view override returns (IERC20) {
-        return _ASCoin;
+    function getAUTO() external view override returns (IERC20) {
+        return _AUTO;
     }
     
     function getStakeManager() external view override returns (address) {
@@ -542,13 +542,13 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     //////////////////////////////////////////////////////////////
 
     modifier targetNotThis(address target) {
-        require(target != address(this) && target != address(_ASCoin), "Reg: nice try ;)");
+        require(target != address(this) && target != address(_AUTO), "Reg: nice try ;)");
         _;
     }
 
-    modifier validEth(bool payWithASC, uint ethForCall) {
-        if (payWithASC) {
-            // When paying with ASC, there's no reason to send more ETH than will
+    modifier validEth(bool payWithAUTO, uint ethForCall) {
+        if (payWithAUTO) {
+            // When paying with AUTO, there's no reason to send more ETH than will
             // be used in the future call
             require(ethForCall == msg.value, "Reg: ethForCall not msg.value");
         } else {
@@ -576,7 +576,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
 
         _;
 
-        if (r.payWithASC) {
+        if (r.payWithAUTO) {
             require(address(this).balance >= ethStartBal - r.ethForCall, "Reg: something fishy here");
         } else {
             require(address(this).balance >= ethStartBal - r.initEthSent, "Reg: something fishy here");

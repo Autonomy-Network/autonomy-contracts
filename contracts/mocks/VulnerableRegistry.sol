@@ -8,11 +8,11 @@ import "../Registry.sol";
 contract VulnerableRegistry is Registry {
 
     constructor(
-        IERC20 ASCoin,
+        IERC20 AUTO,
         IStakeManager staker,
         IOracle oracle,
         IForwarder veriForwarder
-    ) Registry(ASCoin, staker, oracle, veriForwarder) {}
+    ) Registry(AUTO, staker, oracle, veriForwarder) {}
 
     function vulnerableTransfer(address payable receiver, uint amount) external {
         receiver.transfer(amount);

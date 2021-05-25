@@ -4,17 +4,17 @@ from brownie import reverts
 from brownie.test import given, strategy
 
 
-def test_initial_state(asc):
-    checkAreCallers(asc, a[:] + [asc.ASC, asc.po, asc.o, asc.sm, asc.vf, asc.r, asc.m], [asc.r])
-    assert asc.vf.owner() == asc.DEPLOYER
+def test_initial_state(auto):
+    checkAreCallers(auto, a[:] + [auto.AUTO, auto.po, auto.o, auto.sm, auto.vf, auto.r, auto.m], [auto.r])
+    assert auto.vf.owner() == auto.DEPLOYER
 
 
 @given(newCaller=strategy('address'), b=strategy('bool'))
-def test_setCaller(a, asc, newCaller, b):
-    asc.vf.setCaller(newCaller, b, asc.FR_DEPLOYER)
-    callers = [asc.r, newCaller] if b else [asc.r]
+def test_setCaller(a, auto, newCaller, b):
+    auto.vf.setCaller(newCaller, b, auto.FR_DEPLOYER)
+    callers = [auto.r, newCaller] if b else [auto.r]
 
-    checkAreCallers(asc, a[:] + [asc.ASC, asc.po, asc.o, asc.sm, asc.vf, asc.r, asc.m], callers)
+    checkAreCallers(auto, a[:] + [auto.AUTO, auto.po, auto.o, auto.sm, auto.vf, auto.r, auto.m], callers)
 
 
 @given(
@@ -22,10 +22,10 @@ def test_setCaller(a, asc, newCaller, b):
     b=strategy('bool'),
     sender=strategy('address')
 )
-def test_setReg_rev_owner(asc, addr, b, sender):
-    if sender != asc.DEPLOYER:
+def test_setReg_rev_owner(auto, addr, b, sender):
+    if sender != auto.DEPLOYER:
         with reverts(REV_MSG_OWNER):
-            asc.vf.setCaller(addr, b, {'from': sender})
+            auto.vf.setCaller(addr, b, {'from': sender})
 
 
 @given(
@@ -33,6 +33,6 @@ def test_setReg_rev_owner(asc, addr, b, sender):
     callData=strategy('bytes'),
     sender=strategy('address')
 )
-def test_forward_rev_not_reg(asc, target, callData, sender):
+def test_forward_rev_not_reg(auto, target, callData, sender):
     with reverts(REV_MSG_NOT_REG):
-        asc.vf.forward(target, callData, {'from': sender})
+        auto.vf.forward(target, callData, {'from': sender})

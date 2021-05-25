@@ -7,14 +7,14 @@ import "../StakeManager.sol";
 
 contract VulnerableStaker is StakeManager {
 
-    IERC20 private _ASCoin;
+    IERC20 private _AUTO;
 
-    constructor(IOracle oracle, IERC20 ASCoin) StakeManager(oracle, ASCoin) {
-        _ASCoin = ASCoin;
+    constructor(IOracle oracle, IERC20 AUTO) StakeManager(oracle, AUTO) {
+        _AUTO = AUTO;
     }
 
     function vulnerableTransfer(address receiver, uint amount) external {
-        _ASCoin.transfer(receiver, amount);
+        _AUTO.transfer(receiver, amount);
     }
 
 }

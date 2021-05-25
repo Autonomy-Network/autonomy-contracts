@@ -11,138 +11,138 @@ from brownie.test import given, strategy
 
 # Unstake 3 from the 4th staker in stakedMultiSmall
 # For some reason, having this test below the others in this file causes some to fail
-def test_unstake_3_of_4th_staker_from_stakedMultiSmall(asc, evmMaths, stakedMultiSmall):
+def test_unstake_3_of_4th_staker_from_stakedMultiSmall(auto, evmMaths, stakedMultiSmall):
     nums, stakers, startStakes, _ = stakedMultiSmall
     assert len(startStakes) == 7
-    assert asc.sm.getStakes() == [asc.ALICE, asc.BOB, asc.BOB, asc.CHARLIE, asc.CHARLIE, asc.BOB, asc.BOB]
-    assert asc.sm.getStakes() == startStakes
-    assert asc.sm.getStakesLength() == len(startStakes)
+    assert auto.sm.getStakes() == [auto.ALICE, auto.BOB, auto.BOB, auto.CHARLIE, auto.CHARLIE, auto.BOB, auto.BOB]
+    assert auto.sm.getStakes() == startStakes
+    assert auto.sm.getStakesLength() == len(startStakes)
     # Should revert if requesting an index that is above the max
     with reverts():
-        asc.sm.getStakesSlice(0, len(startStakes) + 1)
-    assert asc.sm.getStakesSlice(0, len(startStakes)) == startStakes
+        auto.sm.getStakesSlice(0, len(startStakes) + 1)
+    assert auto.sm.getStakesSlice(0, len(startStakes)) == startStakes
     staker = stakers[3]
-    assert staker == asc.BOB
+    assert staker == auto.BOB
     idxs = [1, 1, 1]
     calcIdxs, newStakes = getModStakes(startStakes, staker, 3, False)
     assert idxs == calcIdxs
     
-    tx = asc.sm.unstake(idxs, {'from': staker})
+    tx = auto.sm.unstake(idxs, {'from': staker})
 
     curNumStakes = 1
-    assert asc.sm.getTotalStaked() == (len(startStakes) - len(idxs)) * STAN_STAKE
-    assert asc.sm.getStake(staker) == curNumStakes * STAN_STAKE
-    assert asc.sm.getStakes() == [asc.ALICE, asc.CHARLIE, asc.BOB, asc.CHARLIE]
-    assert asc.sm.getStakes() == newStakes
-    assert asc.sm.getStakesLength() == len(newStakes)
+    assert auto.sm.getTotalStaked() == (len(startStakes) - len(idxs)) * STAN_STAKE
+    assert auto.sm.getStake(staker) == curNumStakes * STAN_STAKE
+    assert auto.sm.getStakes() == [auto.ALICE, auto.CHARLIE, auto.BOB, auto.CHARLIE]
+    assert auto.sm.getStakes() == newStakes
+    assert auto.sm.getStakesLength() == len(newStakes)
     # Should revert if requesting an index that is above the max
     with reverts():
-        asc.sm.getStakesSlice(0, len(newStakes) + 1)
-    assert asc.sm.getStakesSlice(0, len(newStakes)) == newStakes
-    assert asc.sm.getCurEpoch() == getEpoch(web3.eth.block_number)
+        auto.sm.getStakesSlice(0, len(newStakes) + 1)
+    assert auto.sm.getStakesSlice(0, len(newStakes)) == newStakes
+    assert auto.sm.getCurEpoch() == getEpoch(web3.eth.block_number)
     newExec, epoch = getExecutor(evmMaths, web3.eth.block_number, startStakes)
-    assert asc.sm.getExecutor() == (newExec, epoch)
+    assert auto.sm.getExecutor() == (newExec, epoch)
     if web3.eth.block_number % BLOCKS_IN_EPOCH != BLOCKS_IN_EPOCH - 1:
-        assert asc.sm.isUpdatedExec(newExec).return_value
+        assert auto.sm.isUpdatedExec(newExec).return_value
     for addr in a:
-        assert asc.sm.isCurExec(addr) == (addr == newExec)
+        assert auto.sm.isCurExec(addr) == (addr == newExec)
     assert tx.events["Unstaked"][0].values() == [staker, len(idxs) * STAN_STAKE]
 
 
 # Unstake 1 from the 2nd staker in stakedMultiSmall
-def test_unstake_1_of_2nd_staker_from_stakedMultiSmall(asc, evmMaths, stakedMultiSmall):
+def test_unstake_1_of_2nd_staker_from_stakedMultiSmall(auto, evmMaths, stakedMultiSmall):
     nums, stakers, startStakes, _ = stakedMultiSmall
     assert len(startStakes) == 7
-    assert asc.sm.getStakes() == startStakes
-    assert asc.sm.getStakes() == [asc.ALICE, asc.BOB, asc.BOB, asc.CHARLIE, asc.CHARLIE, asc.BOB, asc.BOB]
-    assert asc.sm.getStakesLength() == len(startStakes)
+    assert auto.sm.getStakes() == startStakes
+    assert auto.sm.getStakes() == [auto.ALICE, auto.BOB, auto.BOB, auto.CHARLIE, auto.CHARLIE, auto.BOB, auto.BOB]
+    assert auto.sm.getStakesLength() == len(startStakes)
     # Should revert if requesting an index that is above the max
     with reverts():
-        asc.sm.getStakesSlice(0, len(startStakes) + 1)
-    assert asc.sm.getStakesSlice(0, len(startStakes)) == startStakes
+        auto.sm.getStakesSlice(0, len(startStakes) + 1)
+    assert auto.sm.getStakesSlice(0, len(startStakes)) == startStakes
     staker  = stakers[1]
     idxs = [1]
     calcIdxs, newStakes = getModStakes(startStakes, staker, 1, False)
     assert idxs == calcIdxs
 
-    tx = asc.sm.unstake(idxs, {'from': staker})
+    tx = auto.sm.unstake(idxs, {'from': staker})
 
     curNumStakes = 3
-    assert asc.sm.getTotalStaked() == (len(startStakes) - len(idxs)) * STAN_STAKE
-    assert asc.sm.getStake(staker) == curNumStakes * STAN_STAKE
-    assert asc.sm.getStakes() == [asc.ALICE, asc.BOB, asc.BOB, asc.CHARLIE, asc.CHARLIE, asc.BOB]
-    assert asc.sm.getStakes() == newStakes
-    assert asc.sm.getStakesLength() == len(newStakes)
+    assert auto.sm.getTotalStaked() == (len(startStakes) - len(idxs)) * STAN_STAKE
+    assert auto.sm.getStake(staker) == curNumStakes * STAN_STAKE
+    assert auto.sm.getStakes() == [auto.ALICE, auto.BOB, auto.BOB, auto.CHARLIE, auto.CHARLIE, auto.BOB]
+    assert auto.sm.getStakes() == newStakes
+    assert auto.sm.getStakesLength() == len(newStakes)
     # Should revert if requesting an index that is above the max
     with reverts():
-        asc.sm.getStakesSlice(0, len(newStakes) + 1)
-    assert asc.sm.getStakesSlice(0, len(newStakes)) == newStakes
-    assert asc.sm.getCurEpoch() == getEpoch(web3.eth.block_number)
+        auto.sm.getStakesSlice(0, len(newStakes) + 1)
+    assert auto.sm.getStakesSlice(0, len(newStakes)) == newStakes
+    assert auto.sm.getCurEpoch() == getEpoch(web3.eth.block_number)
     newExec, epoch = getExecutor(evmMaths, web3.eth.block_number, startStakes)
-    assert asc.sm.getExecutor() == (newExec, epoch)
+    assert auto.sm.getExecutor() == (newExec, epoch)
     if web3.eth.block_number % BLOCKS_IN_EPOCH != BLOCKS_IN_EPOCH - 1:
-        assert asc.sm.isUpdatedExec(newExec).return_value
+        assert auto.sm.isUpdatedExec(newExec).return_value
     for addr in a:
-        assert asc.sm.isCurExec(addr) == (addr == newExec)
+        assert auto.sm.isCurExec(addr) == (addr == newExec)
     assert tx.events["Unstaked"][0].values() == [staker, len(idxs) * STAN_STAKE]
 
 
 # Unstake 2 from the 3rd staker in stakedMultiSmall
-def test_unstake_2_of_3rd_staker_from_stakedMultiSmall(asc, evmMaths, stakedMultiSmall):
-    nums, stakers, startStakes, updateExecReturn = stakedMultiSmall
+def test_unstake_2_of_3rd_staker_from_stakedMultiSmall(auto, evmMaths, stakedMultiSmall):
+    nums, stakers, startStakes, _ = stakedMultiSmall
     assert len(startStakes) == 7
-    assert asc.sm.getStakes() == [asc.ALICE, asc.BOB, asc.BOB, asc.CHARLIE, asc.CHARLIE, asc.BOB, asc.BOB]
-    assert asc.sm.getStakes() == startStakes
-    assert asc.sm.getStakesLength() == len(startStakes)
+    assert auto.sm.getStakes() == [auto.ALICE, auto.BOB, auto.BOB, auto.CHARLIE, auto.CHARLIE, auto.BOB, auto.BOB]
+    assert auto.sm.getStakes() == startStakes
+    assert auto.sm.getStakesLength() == len(startStakes)
     # Should revert if requesting an index that is above the max
     with reverts():
-        asc.sm.getStakesSlice(0, len(startStakes) + 1)
-    assert asc.sm.getStakesSlice(0, len(startStakes)) == startStakes
+        auto.sm.getStakesSlice(0, len(startStakes) + 1)
+    assert auto.sm.getStakesSlice(0, len(startStakes)) == startStakes
     staker = stakers[2]
     idxs = [3, 4]
     calcIdxs, newStakes = getModStakes(startStakes, staker, 2, False)
-    assert asc.sm.getStakes() == startStakes
+    assert auto.sm.getStakes() == startStakes
     assert idxs == calcIdxs
 
-    tx = asc.sm.unstake(idxs, {'from': staker})
+    tx = auto.sm.unstake(idxs, {'from': staker})
 
     curNumStakes = 0
-    assert asc.sm.getTotalStaked() == (len(startStakes) - len(idxs)) * STAN_STAKE
-    assert asc.sm.getStake(staker) == 0
-    assert asc.sm.getStakes() == [asc.ALICE, asc.BOB, asc.BOB, asc.BOB, asc.BOB]
-    assert asc.sm.getStakes() == newStakes
-    assert asc.sm.getStakesLength() == len(newStakes)
+    assert auto.sm.getTotalStaked() == (len(startStakes) - len(idxs)) * STAN_STAKE
+    assert auto.sm.getStake(staker) == 0
+    assert auto.sm.getStakes() == [auto.ALICE, auto.BOB, auto.BOB, auto.BOB, auto.BOB]
+    assert auto.sm.getStakes() == newStakes
+    assert auto.sm.getStakesLength() == len(newStakes)
     # Should revert if requesting an index that is above the max
     with reverts():
-        asc.sm.getStakesSlice(0, len(newStakes) + 1)
-    assert asc.sm.getStakesSlice(0, len(newStakes)) == newStakes
-    assert asc.sm.getCurEpoch() == getEpoch(web3.eth.block_number)
+        auto.sm.getStakesSlice(0, len(newStakes) + 1)
+    assert auto.sm.getStakesSlice(0, len(newStakes)) == newStakes
+    assert auto.sm.getCurEpoch() == getEpoch(web3.eth.block_number)
     newExec, epoch = getExecutor(evmMaths, web3.eth.block_number, startStakes)
-    assert asc.sm.getExecutor() == (newExec, epoch)
+    assert auto.sm.getExecutor() == (newExec, epoch)
     if web3.eth.block_number % BLOCKS_IN_EPOCH != BLOCKS_IN_EPOCH - 1:
-        assert asc.sm.isUpdatedExec(newExec).return_value
+        assert auto.sm.isUpdatedExec(newExec).return_value
     for addr in a:
-        assert asc.sm.isCurExec(addr) == (addr == newExec)
+        assert auto.sm.isCurExec(addr) == (addr == newExec)
     assert tx.events["Unstaked"][0].values() == [staker, len(idxs) * STAN_STAKE]
 
 
 # Using an index that isn't the caller
-def test_unstake_rev_wrong_idx(asc, stakedMultiSmall):
+def test_unstake_rev_wrong_idx(auto, stakedMultiSmall):
     with reverts(REV_MSG_NOT_STAKER):
-        asc.sm.unstake([0], asc.FR_BOB)
+        auto.sm.unstake([0], auto.FR_BOB)
 
 
 # Using indexes that are correct initially but don't account for how
 # staker changes as the end of the array is moved to a just-deleted element
-def test_unstake_rev_wrong_idxs_from_shift(asc, stakedMultiSmall):
+def test_unstake_rev_wrong_idxs_from_shift(auto, stakedMultiSmall):
     with reverts():
-        asc.sm.unstake([1, 2, 5, 6], asc.FR_BOB)
+        auto.sm.unstake([1, 2, 5, 6], auto.FR_BOB)
 
 
 @given(amount=strategy('uint256', max_value=STAN_STAKE-1, exclude=0))
-def test_unstake_rev_noFish(asc, vulnerableStaked, amount):
+def test_unstake_rev_noFish(auto, vulnerableStaked, amount):
     vStaker, staker = vulnerableStaked
-    vStaker.vulnerableTransfer(asc.DENICE, amount)
+    vStaker.vulnerableTransfer(auto.DENICE, amount)
 
     with reverts(REV_MSG_NOFISH):
         vStaker.unstake([0], {'from': staker})

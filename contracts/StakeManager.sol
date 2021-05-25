@@ -13,7 +13,7 @@ contract StakeManager is IStakeManager, Shared {
     uint public constant BLOCKS_IN_EPOCH = 100;
 
     IOracle private _oracle;
-    IERC20 private _ASCoin;
+    IERC20 private _AUTO;
     uint private _totalStaked = 0;
     mapping(address => uint) private _stakerToStakedAmount;
     address[] private _stakes;
@@ -30,9 +30,9 @@ contract StakeManager is IStakeManager, Shared {
     event Unstaked(address staker, uint amount);
 
 
-    constructor(IOracle oracle, IERC20 ASCoin) {
+    constructor(IOracle oracle, IERC20 AUTO) {
         _oracle = oracle;
-        _ASCoin = ASCoin;
+        _AUTO = AUTO;
     }
 
 
@@ -46,8 +46,8 @@ contract StakeManager is IStakeManager, Shared {
         return _oracle;
     }
 
-    function getASCoin() external view returns (address) {
-        return address(_ASCoin);
+    function getAUTO() external view returns (address) {
+        return address(_AUTO);
     }
 
     function getTotalStaked() external view returns (uint) {
@@ -143,12 +143,12 @@ contract StakeManager is IStakeManager, Shared {
     function stake(uint numStakes) external nzUint(numStakes) updateExec noFish override {
         uint amount = numStakes * STAN_STAKE;
         // So that the storage is only loaded once
-        IERC20 asCoin = _ASCoin;
+        IERC20 AUTO = _AUTO;
         // Deposit the coins
-        uint balBefore = asCoin.balanceOf(address(this));
-        require(asCoin.transferFrom(msg.sender, address(this), amount), "SM: transfer failed");
+        uint balBefore = AUTO.balanceOf(address(this));
+        require(AUTO.transferFrom(msg.sender, address(this), amount), "SM: transfer failed");
         // This check is a bit unnecessary, but better to be paranoid than r3kt
-        require(asCoin.balanceOf(address(this)) - balBefore == amount, "SM: transfer bal check failed");
+        require(AUTO.balanceOf(address(this)) - balBefore == amount, "SM: transfer bal check failed");
 
         for (uint i; i < numStakes; i++) {
             _stakes.push(msg.sender);
@@ -174,7 +174,7 @@ contract StakeManager is IStakeManager, Shared {
         
         _stakerToStakedAmount[msg.sender] -= amount;
         _totalStaked -= amount;
-        require(_ASCoin.transfer(msg.sender, amount));
+        require(_AUTO.transfer(msg.sender, amount));
         emit Unstaked(msg.sender, amount);
     }
 
@@ -198,6 +198,6 @@ contract StakeManager is IStakeManager, Shared {
     modifier noFish() {
         _;
         // >= because someone could send some tokens to this contract and disable it if it was ==
-        require(_ASCoin.balanceOf(address(this)) >= _totalStaked, "SM: something fishy here");
+        require(_AUTO.balanceOf(address(this)) >= _totalStaked, "SM: something fishy here");
     }
 }

@@ -5,417 +5,417 @@ from utils import *
 
 
 # Making a request that calls executeHashedReq should be banned to reduce attack surface
-# and generally prevent unknown funny business. Any 'legitimate' use of ASC should
-# just make a new request for recursive ASCs, I see no reason to need to call executeHashedReq
+# and generally prevent unknown funny business. Any 'legitimate' use of AUTO should
+# just make a new request for recursive requests, I see no reason to need to call executeHashedReq
 # from a request etc. Can't make a call directly to the registry from the registry
 # because of `targetNotThis`, so need to call into it from a new contract
-def test_executeHashedReq_rev_nonReentrant(asc, mockTarget, mockReentrancyAttack):
+def test_executeHashedReq_rev_nonReentrant(auto, mockTarget, mockReentrancyAttack):
     # Create request to call in reentrance
     callData = mockTarget.setX.encode_input(5)
-    req1 = (asc.BOB.address, mockReentrancyAttack.address, asc.DENICE, callData, 0, 0, False, True)
-    addToIpfs(asc, req1)
+    req1 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE, callData, 0, 0, False, True)
+    addToIpfs(auto, req1)
 
-    asc.r.newHashedReq(mockTarget, asc.DENICE, callData, 0, False, True, *getIpfsMetaData(asc, req1), {'from': asc.BOB})
+    auto.r.newHashedReq(mockTarget, auto.DENICE, callData, 0, False, True, *getIpfsMetaData(auto, req1), {'from': auto.BOB})
 
     # Create request to be executed directly
-    callData = mockReentrancyAttack.callExecuteHashedReq.encode_input(0, req1, *getIpfsMetaData(asc, req1))
-    req2 = (asc.BOB.address, mockReentrancyAttack.address, asc.DENICE, callData, 0, 0, False, True)
-    addToIpfs(asc, req2)
+    callData = mockReentrancyAttack.callExecuteHashedReq.encode_input(0, req1, *getIpfsMetaData(auto, req1))
+    req2 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE, callData, 0, 0, False, True)
+    addToIpfs(auto, req2)
 
-    asc.r.newHashedReq(mockReentrancyAttack, asc.DENICE, callData, 0, False, True, *getIpfsMetaData(asc, req2), {'from': asc.BOB})
+    auto.r.newHashedReq(mockReentrancyAttack, auto.DENICE, callData, 0, False, True, *getIpfsMetaData(auto, req2), {'from': auto.BOB})
 
     with reverts(REV_MSG_REENTRANCY):
-        asc.r.executeHashedReq(1, req2, *getIpfsMetaData(asc, req2))
+        auto.r.executeHashedReq(1, req2, *getIpfsMetaData(auto, req2))
 
 
 # Check that the revert message from the target contract is passed on correctly
-def test_executeHashedReq_returns_revert_message(asc, stakedMin, mockTarget):
+def test_executeHashedReq_returns_revert_message(auto, stakedMin, mockTarget):
     _, staker, __ = stakedMin
     
     callData = mockTarget.revertWithMessage.encode_input()
-    req = (asc.BOB.address, mockTarget.address, asc.DENICE, callData, E_18, 0, False, False)
-    tx = asc.r.newHashedReq(mockTarget, asc.DENICE, callData, 0, False, False, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
+    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, E_18, 0, False, False)
+    tx = auto.r.newHashedReq(mockTarget, auto.DENICE, callData, 0, False, False, *getIpfsMetaData(auto, req), {'from': auto.BOB, 'value': E_18})
 
     with reverts(REV_MSG_GOOFED):
-        asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+        auto.r.executeHashedReq(0, req, *getIpfsMetaData(auto, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 # Check that no revert message from the target contract is passed on correctly
-def test_executeHashedReq_returns_no_revert_message(asc, stakedMin, mockTarget):
+def test_executeHashedReq_returns_no_revert_message(auto, stakedMin, mockTarget):
     _, staker, __ = stakedMin
     
     callData = mockTarget.revertWithoutMessage.encode_input()
-    req = (asc.BOB.address, mockTarget.address, asc.DENICE, callData, E_18, 0, False, False)
-    tx = asc.r.newHashedReq(mockTarget, asc.DENICE, callData, 0, False, False, *getIpfsMetaData(asc, req), {'from': asc.BOB, 'value': E_18})
+    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, E_18, 0, False, False)
+    tx = auto.r.newHashedReq(mockTarget, auto.DENICE, callData, 0, False, False, *getIpfsMetaData(auto, req), {'from': auto.BOB, 'value': E_18})
 
     with reverts(''):
-        asc.r.executeHashedReq(0, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+        auto.r.executeHashedReq(0, req, *getIpfsMetaData(auto, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 # Randomly generate addresses for the sender and calldata input independently
 # to test validCalldata upon calling executeHashedReq
 @given(
     ethForCall=strategy('uint256', max_value=E_18),
-    payWithASC=strategy('bool'),
+    payWithAUTO=strategy('bool'),
     userAddr=strategy('address'),
     sender=strategy('address')
 )
-def test_executeHashedReq_validCalldata(asc, evmMaths, stakedMin, mockTarget, ethForCall, payWithASC, userAddr, sender):
+def test_executeHashedReq_validCalldata(auto, evmMaths, stakedMin, mockTarget, ethForCall, payWithAUTO, userAddr, sender):
     # It's gonna be a pain in the ass to do the accounting if they're equal
-    if sender != asc.ALICE and sender != asc.DENICE:
+    if sender != auto.ALICE and sender != auto.DENICE:
         _, staker, __ = stakedMin
 
         msgValue = ethForCall + E_18
-        if payWithASC:
+        if payWithAUTO:
             msgValue = ethForCall
 
         id = 0
         callData = mockTarget.setAddrPayVerified.encode_input(userAddr)
-        req = (sender.address, mockTarget.address, asc.DENICE, callData, msgValue, ethForCall, True, payWithASC)
-        addToIpfs(asc, req)
+        req = (sender.address, mockTarget.address, auto.DENICE, callData, msgValue, ethForCall, True, payWithAUTO)
+        addToIpfs(auto, req)
 
-        asc.ASC.approve(asc.r, MAX_TEST_STAKE, {'from': sender})
-        asc.ASC.transfer(sender, MAX_TEST_STAKE, asc.FR_DEPLOYER)
-        senderASCStartBal = asc.ASC.balanceOf(sender)
-        asc.r.newHashedReq(mockTarget, asc.DENICE, callData, ethForCall, True, payWithASC, *getIpfsMetaData(asc, req), {'from': sender, 'value': msgValue})
+        auto.AUTO.approve(auto.r, MAX_TEST_STAKE, {'from': sender})
+        auto.AUTO.transfer(sender, MAX_TEST_STAKE, auto.FR_DEPLOYER)
+        senderAUTOStartBal = auto.AUTO.balanceOf(sender)
+        auto.r.newHashedReq(mockTarget, auto.DENICE, callData, ethForCall, True, payWithAUTO, *getIpfsMetaData(auto, req), {'from': sender, 'value': msgValue})
 
         if userAddr != sender:
             with reverts(REV_MSG_CALLDATA_NOT_VER):
-                asc.r.executeHashedReq(id, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+                auto.r.executeHashedReq(id, req, *getIpfsMetaData(auto, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
         else:
-            tx = asc.r.executeHashedReq(id, req, *getIpfsMetaData(asc, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+            tx = auto.r.executeHashedReq(id, req, *getIpfsMetaData(auto, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
             assert mockTarget.balance() == ethForCall
-            if payWithASC:
+            if payWithAUTO:
                 # Eth bals
-                assert asc.ALICE.balance() == INIT_ETH_BAL - (tx.gas_used * tx.gas_price)
+                assert auto.ALICE.balance() == INIT_ETH_BAL - (tx.gas_used * tx.gas_price)
                 assert sender.balance() == INIT_ETH_BAL - ethForCall
-                # ASC bals
-                ASCForExec = getASCForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
-                assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
-                assert asc.ASC.balanceOf(sender) - senderASCStartBal == -ASCForExec
-                assert asc.ASC.balanceOf(asc.DENICE) == 0
-                assert asc.ASC.balanceOf(asc.r) == 0
+                # AUTO bals
+                AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
+                assert auto.AUTO.balanceOf(auto.ALICE) == MAX_TEST_STAKE - STAN_STAKE + AUTOForExec
+                assert auto.AUTO.balanceOf(sender) - senderAUTOStartBal == -AUTOForExec
+                assert auto.AUTO.balanceOf(auto.DENICE) == 0
+                assert auto.AUTO.balanceOf(auto.r) == 0
             else:
                 # Eth bals
                 ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
-                assert asc.ALICE.balance() == INIT_ETH_BAL + ethForExec - (tx.gas_used * tx.gas_price)
+                assert auto.ALICE.balance() == INIT_ETH_BAL + ethForExec - (tx.gas_used * tx.gas_price)
                 assert sender.balance() == INIT_ETH_BAL - ethForCall - ethForExec
-                # ASC bals
-                assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
-                assert asc.ASC.balanceOf(sender) - senderASCStartBal == 0
-                assert asc.ASC.balanceOf(asc.DENICE) == 0
-                assert asc.ASC.balanceOf(asc.r) == 0
+                # AUTO bals
+                assert auto.AUTO.balanceOf(auto.ALICE) == MAX_TEST_STAKE - STAN_STAKE
+                assert auto.AUTO.balanceOf(sender) - senderAUTOStartBal == 0
+                assert auto.AUTO.balanceOf(auto.DENICE) == 0
+                assert auto.AUTO.balanceOf(auto.r) == 0
 
             # Target state
             assert mockTarget.userAddr() == sender.address
-            assert mockTarget.msgSender() == asc.vf.address
+            assert mockTarget.msgSender() == auto.vf.address
             # Registry state
             reqHashes = [NULL_HASH]
-            assert asc.r.getHashedReqs() == reqHashes
+            assert auto.r.getHashedReqs() == reqHashes
             # Should revert when using indexes above the length
             with reverts():
-                asc.r.getHashedReqsSlice(0, len(reqHashes) + 1)
-            assert asc.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
-            assert asc.r.getHashedReqsLen() == 1
-            assert asc.r.getHashedReq(id) == NULL_HASH
+                auto.r.getHashedReqsSlice(0, len(reqHashes) + 1)
+            assert auto.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
+            assert auto.r.getHashedReqsLen() == 1
+            assert auto.r.getHashedReq(id) == NULL_HASH
             assert tx.events["HashedReqRemoved"][0].values() == [id, True]
-            assert asc.r.getReqCountOf(sender) == 1
-            assert asc.r.getExecCountOf(asc.ALICE) == 1
-            assert asc.r.getReferalCountOf(asc.DENICE) == 1
+            assert auto.r.getReqCountOf(sender) == 1
+            assert auto.r.getExecCountOf(auto.ALICE) == 1
+            assert auto.r.getReferalCountOf(auto.DENICE) == 1
 
             # Shouldn't've changed
             assert mockTarget.x() == 0
-            assert asc.r.balance() == 0
+            assert auto.r.balance() == 0
 
 
-def test_executeHashedReq_no_ethForCall(asc, stakedMin, mockTarget, hashedReqs):
+def test_executeHashedReq_no_ethForCall(auto, stakedMin, mockTarget, hashedReqs):
     _, staker, __ = stakedMin
     reqs, reqHashes, msgValue, ethForCall = hashedReqs
     # reqHashes will modify the original even after this test has finished otherwise since it's a reference
     reqHashes = reqHashes[:]
     id = 0
     assert mockTarget.x() == 0
-    assert asc.ALICE.balance() == INIT_ETH_BAL
-    assert asc.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (2 * ethForCall)
-    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
-    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
-    assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(asc.r) == 0
+    assert auto.ALICE.balance() == INIT_ETH_BAL
+    assert auto.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (2 * ethForCall)
+    assert auto.AUTO.balanceOf(auto.ALICE) == MAX_TEST_STAKE - STAN_STAKE
+    assert auto.AUTO.balanceOf(auto.BOB) == MAX_TEST_STAKE
+    assert auto.AUTO.balanceOf(auto.DENICE) == 0
+    assert auto.AUTO.balanceOf(auto.r) == 0
 
-    tx = asc.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    tx = auto.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(auto, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
     ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
-    assert asc.ALICE.balance() == INIT_ETH_BAL + ethForExec - (tx.gas_used * tx.gas_price)
-    assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall)) + msgValue - ethForExec
-    assert asc.r.balance() == msgValue + (2 * ethForCall)
+    assert auto.ALICE.balance() == INIT_ETH_BAL + ethForExec - (tx.gas_used * tx.gas_price)
+    assert auto.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall)) + msgValue - ethForExec
+    assert auto.r.balance() == msgValue + (2 * ethForCall)
     assert mockTarget.balance() == 0
-    # ASC bals
-    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
-    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
-    assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(asc.r) == 0
+    # AUTO bals
+    assert auto.AUTO.balanceOf(auto.ALICE) == MAX_TEST_STAKE - STAN_STAKE
+    assert auto.AUTO.balanceOf(auto.BOB) == MAX_TEST_STAKE
+    assert auto.AUTO.balanceOf(auto.DENICE) == 0
+    assert auto.AUTO.balanceOf(auto.r) == 0
     # Target state
     assert mockTarget.x() == 5
-    assert mockTarget.msgSender() == asc.r
+    assert mockTarget.msgSender() == auto.r
     # Registry state
     reqHashes[id] = NULL_HASH
-    assert asc.r.getHashedReqs() == reqHashes
+    assert auto.r.getHashedReqs() == reqHashes
     # Should revert when using indexes above the length
     with reverts():
-        asc.r.getHashedReqsSlice(0, len(reqHashes) + 1)
-    assert asc.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
-    assert asc.r.getHashedReqsLen() == 5
-    assert asc.r.getHashedReq(id) == NULL_HASH
+        auto.r.getHashedReqsSlice(0, len(reqHashes) + 1)
+    assert auto.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
+    assert auto.r.getHashedReqsLen() == 5
+    assert auto.r.getHashedReq(id) == NULL_HASH
     assert tx.events["HashedReqRemoved"][0].values() == [id, True]
-    assert asc.r.getReqCountOf(asc.BOB) == 1
-    assert asc.r.getExecCountOf(asc.ALICE) == 1
-    assert asc.r.getReferalCountOf(asc.DENICE) == 1
+    assert auto.r.getReqCountOf(auto.BOB) == 1
+    assert auto.r.getExecCountOf(auto.ALICE) == 1
+    assert auto.r.getReferalCountOf(auto.DENICE) == 1
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
 
 
-def test_executeHashedReq_with_ethForCall(asc, stakedMin, mockTarget, hashedReqs):
+def test_executeHashedReq_with_ethForCall(auto, stakedMin, mockTarget, hashedReqs):
     _, staker, __ = stakedMin
     reqs, reqHashes, msgValue, ethForCall = hashedReqs
     # reqHashes will modify the original even after this test has finished otherwise since it's a reference
     reqHashes = reqHashes[:]
     id = 1
     assert mockTarget.x() == 0
-    assert asc.ALICE.balance() == INIT_ETH_BAL
-    assert asc.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (2 * ethForCall)
-    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
-    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
-    assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(asc.r) == 0
+    assert auto.ALICE.balance() == INIT_ETH_BAL
+    assert auto.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (2 * ethForCall)
+    assert auto.AUTO.balanceOf(auto.ALICE) == MAX_TEST_STAKE - STAN_STAKE
+    assert auto.AUTO.balanceOf(auto.BOB) == MAX_TEST_STAKE
+    assert auto.AUTO.balanceOf(auto.DENICE) == 0
+    assert auto.AUTO.balanceOf(auto.r) == 0
 
-    tx = asc.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    tx = auto.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(auto, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
     ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
-    assert asc.ALICE.balance() == INIT_ETH_BAL + ethForExec - (tx.gas_used * tx.gas_price)
-    assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall)) + msgValue - ethForCall - ethForExec
-    assert asc.r.balance() == msgValue + (2 * ethForCall)
+    assert auto.ALICE.balance() == INIT_ETH_BAL + ethForExec - (tx.gas_used * tx.gas_price)
+    assert auto.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall)) + msgValue - ethForCall - ethForExec
+    assert auto.r.balance() == msgValue + (2 * ethForCall)
     assert mockTarget.balance() == ethForCall
-    # ASC bals
-    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
-    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
-    assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(asc.r) == 0
+    # AUTO bals
+    assert auto.AUTO.balanceOf(auto.ALICE) == MAX_TEST_STAKE - STAN_STAKE
+    assert auto.AUTO.balanceOf(auto.BOB) == MAX_TEST_STAKE
+    assert auto.AUTO.balanceOf(auto.DENICE) == 0
+    assert auto.AUTO.balanceOf(auto.r) == 0
     # Target state
     assert mockTarget.x() == 5
-    assert mockTarget.msgSender() == asc.r
+    assert mockTarget.msgSender() == auto.r
     # Registry state
     reqHashes[id] = NULL_HASH
     # Should revert when using indexes above the length
     with reverts():
-        asc.r.getHashedReqsSlice(0, len(reqHashes) + 1)
-    assert asc.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
-    assert asc.r.getHashedReqs() == reqHashes
+        auto.r.getHashedReqsSlice(0, len(reqHashes) + 1)
+    assert auto.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
+    assert auto.r.getHashedReqs() == reqHashes
     # Should revert when using indexes above the length
     with reverts():
-        asc.r.getHashedReqsSlice(0, len(reqHashes) + 1)
-    assert asc.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
-    assert asc.r.getHashedReqsLen() == 5
-    assert asc.r.getHashedReq(id) == NULL_HASH
+        auto.r.getHashedReqsSlice(0, len(reqHashes) + 1)
+    assert auto.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
+    assert auto.r.getHashedReqsLen() == 5
+    assert auto.r.getHashedReq(id) == NULL_HASH
     assert tx.events["HashedReqRemoved"][0].values() == [id, True]
-    assert asc.r.getReqCountOf(asc.BOB) == 1
-    assert asc.r.getExecCountOf(asc.ALICE) == 1
-    assert asc.r.getReferalCountOf(asc.DENICE) == 1
+    assert auto.r.getReqCountOf(auto.BOB) == 1
+    assert auto.r.getExecCountOf(auto.ALICE) == 1
+    assert auto.r.getReferalCountOf(auto.DENICE) == 1
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
 
 
-def test_executeHashedReq_pay_ASC(asc, evmMaths, stakedMin, mockTarget, hashedReqs):
+def test_executeHashedReq_pay_AUTO(auto, evmMaths, stakedMin, mockTarget, hashedReqs):
     _, staker, __ = stakedMin
     reqs, reqHashes, msgValue, ethForCall = hashedReqs
     # reqHashes will modify the original even after this test has finished otherwise since it's a reference
     reqHashes = reqHashes[:]
     id = 2
     assert mockTarget.x() == 0
-    assert asc.ALICE.balance() == INIT_ETH_BAL
-    assert asc.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (2 * ethForCall)
-    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
-    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
-    assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(asc.r) == 0
+    assert auto.ALICE.balance() == INIT_ETH_BAL
+    assert auto.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (2 * ethForCall)
+    assert auto.AUTO.balanceOf(auto.ALICE) == MAX_TEST_STAKE - STAN_STAKE
+    assert auto.AUTO.balanceOf(auto.BOB) == MAX_TEST_STAKE
+    assert auto.AUTO.balanceOf(auto.DENICE) == 0
+    assert auto.AUTO.balanceOf(auto.r) == 0
 
-    tx = asc.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    tx = auto.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(auto, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
-    assert asc.ALICE.balance() == INIT_ETH_BAL - (tx.gas_used * tx.gas_price)
-    assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall))
-    assert asc.r.balance() == (2 * msgValue) + (2 * ethForCall)
+    assert auto.ALICE.balance() == INIT_ETH_BAL - (tx.gas_used * tx.gas_price)
+    assert auto.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall))
+    assert auto.r.balance() == (2 * msgValue) + (2 * ethForCall)
     assert mockTarget.balance() == 0
-    # ASC bals
-    ASCForExec = getASCForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
-    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
-    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
-    assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(asc.r) == 0
+    # AUTO bals
+    AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
+    assert auto.AUTO.balanceOf(auto.ALICE) == MAX_TEST_STAKE - STAN_STAKE + AUTOForExec
+    assert auto.AUTO.balanceOf(auto.BOB) == MAX_TEST_STAKE - AUTOForExec
+    assert auto.AUTO.balanceOf(auto.DENICE) == 0
+    assert auto.AUTO.balanceOf(auto.r) == 0
     # Target state
     assert mockTarget.x() == 5
-    assert mockTarget.msgSender() == asc.r
+    assert mockTarget.msgSender() == auto.r
     # Registry state
     reqHashes[id] = NULL_HASH
-    assert asc.r.getHashedReqs() == reqHashes
+    assert auto.r.getHashedReqs() == reqHashes
     # Should revert when using indexes above the length
     with reverts():
-        asc.r.getHashedReqsSlice(0, len(reqHashes) + 1)
-    assert asc.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
-    assert asc.r.getHashedReqsLen() == 5
-    assert asc.r.getHashedReq(id) == NULL_HASH
+        auto.r.getHashedReqsSlice(0, len(reqHashes) + 1)
+    assert auto.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
+    assert auto.r.getHashedReqsLen() == 5
+    assert auto.r.getHashedReq(id) == NULL_HASH
     assert tx.events["HashedReqRemoved"][0].values() == [id, True]
-    assert asc.r.getReqCountOf(asc.BOB) == 1
-    assert asc.r.getExecCountOf(asc.ALICE) == 1
-    assert asc.r.getReferalCountOf(asc.DENICE) == 1
+    assert auto.r.getReqCountOf(auto.BOB) == 1
+    assert auto.r.getExecCountOf(auto.ALICE) == 1
+    assert auto.r.getReferalCountOf(auto.DENICE) == 1
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
 
 
-def test_executeHashedReq_pay_ASC_with_ethForCall(asc, evmMaths, stakedMin, mockTarget, hashedReqs):
+def test_executeHashedReq_pay_AUTO_with_ethForCall(auto, evmMaths, stakedMin, mockTarget, hashedReqs):
     _, staker, __ = stakedMin
     reqs, reqHashes, msgValue, ethForCall = hashedReqs
     # reqHashes will modify the original even after this test has finished otherwise since it's a reference
     reqHashes = reqHashes[:]
     id = 3
     assert mockTarget.x() == 0
-    assert asc.ALICE.balance() == INIT_ETH_BAL
-    assert asc.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (2 * ethForCall)
-    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
-    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
-    assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(asc.r) == 0
+    assert auto.ALICE.balance() == INIT_ETH_BAL
+    assert auto.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (2 * ethForCall)
+    assert auto.AUTO.balanceOf(auto.ALICE) == MAX_TEST_STAKE - STAN_STAKE
+    assert auto.AUTO.balanceOf(auto.BOB) == MAX_TEST_STAKE
+    assert auto.AUTO.balanceOf(auto.DENICE) == 0
+    assert auto.AUTO.balanceOf(auto.r) == 0
 
-    tx = asc.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    tx = auto.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(auto, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
-    assert asc.ALICE.balance() == INIT_ETH_BAL - (tx.gas_used * tx.gas_price)
-    assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall))
-    assert asc.r.balance() == 2 * msgValue + ethForCall
+    assert auto.ALICE.balance() == INIT_ETH_BAL - (tx.gas_used * tx.gas_price)
+    assert auto.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall))
+    assert auto.r.balance() == 2 * msgValue + ethForCall
     assert mockTarget.balance() == ethForCall
-    # ASC bals
-    ASCForExec = getASCForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
-    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
-    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
-    assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(asc.r) == 0
+    # AUTO bals
+    AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
+    assert auto.AUTO.balanceOf(auto.ALICE) == MAX_TEST_STAKE - STAN_STAKE + AUTOForExec
+    assert auto.AUTO.balanceOf(auto.BOB) == MAX_TEST_STAKE - AUTOForExec
+    assert auto.AUTO.balanceOf(auto.DENICE) == 0
+    assert auto.AUTO.balanceOf(auto.r) == 0
     # Target state
     assert mockTarget.x() == 5
-    assert mockTarget.msgSender() == asc.r
+    assert mockTarget.msgSender() == auto.r
     # Registry state
     reqHashes[id] = NULL_HASH
-    assert asc.r.getHashedReqs() == reqHashes
+    assert auto.r.getHashedReqs() == reqHashes
     # Should revert when using indexes above the length
     with reverts():
-        asc.r.getHashedReqsSlice(0, len(reqHashes) + 1)
-    assert asc.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
-    assert asc.r.getHashedReqsLen() == 5
-    assert asc.r.getHashedReq(id) == NULL_HASH
+        auto.r.getHashedReqsSlice(0, len(reqHashes) + 1)
+    assert auto.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
+    assert auto.r.getHashedReqsLen() == 5
+    assert auto.r.getHashedReq(id) == NULL_HASH
     assert tx.events["HashedReqRemoved"][0].values() == [id, True]
-    assert asc.r.getReqCountOf(asc.BOB) == 1
-    assert asc.r.getExecCountOf(asc.ALICE) == 1
-    assert asc.r.getReferalCountOf(asc.DENICE) == 1
+    assert auto.r.getReqCountOf(auto.BOB) == 1
+    assert auto.r.getExecCountOf(auto.ALICE) == 1
+    assert auto.r.getReferalCountOf(auto.DENICE) == 1
 
     # Shouldn't've changed
     assert mockTarget.userAddr() == ADDR_0
 
 
-def test_executeHashedReq_pay_ASC_with_ethForCall_and_verifySender(asc, evmMaths, stakedMin, mockTarget, hashedReqs):
+def test_executeHashedReq_pay_AUTO_with_ethForCall_and_verifySender(auto, evmMaths, stakedMin, mockTarget, hashedReqs):
     _, staker, __ = stakedMin
     reqs, reqHashes, msgValue, ethForCall = hashedReqs
     # reqHashes will modify the original even after this test has finished otherwise since it's a reference
     reqHashes = reqHashes[:]
     id = 4
     assert mockTarget.x() == 0
-    assert asc.ALICE.balance() == INIT_ETH_BAL
-    assert asc.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (2 * ethForCall)
-    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE
-    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE
-    assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(asc.r) == 0
+    assert auto.ALICE.balance() == INIT_ETH_BAL
+    assert auto.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (2 * ethForCall)
+    assert auto.AUTO.balanceOf(auto.ALICE) == MAX_TEST_STAKE - STAN_STAKE
+    assert auto.AUTO.balanceOf(auto.BOB) == MAX_TEST_STAKE
+    assert auto.AUTO.balanceOf(auto.DENICE) == 0
+    assert auto.AUTO.balanceOf(auto.r) == 0
 
-    tx = asc.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    tx = auto.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(auto, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
-    assert asc.ALICE.balance() == INIT_ETH_BAL - (tx.gas_used * tx.gas_price)
-    assert asc.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall))
-    assert asc.r.balance() == 2 * msgValue + ethForCall
+    assert auto.ALICE.balance() == INIT_ETH_BAL - (tx.gas_used * tx.gas_price)
+    assert auto.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall))
+    assert auto.r.balance() == 2 * msgValue + ethForCall
     assert mockTarget.balance() == ethForCall
-    # ASC bals
-    ASCForExec = getASCForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
-    assert asc.ASC.balanceOf(asc.ALICE) == MAX_TEST_STAKE - STAN_STAKE + ASCForExec
-    assert asc.ASC.balanceOf(asc.BOB) == MAX_TEST_STAKE - ASCForExec
-    assert asc.ASC.balanceOf(asc.DENICE) == 0
-    assert asc.ASC.balanceOf(asc.r) == 0
+    # AUTO bals
+    AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
+    assert auto.AUTO.balanceOf(auto.ALICE) == MAX_TEST_STAKE - STAN_STAKE + AUTOForExec
+    assert auto.AUTO.balanceOf(auto.BOB) == MAX_TEST_STAKE - AUTOForExec
+    assert auto.AUTO.balanceOf(auto.DENICE) == 0
+    assert auto.AUTO.balanceOf(auto.r) == 0
     # Target state
-    assert mockTarget.userAddr() == asc.BOB.address
-    assert mockTarget.msgSender() == asc.vf.address
+    assert mockTarget.userAddr() == auto.BOB.address
+    assert mockTarget.msgSender() == auto.vf.address
     # Registry state
     reqHashes[id] = NULL_HASH
-    assert asc.r.getHashedReqs() == reqHashes
+    assert auto.r.getHashedReqs() == reqHashes
     # Should revert when using indexes above the length
     with reverts():
-        asc.r.getHashedReqsSlice(0, len(reqHashes) + 1)
-    assert asc.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
-    assert asc.r.getHashedReqsLen() == 5
-    assert asc.r.getHashedReq(id) == NULL_HASH
+        auto.r.getHashedReqsSlice(0, len(reqHashes) + 1)
+    assert auto.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
+    assert auto.r.getHashedReqsLen() == 5
+    assert auto.r.getHashedReq(id) == NULL_HASH
     assert tx.events["HashedReqRemoved"][0].values() == [id, True]
-    assert asc.r.getReqCountOf(asc.BOB) == 1
-    assert asc.r.getExecCountOf(asc.ALICE) == 1
-    assert asc.r.getReferalCountOf(asc.DENICE) == 1
+    assert auto.r.getReqCountOf(auto.BOB) == 1
+    assert auto.r.getExecCountOf(auto.ALICE) == 1
+    assert auto.r.getReferalCountOf(auto.DENICE) == 1
 
     # Shouldn't've changed
     assert mockTarget.x() == 0
 
 
-def test_executeHashedReq_rev_not_executor(asc, stakedMin, hashedReqs):
+def test_executeHashedReq_rev_not_executor(auto, stakedMin, hashedReqs):
     reqs, reqHashes, msgValue, ethForCall = hashedReqs
     with reverts(REV_MSG_NOT_EXEC):
-        asc.r.executeHashedReq(0, reqs[0], *getIpfsMetaData(asc, reqs[0]), {'from': asc.DENICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+        auto.r.executeHashedReq(0, reqs[0], *getIpfsMetaData(auto, reqs[0]), {'from': auto.DENICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
-def test_executeHashedReq_rev_req_not_the_same(asc, stakedMin, hashedReqs):
+def test_executeHashedReq_rev_req_not_the_same(auto, stakedMin, hashedReqs):
     _, staker, __ = stakedMin
     reqs, reqHashes, msgValue, ethForCall = hashedReqs
     invalidReq = list(reqs[0])
     invalidReq[4] = 1
     with reverts(REV_MSG_NOT_SAME):
-        asc.r.executeHashedReq(0, invalidReq, *getIpfsMetaData(asc, invalidReq), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+        auto.r.executeHashedReq(0, invalidReq, *getIpfsMetaData(auto, invalidReq), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
-def test_executeHashedReq_rev_already_executeHashedReqd(asc, stakedMin, hashedReqs):
+def test_executeHashedReq_rev_already_executeHashedReqd(auto, stakedMin, hashedReqs):
     _, staker, __ = stakedMin
     reqs, reqHashes, msgValue, ethForCall = hashedReqs
 
-    asc.r.executeHashedReq(0, reqs[0], *getIpfsMetaData(asc, reqs[0]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    auto.r.executeHashedReq(0, reqs[0], *getIpfsMetaData(auto, reqs[0]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
     with reverts(REV_MSG_NOT_SAME):
-        asc.r.executeHashedReq(0, reqs[0], *getIpfsMetaData(asc, reqs[0]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+        auto.r.executeHashedReq(0, reqs[0], *getIpfsMetaData(auto, reqs[0]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
-def test_executeHashedReq_rev_noFish_pay_eth(asc, vulnerableRegistry, vulnerableHashedReqs, stakedMin):
+def test_executeHashedReq_rev_noFish_pay_eth(auto, vulnerableRegistry, vulnerableHashedReqs, stakedMin):
     _, staker, __ = stakedMin
     reqs, reqHashes, msgValue, ethForCall = vulnerableHashedReqs
     id = 0
 
     with reverts(REV_MSG_FISHY):
-        vulnerableRegistry.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+        vulnerableRegistry.executeHashedReq(id, reqs[id], *getIpfsMetaData(auto, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
-def test_executeHashedReq_rev_noFish_payWithASC(asc, vulnerableRegistry, vulnerableHashedReqs, stakedMin):
+def test_executeHashedReq_rev_noFish_payWithAUTO(auto, vulnerableRegistry, vulnerableHashedReqs, stakedMin):
     _, staker, __ = stakedMin
     reqs, reqHashes, msgValue, ethForCall = vulnerableHashedReqs
     id = 1
 
     with reverts(REV_MSG_FISHY):
-        vulnerableRegistry.executeHashedReq(id, reqs[id], *getIpfsMetaData(asc, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+        vulnerableRegistry.executeHashedReq(id, reqs[id], *getIpfsMetaData(auto, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})

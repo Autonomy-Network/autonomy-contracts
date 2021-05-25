@@ -17,7 +17,7 @@ interface IRegistry {
         uint120 initEthSent;
         uint120 ethForCall;
         bool verifySender;
-        bool payWithASC;
+        bool payWithAUTO;
     }
 
 
@@ -33,7 +33,7 @@ interface IRegistry {
         bytes calldata callData,
         uint120 ethForCall,
         bool verifySender,
-        bool payWithASC
+        bool payWithAUTO
     ) external payable returns (uint id);
 
     function getRawReqs() external view returns (Request[] memory);
@@ -55,7 +55,7 @@ interface IRegistry {
         bytes calldata callData,
         uint120 ethForCall,
         bool verifySender,
-        bool payWithASC,
+        bool payWithAUTO,
         bytes memory dataPrefix,
         bytes memory dataSuffix
     ) external payable returns (uint id);
@@ -162,7 +162,7 @@ interface IRegistry {
     //                                                          //
     //////////////////////////////////////////////////////////////
     
-    function getASCoin() external view returns (IERC20);
+    function getAUTO() external view returns (IERC20);
     
     function getStakeManager() external view returns (address);
     

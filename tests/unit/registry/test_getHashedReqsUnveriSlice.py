@@ -16,16 +16,16 @@ NUM_SLICE_TESTS = 100
     endIdxs=strategy(f'uint[{NUM_SLICE_TESTS}]', max_value=MAX_ARR_LEN)
 )
 @settings(max_examples=10)
-def test_getHashedReqsUnveriSlice(asc, mockTarget, requesters, hashedReqs, startIdxs, endIdxs):
+def test_getHashedReqsUnveriSlice(auto, mockTarget, requesters, hashedReqs, startIdxs, endIdxs):
     hashedReqs = [bytesToHex(h) for h in hashedReqs]
     for h, r in zip(hashedReqs, requesters):
-        asc.r.newHashedReqUnveri(h, {'from': r})
+        auto.r.newHashedReqUnveri(h, {'from': r})
     
-    assert asc.r.getHashedReqsUnveriSlice(0, len(hashedReqs)) == hashedReqs
-    assert asc.r.getHashedReqsUnveriSlice(0, len(hashedReqs)) == asc.r.getHashedReqsUnveri()
+    assert auto.r.getHashedReqsUnveriSlice(0, len(hashedReqs)) == hashedReqs
+    assert auto.r.getHashedReqsUnveriSlice(0, len(hashedReqs)) == auto.r.getHashedReqsUnveri()
     for si, ei in zip(startIdxs, endIdxs):
         if ei < si or (ei > len(hashedReqs) and si != ei):
             with reverts():
-                asc.r.getHashedReqsUnveriSlice(si, ei)
+                auto.r.getHashedReqsUnveriSlice(si, ei)
         else:
-            assert asc.r.getHashedReqsUnveriSlice(si, ei) == hashedReqs[si:ei]
+            assert auto.r.getHashedReqsUnveriSlice(si, ei) == hashedReqs[si:ei]

@@ -2,19 +2,19 @@ from consts import *
 from utils import *
 
 
-# These serve as benchmarks for calibrating GAS_OVERHEAD_ETH and GAS_OVERHEAD_ASCOIN
+# These serve as benchmarks for calibrating GAS_OVERHEAD_ETH and GAS_OVERHEAD_AUTO
 # etc experimentally
 
 
 # # See how gas measurement accuracy changes as calldata size doesn't change and the
 # # gas of the actual call increases
-# def test_gas_usage_rawReq_change_call_gas(asc, mockTarget):
+# def test_gas_usage_rawReq_change_call_gas(auto, mockTarget):
 #     # Have an initial request executed so that _reqCounts etc are non-zero for the
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     callData = mockTarget.useGasWithArray.encode_input(0)
-#     asc.r.newRawReq(mockTarget, callData, False, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#     auto.r.newRawReq(mockTarget, callData, False, False, 0, auto.DENICE, {'from': auto.BOB, 'value': E_18})
+#     tx = auto.r.executeRawReq(0, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -25,19 +25,19 @@ from utils import *
 #     print()
 
 #     for i in range(0, 100):
-#         bobStartBal = asc.BOB.balance()
-#         execStartBal = asc.ALICE.balance()
+#         bobStartBal = auto.BOB.balance()
+#         execStartBal = auto.ALICE.balance()
 #         # Create request
 #         callData = mockTarget.useGasWithArray.encode_input(i)
-#         asc.r.newRawReq(mockTarget, callData, False, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
+#         auto.r.newRawReq(mockTarget, callData, False, False, 0, auto.DENICE, {'from': auto.BOB, 'value': E_18})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#         tx = auto.r.executeRawReq(i+1, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
 #         ethSpent = (tx.gas_used * tx.gas_price)
 #         execProfit = ethForExec - ethSpent
-#         assert asc.BOB.balance() - bobStartBal == -ethForExec
-#         assert asc.ALICE.balance() - execStartBal == execProfit
+#         assert auto.BOB.balance() - bobStartBal == -ethForExec
+#         assert auto.ALICE.balance() - execStartBal == execProfit
 
 #         print(i)
 #         # print(tx.events["Test"][0].values())
@@ -53,13 +53,13 @@ from utils import *
 
 # # See how gas measurement accuracy changes as calldata size increases and the
 # # gas of the actual call doesn't change
-# def test_gas_usage_rawReq_change_callData_size(asc, mockTarget):
+# def test_gas_usage_rawReq_change_callData_size(auto, mockTarget):
 #     # Have an initial request executed so that _reqCounts etc are non-zero for the
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     callData = mockTarget.useGasWithCallData.encode_input([])
-#     asc.r.newRawReq(mockTarget, callData, False, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#     auto.r.newRawReq(mockTarget, callData, False, False, 0, auto.DENICE, {'from': auto.BOB, 'value': E_18})
+#     tx = auto.r.executeRawReq(0, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -70,19 +70,19 @@ from utils import *
 #     print()
 
 #     for i in range(0, 100):
-#         bobStartBal = asc.BOB.balance()
-#         execStartBal = asc.ALICE.balance()
+#         bobStartBal = auto.BOB.balance()
+#         execStartBal = auto.ALICE.balance()
 #         # Create request
 #         callData = mockTarget.useGasWithCallData.encode_input([i for i in range(i)])
-#         asc.r.newRawReq(mockTarget, callData, False, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
+#         auto.r.newRawReq(mockTarget, callData, False, False, 0, auto.DENICE, {'from': auto.BOB, 'value': E_18})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#         tx = auto.r.executeRawReq(i+1, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
 #         ethSpent = (tx.gas_used * tx.gas_price)
 #         execProfit = ethForExec - ethSpent
-#         assert asc.BOB.balance() - bobStartBal == -ethForExec
-#         assert asc.ALICE.balance() - execStartBal == execProfit
+#         assert auto.BOB.balance() - bobStartBal == -ethForExec
+#         assert auto.ALICE.balance() - execStartBal == execProfit
 
 #         print(i)
 #         # print(tx.events["Test"][0].values())
@@ -98,13 +98,13 @@ from utils import *
 
 # # See how gas measurement accuracy changes as both calldata size increases and the
 # # gas of the actual call increase at a consistent rate
-# def test_gas_usage_rawReq_change_callData_size_and_call_gas(asc, mockTarget):
+# def test_gas_usage_rawReq_change_callData_size_and_call_gas(auto, mockTarget):
 #     # Have an initial request executed so that _reqCounts etc are non-zero for the
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     callData = mockTarget.useGasCallDataAndArray.encode_input([])
-#     asc.r.newRawReq(mockTarget, callData, False, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#     auto.r.newRawReq(mockTarget, callData, False, False, 0, auto.DENICE, {'from': auto.BOB, 'value': E_18})
+#     tx = auto.r.executeRawReq(0, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -115,19 +115,19 @@ from utils import *
 #     print()
 
 #     for i in range(0, 100):
-#         bobStartBal = asc.BOB.balance()
-#         execStartBal = asc.ALICE.balance()
+#         bobStartBal = auto.BOB.balance()
+#         execStartBal = auto.ALICE.balance()
 #         # Create request
 #         callData = mockTarget.useGasCallDataAndArray.encode_input([i for i in range(i)])
-#         asc.r.newRawReq(mockTarget, callData, False, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
+#         auto.r.newRawReq(mockTarget, callData, False, False, 0, auto.DENICE, {'from': auto.BOB, 'value': E_18})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#         tx = auto.r.executeRawReq(i+1, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
 #         ethSpent = (tx.gas_used * tx.gas_price)
 #         execProfit = ethForExec - ethSpent
-#         assert asc.BOB.balance() - bobStartBal == -ethForExec
-#         assert asc.ALICE.balance() - execStartBal == execProfit
+#         assert auto.BOB.balance() - bobStartBal == -ethForExec
+#         assert auto.ALICE.balance() - execStartBal == execProfit
 
 #         print(i)
 #         # print(tx.events["Test"][0].values())
@@ -143,15 +143,15 @@ from utils import *
 
 # # See how gas measurement accuracy changes as both calldata size increases and the
 # # gas of the actual call increase at a consistent rate, using addresses instead
-# def test_gas_usage_rawReq_change_callData_size_and_call_gas_addrs(asc, mockTarget):
+# def test_gas_usage_rawReq_change_callData_size_and_call_gas_addrs(auto, mockTarget):
 #     addrs = a[:] * 10
 
 #     # Have an initial request executed so that _reqCounts etc are non-zero for the
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     callData = mockTarget.useGasCallDataAndAddrArray.encode_input([])
-#     asc.r.newRawReq(mockTarget, callData, False, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#     auto.r.newRawReq(mockTarget, callData, False, False, 0, auto.DENICE, {'from': auto.BOB, 'value': E_18})
+#     tx = auto.r.executeRawReq(0, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -162,19 +162,19 @@ from utils import *
 #     print()
 
 #     for i in range(0, 100):
-#         bobStartBal = asc.BOB.balance()
-#         execStartBal = asc.ALICE.balance()
+#         bobStartBal = auto.BOB.balance()
+#         execStartBal = auto.ALICE.balance()
 #         # Create request
 #         callData = mockTarget.useGasCallDataAndAddrArray.encode_input(addrs[:i])
-#         asc.r.newRawReq(mockTarget, callData, False, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
+#         auto.r.newRawReq(mockTarget, callData, False, False, 0, auto.DENICE, {'from': auto.BOB, 'value': E_18})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#         tx = auto.r.executeRawReq(i+1, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
 #         ethSpent = (tx.gas_used * tx.gas_price)
 #         execProfit = ethForExec - ethSpent
-#         assert asc.BOB.balance() - bobStartBal == -ethForExec
-#         assert asc.ALICE.balance() - execStartBal == execProfit
+#         assert auto.BOB.balance() - bobStartBal == -ethForExec
+#         assert auto.ALICE.balance() - execStartBal == execProfit
 
 #         print(i)
 #         # print(tx.events["Test"][0].values())
@@ -190,15 +190,15 @@ from utils import *
 
 # # See how gas measurement accuracy changes as the calldata is large and the gas of the
 # # actual call increases, but the overall gas of the former is greater than the latter
-# def test_gas_usage_rawReq_change_callData_size_and_call_gas_addrs_specific(asc, mockTarget):
+# def test_gas_usage_rawReq_change_callData_size_and_call_gas_addrs_specific(auto, mockTarget):
 #     addrs = a[:] * 10
 
 #     # Have an initial request executed so that _reqCounts etc are non-zero for the
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     callData = mockTarget.useGasCallDataAndSpecificAddrArray.encode_input([], 0)
-#     asc.r.newRawReq(mockTarget, callData, False, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#     auto.r.newRawReq(mockTarget, callData, False, False, 0, auto.DENICE, {'from': auto.BOB, 'value': E_18})
+#     tx = auto.r.executeRawReq(0, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -209,19 +209,19 @@ from utils import *
 #     print()
 
 #     for i in range(0, 100):
-#         bobStartBal = asc.BOB.balance()
-#         execStartBal = asc.ALICE.balance()
+#         bobStartBal = auto.BOB.balance()
+#         execStartBal = auto.ALICE.balance()
 #         # Create request
 #         callData = mockTarget.useGasCallDataAndSpecificAddrArray.encode_input(addrs, i)
-#         asc.r.newRawReq(mockTarget, callData, False, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
+#         auto.r.newRawReq(mockTarget, callData, False, False, 0, auto.DENICE, {'from': auto.BOB, 'value': E_18})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#         tx = auto.r.executeRawReq(i+1, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
 #         ethSpent = (tx.gas_used * tx.gas_price)
 #         execProfit = ethForExec - ethSpent
-#         assert asc.BOB.balance() - bobStartBal == -ethForExec
-#         assert asc.ALICE.balance() - execStartBal == execProfit
+#         assert auto.BOB.balance() - bobStartBal == -ethForExec
+#         assert auto.ALICE.balance() - execStartBal == execProfit
 
 #         print(i)
 #         # print(tx.events["Test"][0].values())
@@ -237,15 +237,15 @@ from utils import *
 
 # # See how gas measurement accuracy changes as the calldata is large and the gas of the
 # # actual call increases, but the overall gas of the former is lesser than the latter
-# def test_gas_usage_rawReq_change_callData_size_and_call_gas_addrs_multiple(asc, mockTarget):
+# def test_gas_usage_rawReq_change_callData_size_and_call_gas_addrs_multiple(auto, mockTarget):
 #     addrs = a[:] * 3
 
 #     # Have an initial request executed so that _reqCounts etc are non-zero for the
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
 #     callData = mockTarget.useGasCallDataAndAddrArrayMultiple.encode_input([], 0)
-#     asc.r.newRawReq(mockTarget, callData, False, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#     auto.r.newRawReq(mockTarget, callData, False, False, 0, auto.DENICE, {'from': auto.BOB, 'value': E_18})
+#     tx = auto.r.executeRawReq(0, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -256,19 +256,19 @@ from utils import *
 #     print()
 
 #     for i in range(0, 100):
-#         bobStartBal = asc.BOB.balance()
-#         execStartBal = asc.ALICE.balance()
+#         bobStartBal = auto.BOB.balance()
+#         execStartBal = auto.ALICE.balance()
 #         # Create request
 #         callData = mockTarget.useGasCallDataAndAddrArrayMultiple.encode_input(addrs, i)
-#         asc.r.newRawReq(mockTarget, callData, False, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
+#         auto.r.newRawReq(mockTarget, callData, False, False, 0, auto.DENICE, {'from': auto.BOB, 'value': E_18})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#         tx = auto.r.executeRawReq(i+1, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
 #         ethSpent = (tx.gas_used * tx.gas_price)
 #         execProfit = ethForExec - ethSpent
-#         assert asc.BOB.balance() - bobStartBal == -ethForExec
-#         assert asc.ALICE.balance() - execStartBal == execProfit
+#         assert auto.BOB.balance() - bobStartBal == -ethForExec
+#         assert auto.ALICE.balance() - execStartBal == execProfit
 
 #         print(i)
 #         # print(tx.events["Test"][0].values())
@@ -283,19 +283,19 @@ from utils import *
 
 
 
-# payWithASC
+# payWithAUTO
 
 
 # # See how gas measurement accuracy changes as calldata size doesn't change and the
-# # gas of the actual call increases, while paying with ASC
-# def test_gas_usage_rawReq_payWithASC_change_call_gas(asc, mockTarget):
+# # gas of the actual call increases, while paying with AUTO
+# def test_gas_usage_rawReq_payWithAUTO_change_call_gas(auto, mockTarget):
 #     # Have an initial request executed so that _reqCounts etc are non-zero for the
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
-#     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
+#     auto.AUTO.approve(auto.r, MAX_TEST_STAKE, auto.FR_BOB)
 #     callData = mockTarget.useGasWithArray.encode_input(0)
-#     asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#     auto.r.newRawReq(mockTarget, callData, False, True, 0, auto.DENICE, {'from': auto.BOB, 'value': 0})
+#     tx = auto.r.executeRawReq(0, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -305,17 +305,17 @@ from utils import *
 #     print()
 
 #     for i in range(0, 100):
-#         bobStartBal = asc.ASC.balanceOf(asc.BOB)
-#         execStartBal = asc.ASC.balanceOf(asc.ALICE)
+#         bobStartBal = auto.AUTO.balanceOf(auto.BOB)
+#         execStartBal = auto.AUTO.balanceOf(auto.ALICE)
 #         # Create request
 #         callData = mockTarget.useGasWithArray.encode_input(i)
-#         asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
+#         auto.r.newRawReq(mockTarget, callData, False, True, 0, auto.DENICE, {'from': auto.BOB, 'value': 0})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#         tx = auto.r.executeRawReq(i+1, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
-#         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
-#         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
+#         AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
+#         assert auto.AUTO.balanceOf(auto.BOB) - bobStartBal == -AUTOForExec
+#         assert auto.AUTO.balanceOf(auto.ALICE) - execStartBal == AUTOForExec
 
 #         print(i)
 #         # print(tx.events["Test"][0].values())
@@ -329,15 +329,15 @@ from utils import *
     
 
 # # See how gas measurement accuracy changes as calldata size increases and the
-# # gas of the actual call doesn't change, while paying with ASC
-# def test_gas_usage_rawReq_payWithASC_change_callData_size(asc, mockTarget):
+# # gas of the actual call doesn't change, while paying with AUTO
+# def test_gas_usage_rawReq_payWithAUTO_change_callData_size(auto, mockTarget):
 #     # Have an initial request executed so that _reqCounts etc are non-zero for the
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
-#     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
+#     auto.AUTO.approve(auto.r, MAX_TEST_STAKE, auto.FR_BOB)
 #     callData = mockTarget.useGasWithCallData.encode_input([])
-#     asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#     auto.r.newRawReq(mockTarget, callData, False, True, 0, auto.DENICE, {'from': auto.BOB, 'value': 0})
+#     tx = auto.r.executeRawReq(0, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -347,18 +347,18 @@ from utils import *
 #     print()
 
 #     for i in range(0, 500):
-#         bobStartBal = asc.ASC.balanceOf(asc.BOB)
-#         execStartBal = asc.ASC.balanceOf(asc.ALICE)
+#         bobStartBal = auto.AUTO.balanceOf(auto.BOB)
+#         execStartBal = auto.AUTO.balanceOf(auto.ALICE)
 #         # Create request
 #         callData = mockTarget.useGasWithCallData.encode_input([i for i in range(i)] * 5)
 #         # print(callData)
-#         asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
+#         auto.r.newRawReq(mockTarget, callData, False, True, 0, auto.DENICE, {'from': auto.BOB, 'value': 0})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#         tx = auto.r.executeRawReq(i+1, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
-#         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
-#         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
+#         AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
+#         assert auto.AUTO.balanceOf(auto.BOB) - bobStartBal == -AUTOForExec
+#         assert auto.AUTO.balanceOf(auto.ALICE) - execStartBal == AUTOForExec
 
 #         print(i)
 #         # print(tx.events["Test"][0].values())
@@ -372,15 +372,15 @@ from utils import *
     
 
 # # See how gas measurement accuracy changes as both calldata size increases and the
-# # gas of the actual call increase at a consistent rate, while paying with ASC
-# def test_gas_usage_rawReq_payWithASC_change_callData_size_and_call_gas(asc, mockTarget):
+# # gas of the actual call increase at a consistent rate, while paying with AUTO
+# def test_gas_usage_rawReq_payWithAUTO_change_callData_size_and_call_gas(auto, mockTarget):
 #     # Have an initial request executed so that _reqCounts etc are non-zero for the
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
-#     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
+#     auto.AUTO.approve(auto.r, MAX_TEST_STAKE, auto.FR_BOB)
 #     callData = mockTarget.useGasCallDataAndArray.encode_input([])
-#     asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#     auto.r.newRawReq(mockTarget, callData, False, True, 0, auto.DENICE, {'from': auto.BOB, 'value': 0})
+#     tx = auto.r.executeRawReq(0, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -390,18 +390,18 @@ from utils import *
 #     print()
 
 #     for i in range(0, 100):
-#         bobStartBal = asc.ASC.balanceOf(asc.BOB)
-#         execStartBal = asc.ASC.balanceOf(asc.ALICE)
+#         bobStartBal = auto.AUTO.balanceOf(auto.BOB)
+#         execStartBal = auto.AUTO.balanceOf(auto.ALICE)
 #         # Create request
 #         callData = mockTarget.useGasCallDataAndArray.encode_input([i for i in range(i)])
 #         # print(callData)
-#         asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
+#         auto.r.newRawReq(mockTarget, callData, False, True, 0, auto.DENICE, {'from': auto.BOB, 'value': 0})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#         tx = auto.r.executeRawReq(i+1, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
-#         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
-#         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
+#         AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
+#         assert auto.AUTO.balanceOf(auto.BOB) - bobStartBal == -AUTOForExec
+#         assert auto.AUTO.balanceOf(auto.ALICE) - execStartBal == AUTOForExec
 
 #         print(i)
 #         # print(tx.events["Test"][0].values())
@@ -415,17 +415,17 @@ from utils import *
 
 
 # # See how gas measurement accuracy changes as both calldata size increases and the
-# # gas of the actual call increase at a consistent rate, using addresses instead, while paying with ASC
-# def test_gas_usage_rawReq_payWithASC_change_callData_size_and_call_gas_addrs(a, asc, mockTarget):
+# # gas of the actual call increase at a consistent rate, using addresses instead, while paying with AUTO
+# def test_gas_usage_rawReq_payWithAUTO_change_callData_size_and_call_gas_addrs(a, auto, mockTarget):
 #     addrs = a[:] * 10
 
 #     # Have an initial request executed so that _reqCounts etc are non-zero for the
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
-#     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
+#     auto.AUTO.approve(auto.r, MAX_TEST_STAKE, auto.FR_BOB)
 #     callData = mockTarget.useGasCallDataAndAddrArray.encode_input([])
-#     asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#     auto.r.newRawReq(mockTarget, callData, False, True, 0, auto.DENICE, {'from': auto.BOB, 'value': 0})
+#     tx = auto.r.executeRawReq(0, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -435,18 +435,18 @@ from utils import *
 #     print()
 
 #     for i in range(0, 100):
-#         bobStartBal = asc.ASC.balanceOf(asc.BOB)
-#         execStartBal = asc.ASC.balanceOf(asc.ALICE)
+#         bobStartBal = auto.AUTO.balanceOf(auto.BOB)
+#         execStartBal = auto.AUTO.balanceOf(auto.ALICE)
 #         # Create request
 #         callData = mockTarget.useGasCallDataAndAddrArray.encode_input(addrs[:i])
 #         # print(callData)
-#         asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
+#         auto.r.newRawReq(mockTarget, callData, False, True, 0, auto.DENICE, {'from': auto.BOB, 'value': 0})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#         tx = auto.r.executeRawReq(i+1, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
-#         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
-#         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
+#         AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
+#         assert auto.AUTO.balanceOf(auto.BOB) - bobStartBal == -AUTOForExec
+#         assert auto.AUTO.balanceOf(auto.ALICE) - execStartBal == AUTOForExec
 
 #         print(i)
 #         # print(tx.events["Test"][0].values())
@@ -460,17 +460,17 @@ from utils import *
 
 
 # # See how gas measurement accuracy changes as the calldata is large and the gas of the
-# # actual call increases, but the overall gas of the former is greater than the latter, while paying with ASC
-# def test_gas_usage_rawReq_payWithASC_change_callData_size_and_call_gas_addrs_specific(a, asc, mockTarget):
+# # actual call increases, but the overall gas of the former is greater than the latter, while paying with AUTO
+# def test_gas_usage_rawReq_payWithAUTO_change_callData_size_and_call_gas_addrs_specific(a, auto, mockTarget):
 #     addrs = a[:] * 5
 
 #     # Have an initial request executed so that _reqCounts etc are non-zero for the
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
-#     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
+#     auto.AUTO.approve(auto.r, MAX_TEST_STAKE, auto.FR_BOB)
 #     callData = mockTarget.useGasCallDataAndSpecificAddrArray.encode_input([], 0)
-#     asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#     auto.r.newRawReq(mockTarget, callData, False, True, 0, auto.DENICE, {'from': auto.BOB, 'value': 0})
+#     tx = auto.r.executeRawReq(0, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -480,18 +480,18 @@ from utils import *
 #     print()
 
 #     for i in range(0, 100):
-#         bobStartBal = asc.ASC.balanceOf(asc.BOB)
-#         execStartBal = asc.ASC.balanceOf(asc.ALICE)
+#         bobStartBal = auto.AUTO.balanceOf(auto.BOB)
+#         execStartBal = auto.AUTO.balanceOf(auto.ALICE)
 #         # Create request
 #         callData = mockTarget.useGasCallDataAndSpecificAddrArray.encode_input(addrs, i)
 #         # print(callData)
-#         asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
+#         auto.r.newRawReq(mockTarget, callData, False, True, 0, auto.DENICE, {'from': auto.BOB, 'value': 0})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#         tx = auto.r.executeRawReq(i+1, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
-#         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
-#         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
+#         AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
+#         assert auto.AUTO.balanceOf(auto.BOB) - bobStartBal == -AUTOForExec
+#         assert auto.AUTO.balanceOf(auto.ALICE) - execStartBal == AUTOForExec
 
 #         print(i)
 #         # print(tx.events["Test"][0].values())
@@ -506,17 +506,17 @@ from utils import *
 
 # # See how gas measurement accuracy changes as the calldata is large and the gas of the
 # # actual call increases, but the overall gas of the former is lesser than the latter,
-# # while paying with ASC
-# def test_gas_usage_rawReq_payWithASC_change_callData_size_and_call_gas_addrs_multiple(a, asc, mockTarget):
+# # while paying with AUTO
+# def test_gas_usage_rawReq_payWithAUTO_change_callData_size_and_call_gas_addrs_multiple(a, auto, mockTarget):
 #     addrs = a[:] * 1
 
 #     # Have an initial request executed so that _reqCounts etc are non-zero for the
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
-#     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
+#     auto.AUTO.approve(auto.r, MAX_TEST_STAKE, auto.FR_BOB)
 #     callData = mockTarget.useGasCallDataAndAddrArrayMultiple.encode_input([], 0)
-#     asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#     auto.r.newRawReq(mockTarget, callData, False, True, 0, auto.DENICE, {'from': auto.BOB, 'value': 0})
+#     tx = auto.r.executeRawReq(0, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -526,18 +526,18 @@ from utils import *
 #     print()
 
 #     for i in range(0, 10):
-#         bobStartBal = asc.ASC.balanceOf(asc.BOB)
-#         execStartBal = asc.ASC.balanceOf(asc.ALICE)
+#         bobStartBal = auto.AUTO.balanceOf(auto.BOB)
+#         execStartBal = auto.AUTO.balanceOf(auto.ALICE)
 #         # Create request
 #         callData = mockTarget.useGasCallDataAndAddrArrayMultiple.encode_input(addrs, i)
 #         # print(callData)
-#         asc.r.newRawReq(mockTarget, callData, False, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
+#         auto.r.newRawReq(mockTarget, callData, False, True, 0, auto.DENICE, {'from': auto.BOB, 'value': 0})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#         tx = auto.r.executeRawReq(i+1, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
-#         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
-#         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
+#         AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
+#         assert auto.AUTO.balanceOf(auto.BOB) - bobStartBal == -AUTOForExec
+#         assert auto.AUTO.balanceOf(auto.ALICE) - execStartBal == AUTOForExec
 
 #         print(i)
 #         # print(tx.events["Test"][0].values())
@@ -573,13 +573,13 @@ from utils import *
 
 
 # # gas of the actual call increases
-# def test_gas_usage_rawReq_change_call_gas(asc, mockTarget):
+# def test_gas_usage_rawReq_change_call_gas(auto, mockTarget):
 #     # Have an initial request executed so that _reqCounts etc are non-zero for the
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
-#     callData = mockTarget.useGasWithArrayVeri.encode_input(asc.BOB, 0)
-#     asc.r.newRawReq(mockTarget, callData, True, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#     callData = mockTarget.useGasWithArrayVeri.encode_input(auto.BOB, 0)
+#     auto.r.newRawReq(mockTarget, callData, True, False, 0, auto.DENICE, {'from': auto.BOB, 'value': E_18})
+#     tx = auto.r.executeRawReq(0, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -590,19 +590,19 @@ from utils import *
 #     print()
 
 #     for i in range(0, 100):
-#         bobStartBal = asc.BOB.balance()
-#         execStartBal = asc.ALICE.balance()
+#         bobStartBal = auto.BOB.balance()
+#         execStartBal = auto.ALICE.balance()
 #         # Create request
-#         callData = mockTarget.useGasWithArrayVeri.encode_input(asc.BOB, i)
-#         asc.r.newRawReq(mockTarget, callData, True, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
+#         callData = mockTarget.useGasWithArrayVeri.encode_input(auto.BOB, i)
+#         auto.r.newRawReq(mockTarget, callData, True, False, 0, auto.DENICE, {'from': auto.BOB, 'value': E_18})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#         tx = auto.r.executeRawReq(i+1, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
 #         ethSpent = (tx.gas_used * tx.gas_price)
 #         execProfit = ethForExec - ethSpent
-#         assert asc.BOB.balance() - bobStartBal == -ethForExec
-#         assert asc.ALICE.balance() - execStartBal == execProfit
+#         assert auto.BOB.balance() - bobStartBal == -ethForExec
+#         assert auto.ALICE.balance() - execStartBal == execProfit
 
 #         print(i)
 #         # print(tx.events["Test"][0].values())
@@ -618,13 +618,13 @@ from utils import *
 
 # # See how gas measurement accuracy changes as calldata size increases and the
 # # gas of the actual call doesn't change
-# def test_gas_usage_rawReq_change_callData_size(asc, mockTarget):
+# def test_gas_usage_rawReq_change_callData_size(auto, mockTarget):
 #     # Have an initial request executed so that _reqCounts etc are non-zero for the
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
-#     callData = mockTarget.useGasWithCallDataVeri.encode_input(asc.BOB, [])
-#     asc.r.newRawReq(mockTarget, callData, True, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#     callData = mockTarget.useGasWithCallDataVeri.encode_input(auto.BOB, [])
+#     auto.r.newRawReq(mockTarget, callData, True, False, 0, auto.DENICE, {'from': auto.BOB, 'value': E_18})
+#     tx = auto.r.executeRawReq(0, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -635,19 +635,19 @@ from utils import *
 #     print()
 
 #     for i in range(0, 100):
-#         bobStartBal = asc.BOB.balance()
-#         execStartBal = asc.ALICE.balance()
+#         bobStartBal = auto.BOB.balance()
+#         execStartBal = auto.ALICE.balance()
 #         # Create request
-#         callData = mockTarget.useGasWithCallDataVeri.encode_input(asc.BOB, [i for i in range(i)])
-#         asc.r.newRawReq(mockTarget, callData, True, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
+#         callData = mockTarget.useGasWithCallDataVeri.encode_input(auto.BOB, [i for i in range(i)])
+#         auto.r.newRawReq(mockTarget, callData, True, False, 0, auto.DENICE, {'from': auto.BOB, 'value': E_18})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#         tx = auto.r.executeRawReq(i+1, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
 #         ethSpent = (tx.gas_used * tx.gas_price)
 #         execProfit = ethForExec - ethSpent
-#         assert asc.BOB.balance() - bobStartBal == -ethForExec
-#         assert asc.ALICE.balance() - execStartBal == execProfit
+#         assert auto.BOB.balance() - bobStartBal == -ethForExec
+#         assert auto.ALICE.balance() - execStartBal == execProfit
 
 #         print(i)
 #         # print(tx.events["Test"][0].values())
@@ -663,13 +663,13 @@ from utils import *
 
 # # See how gas measurement accuracy changes as both calldata size increases and the
 # # gas of the actual call increase at a consistent rate
-# def test_gas_usage_rawReq_change_callData_size_and_call_gas(asc, mockTarget):
+# def test_gas_usage_rawReq_change_callData_size_and_call_gas(auto, mockTarget):
 #     # Have an initial request executed so that _reqCounts etc are non-zero for the
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
-#     callData = mockTarget.useGasCallDataAndArrayVeri.encode_input(asc.BOB, [])
-#     asc.r.newRawReq(mockTarget, callData, True, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#     callData = mockTarget.useGasCallDataAndArrayVeri.encode_input(auto.BOB, [])
+#     auto.r.newRawReq(mockTarget, callData, True, False, 0, auto.DENICE, {'from': auto.BOB, 'value': E_18})
+#     tx = auto.r.executeRawReq(0, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -680,19 +680,19 @@ from utils import *
 #     print()
 
 #     for i in range(0, 100):
-#         bobStartBal = asc.BOB.balance()
-#         execStartBal = asc.ALICE.balance()
+#         bobStartBal = auto.BOB.balance()
+#         execStartBal = auto.ALICE.balance()
 #         # Create request
-#         callData = mockTarget.useGasCallDataAndArrayVeri.encode_input(asc.BOB, [i for i in range(i)])
-#         asc.r.newRawReq(mockTarget, callData, True, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
+#         callData = mockTarget.useGasCallDataAndArrayVeri.encode_input(auto.BOB, [i for i in range(i)])
+#         auto.r.newRawReq(mockTarget, callData, True, False, 0, auto.DENICE, {'from': auto.BOB, 'value': E_18})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#         tx = auto.r.executeRawReq(i+1, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
 #         ethSpent = (tx.gas_used * tx.gas_price)
 #         execProfit = ethForExec - ethSpent
-#         assert asc.BOB.balance() - bobStartBal == -ethForExec
-#         assert asc.ALICE.balance() - execStartBal == execProfit
+#         assert auto.BOB.balance() - bobStartBal == -ethForExec
+#         assert auto.ALICE.balance() - execStartBal == execProfit
 
 #         print(i)
 #         # print(tx.events["Test"][0].values())
@@ -708,15 +708,15 @@ from utils import *
 
 # # See how gas measurement accuracy changes as both calldata size increases and the
 # # gas of the actual call increase at a consistent rate, using addresses instead
-# def test_gas_usage_rawReq_change_callData_size_and_call_gas_addrs(asc, mockTarget):
+# def test_gas_usage_rawReq_change_callData_size_and_call_gas_addrs(auto, mockTarget):
 #     addrs = a[:] * 10
 
 #     # Have an initial request executed so that _reqCounts etc are non-zero for the
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
-#     callData = mockTarget.useGasCallDataAndAddrArrayVeri.encode_input(asc.BOB, [])
-#     asc.r.newRawReq(mockTarget, callData, True, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#     callData = mockTarget.useGasCallDataAndAddrArrayVeri.encode_input(auto.BOB, [])
+#     auto.r.newRawReq(mockTarget, callData, True, False, 0, auto.DENICE, {'from': auto.BOB, 'value': E_18})
+#     tx = auto.r.executeRawReq(0, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -727,19 +727,19 @@ from utils import *
 #     print()
 
 #     for i in range(0, 100):
-#         bobStartBal = asc.BOB.balance()
-#         execStartBal = asc.ALICE.balance()
+#         bobStartBal = auto.BOB.balance()
+#         execStartBal = auto.ALICE.balance()
 #         # Create request
-#         callData = mockTarget.useGasCallDataAndAddrArrayVeri.encode_input(asc.BOB, addrs[:i])
-#         asc.r.newRawReq(mockTarget, callData, True, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
+#         callData = mockTarget.useGasCallDataAndAddrArrayVeri.encode_input(auto.BOB, addrs[:i])
+#         auto.r.newRawReq(mockTarget, callData, True, False, 0, auto.DENICE, {'from': auto.BOB, 'value': E_18})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#         tx = auto.r.executeRawReq(i+1, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
 #         ethSpent = (tx.gas_used * tx.gas_price)
 #         execProfit = ethForExec - ethSpent
-#         assert asc.BOB.balance() - bobStartBal == -ethForExec
-#         assert asc.ALICE.balance() - execStartBal == execProfit
+#         assert auto.BOB.balance() - bobStartBal == -ethForExec
+#         assert auto.ALICE.balance() - execStartBal == execProfit
 
 #         print(i)
 #         # print(tx.events["Test"][0].values())
@@ -755,15 +755,15 @@ from utils import *
 
 # # See how gas measurement accuracy changes as the calldata is large and the gas of the
 # # actual call increases, but the overall gas of the former is greater than the latter
-# def test_gas_usage_rawReq_change_callData_size_and_call_gas_addrs_specific(asc, mockTarget):
+# def test_gas_usage_rawReq_change_callData_size_and_call_gas_addrs_specific(auto, mockTarget):
 #     addrs = a[:] * 10
 
 #     # Have an initial request executed so that _reqCounts etc are non-zero for the
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
-#     callData = mockTarget.useGasCallDataAndSpecificAddrArrayVeri.encode_input(asc.BOB, [], 0)
-#     asc.r.newRawReq(mockTarget, callData, True, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#     callData = mockTarget.useGasCallDataAndSpecificAddrArrayVeri.encode_input(auto.BOB, [], 0)
+#     auto.r.newRawReq(mockTarget, callData, True, False, 0, auto.DENICE, {'from': auto.BOB, 'value': E_18})
+#     tx = auto.r.executeRawReq(0, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -774,19 +774,19 @@ from utils import *
 #     print()
 
 #     for i in range(0, 100):
-#         bobStartBal = asc.BOB.balance()
-#         execStartBal = asc.ALICE.balance()
+#         bobStartBal = auto.BOB.balance()
+#         execStartBal = auto.ALICE.balance()
 #         # Create request
-#         callData = mockTarget.useGasCallDataAndSpecificAddrArrayVeri.encode_input(asc.BOB, addrs, i)
-#         asc.r.newRawReq(mockTarget, callData, True, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
+#         callData = mockTarget.useGasCallDataAndSpecificAddrArrayVeri.encode_input(auto.BOB, addrs, i)
+#         auto.r.newRawReq(mockTarget, callData, True, False, 0, auto.DENICE, {'from': auto.BOB, 'value': E_18})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#         tx = auto.r.executeRawReq(i+1, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
 #         ethSpent = (tx.gas_used * tx.gas_price)
 #         execProfit = ethForExec - ethSpent
-#         assert asc.BOB.balance() - bobStartBal == -ethForExec
-#         assert asc.ALICE.balance() - execStartBal == execProfit
+#         assert auto.BOB.balance() - bobStartBal == -ethForExec
+#         assert auto.ALICE.balance() - execStartBal == execProfit
 
 #         print(i)
 #         # print(tx.events["Test"][0].values())
@@ -802,15 +802,15 @@ from utils import *
 
 # # See how gas measurement accuracy changes as the calldata is large and the gas of the
 # # actual call increases, but the overall gas of the former is lesser than the latter
-# def test_gas_usage_rawReq_change_callData_size_and_call_gas_addrs_multiple(asc, mockTarget):
+# def test_gas_usage_rawReq_change_callData_size_and_call_gas_addrs_multiple(auto, mockTarget):
 #     addrs = a[:] * 1
 
 #     # Have an initial request executed so that _reqCounts etc are non-zero for the
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
-#     callData = mockTarget.useGasCallDataAndAddrArrayMultipleVeri.encode_input(asc.BOB, [], 0)
-#     asc.r.newRawReq(mockTarget, callData, True, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#     callData = mockTarget.useGasCallDataAndAddrArrayMultipleVeri.encode_input(auto.BOB, [], 0)
+#     auto.r.newRawReq(mockTarget, callData, True, False, 0, auto.DENICE, {'from': auto.BOB, 'value': E_18})
+#     tx = auto.r.executeRawReq(0, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -821,19 +821,19 @@ from utils import *
 #     print()
 
 #     for i in range(0, 100):
-#         bobStartBal = asc.BOB.balance()
-#         execStartBal = asc.ALICE.balance()
+#         bobStartBal = auto.BOB.balance()
+#         execStartBal = auto.ALICE.balance()
 #         # Create request
-#         callData = mockTarget.useGasCallDataAndAddrArrayMultipleVeri.encode_input(asc.BOB, addrs, i)
-#         asc.r.newRawReq(mockTarget, callData, True, False, 0, asc.DENICE, {'from': asc.BOB, 'value': E_18})
+#         callData = mockTarget.useGasCallDataAndAddrArrayMultipleVeri.encode_input(auto.BOB, addrs, i)
+#         auto.r.newRawReq(mockTarget, callData, True, False, 0, auto.DENICE, {'from': auto.BOB, 'value': E_18})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#         tx = auto.r.executeRawReq(i+1, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #         ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
 #         ethSpent = (tx.gas_used * tx.gas_price)
 #         execProfit = ethForExec - ethSpent
-#         assert asc.BOB.balance() - bobStartBal == -ethForExec
-#         assert asc.ALICE.balance() - execStartBal == execProfit
+#         assert auto.BOB.balance() - bobStartBal == -ethForExec
+#         assert auto.ALICE.balance() - execStartBal == execProfit
 
 #         print(i)
 #         # print(tx.events["Test"][0].values())
@@ -848,19 +848,19 @@ from utils import *
 
 
 
-# payWithASC
+# payWithAUTO
 
 
 # # See how gas measurement accuracy changes as calldata size doesn't change and the
-# # gas of the actual call increases, while paying with ASC
-# def test_gas_usage_rawReq_payWithASC_change_call_gas(asc, mockTarget):
+# # gas of the actual call increases, while paying with AUTO
+# def test_gas_usage_rawReq_payWithAUTO_change_call_gas(auto, mockTarget):
 #     # Have an initial request executed so that _reqCounts etc are non-zero for the
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
-#     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
-#     callData = mockTarget.useGasWithArrayVeri.encode_input(asc.BOB, 0)
-#     asc.r.newRawReq(mockTarget, callData, True, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#     auto.AUTO.approve(auto.r, MAX_TEST_STAKE, auto.FR_BOB)
+#     callData = mockTarget.useGasWithArrayVeri.encode_input(auto.BOB, 0)
+#     auto.r.newRawReq(mockTarget, callData, True, True, 0, auto.DENICE, {'from': auto.BOB, 'value': 0})
+#     tx = auto.r.executeRawReq(0, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -870,17 +870,17 @@ from utils import *
 #     print()
 
 #     for i in range(0, 100):
-#         bobStartBal = asc.ASC.balanceOf(asc.BOB)
-#         execStartBal = asc.ASC.balanceOf(asc.ALICE)
+#         bobStartBal = auto.AUTO.balanceOf(auto.BOB)
+#         execStartBal = auto.AUTO.balanceOf(auto.ALICE)
 #         # Create request
-#         callData = mockTarget.useGasWithArrayVeri.encode_input(asc.BOB, i)
-#         asc.r.newRawReq(mockTarget, callData, True, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
+#         callData = mockTarget.useGasWithArrayVeri.encode_input(auto.BOB, i)
+#         auto.r.newRawReq(mockTarget, callData, True, True, 0, auto.DENICE, {'from': auto.BOB, 'value': 0})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#         tx = auto.r.executeRawReq(i+1, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
-#         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
-#         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
+#         AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
+#         assert auto.AUTO.balanceOf(auto.BOB) - bobStartBal == -AUTOForExec
+#         assert auto.AUTO.balanceOf(auto.ALICE) - execStartBal == AUTOForExec
 
 #         print(i)
 #         # print(tx.events["Test"][0].values())
@@ -894,15 +894,15 @@ from utils import *
     
 
 # # See how gas measurement accuracy changes as calldata size increases and the
-# # gas of the actual call doesn't change, while paying with ASC
-# def test_gas_usage_rawReq_payWithASC_change_callData_size(asc, mockTarget):
+# # gas of the actual call doesn't change, while paying with AUTO
+# def test_gas_usage_rawReq_payWithAUTO_change_callData_size(auto, mockTarget):
 #     # Have an initial request executed so that _reqCounts etc are non-zero for the
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
-#     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
-#     callData = mockTarget.useGasWithCallDataVeri.encode_input(asc.BOB, [])
-#     asc.r.newRawReq(mockTarget, callData, True, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#     auto.AUTO.approve(auto.r, MAX_TEST_STAKE, auto.FR_BOB)
+#     callData = mockTarget.useGasWithCallDataVeri.encode_input(auto.BOB, [])
+#     auto.r.newRawReq(mockTarget, callData, True, True, 0, auto.DENICE, {'from': auto.BOB, 'value': 0})
+#     tx = auto.r.executeRawReq(0, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -912,18 +912,18 @@ from utils import *
 #     print()
 
 #     for i in range(0, 500):
-#         bobStartBal = asc.ASC.balanceOf(asc.BOB)
-#         execStartBal = asc.ASC.balanceOf(asc.ALICE)
+#         bobStartBal = auto.AUTO.balanceOf(auto.BOB)
+#         execStartBal = auto.AUTO.balanceOf(auto.ALICE)
 #         # Create request
-#         callData = mockTarget.useGasWithCallDataVeri.encode_input(asc.BOB, [i for i in range(i)] * 5)
+#         callData = mockTarget.useGasWithCallDataVeri.encode_input(auto.BOB, [i for i in range(i)] * 5)
 #         # print(callData)
-#         asc.r.newRawReq(mockTarget, callData, True, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
+#         auto.r.newRawReq(mockTarget, callData, True, True, 0, auto.DENICE, {'from': auto.BOB, 'value': 0})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#         tx = auto.r.executeRawReq(i+1, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
-#         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
-#         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
+#         AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
+#         assert auto.AUTO.balanceOf(auto.BOB) - bobStartBal == -AUTOForExec
+#         assert auto.AUTO.balanceOf(auto.ALICE) - execStartBal == AUTOForExec
 
 #         print(i)
 #         # print(tx.events["Test"][0].values())
@@ -937,15 +937,15 @@ from utils import *
     
 
 # # See how gas measurement accuracy changes as both calldata size increases and the
-# # gas of the actual call increase at a consistent rate, while paying with ASC
-# def test_gas_usage_rawReq_payWithASC_change_callData_size_and_call_gas(asc, mockTarget):
+# # gas of the actual call increase at a consistent rate, while paying with AUTO
+# def test_gas_usage_rawReq_payWithAUTO_change_callData_size_and_call_gas(auto, mockTarget):
 #     # Have an initial request executed so that _reqCounts etc are non-zero for the
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
-#     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
-#     callData = mockTarget.useGasCallDataAndArrayVeri.encode_input(asc.BOB, [])
-#     asc.r.newRawReq(mockTarget, callData, True, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#     auto.AUTO.approve(auto.r, MAX_TEST_STAKE, auto.FR_BOB)
+#     callData = mockTarget.useGasCallDataAndArrayVeri.encode_input(auto.BOB, [])
+#     auto.r.newRawReq(mockTarget, callData, True, True, 0, auto.DENICE, {'from': auto.BOB, 'value': 0})
+#     tx = auto.r.executeRawReq(0, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -955,18 +955,18 @@ from utils import *
 #     print()
 
 #     for i in range(0, 100):
-#         bobStartBal = asc.ASC.balanceOf(asc.BOB)
-#         execStartBal = asc.ASC.balanceOf(asc.ALICE)
+#         bobStartBal = auto.AUTO.balanceOf(auto.BOB)
+#         execStartBal = auto.AUTO.balanceOf(auto.ALICE)
 #         # Create request
-#         callData = mockTarget.useGasCallDataAndArrayVeri.encode_input(asc.BOB, [i for i in range(i)])
+#         callData = mockTarget.useGasCallDataAndArrayVeri.encode_input(auto.BOB, [i for i in range(i)])
 #         # print(callData)
-#         asc.r.newRawReq(mockTarget, callData, True, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
+#         auto.r.newRawReq(mockTarget, callData, True, True, 0, auto.DENICE, {'from': auto.BOB, 'value': 0})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#         tx = auto.r.executeRawReq(i+1, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
-#         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
-#         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
+#         AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
+#         assert auto.AUTO.balanceOf(auto.BOB) - bobStartBal == -AUTOForExec
+#         assert auto.AUTO.balanceOf(auto.ALICE) - execStartBal == AUTOForExec
 
 #         print(i)
 #         # print(tx.events["Test"][0].values())
@@ -980,17 +980,17 @@ from utils import *
 
 
 # # See how gas measurement accuracy changes as both calldata size increases and the
-# # gas of the actual call increase at a consistent rate, using addresses instead, while paying with ASC
-# def test_gas_usage_rawReq_payWithASC_change_callData_size_and_call_gas_addrs(a, asc, mockTarget):
+# # gas of the actual call increase at a consistent rate, using addresses instead, while paying with AUTO
+# def test_gas_usage_rawReq_payWithAUTO_change_callData_size_and_call_gas_addrs(a, auto, mockTarget):
 #     addrs = a[:] * 10
 
 #     # Have an initial request executed so that _reqCounts etc are non-zero for the
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
-#     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
-#     callData = mockTarget.useGasCallDataAndAddrArrayVeri.encode_input(asc.BOB, [])
-#     asc.r.newRawReq(mockTarget, callData, True, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#     auto.AUTO.approve(auto.r, MAX_TEST_STAKE, auto.FR_BOB)
+#     callData = mockTarget.useGasCallDataAndAddrArrayVeri.encode_input(auto.BOB, [])
+#     auto.r.newRawReq(mockTarget, callData, True, True, 0, auto.DENICE, {'from': auto.BOB, 'value': 0})
+#     tx = auto.r.executeRawReq(0, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -1000,18 +1000,18 @@ from utils import *
 #     print()
 
 #     for i in range(0, 100):
-#         bobStartBal = asc.ASC.balanceOf(asc.BOB)
-#         execStartBal = asc.ASC.balanceOf(asc.ALICE)
+#         bobStartBal = auto.AUTO.balanceOf(auto.BOB)
+#         execStartBal = auto.AUTO.balanceOf(auto.ALICE)
 #         # Create request
-#         callData = mockTarget.useGasCallDataAndAddrArrayVeri.encode_input(asc.BOB, addrs[:i])
+#         callData = mockTarget.useGasCallDataAndAddrArrayVeri.encode_input(auto.BOB, addrs[:i])
 #         # print(callData)
-#         asc.r.newRawReq(mockTarget, callData, True, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
+#         auto.r.newRawReq(mockTarget, callData, True, True, 0, auto.DENICE, {'from': auto.BOB, 'value': 0})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#         tx = auto.r.executeRawReq(i+1, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
-#         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
-#         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
+#         AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
+#         assert auto.AUTO.balanceOf(auto.BOB) - bobStartBal == -AUTOForExec
+#         assert auto.AUTO.balanceOf(auto.ALICE) - execStartBal == AUTOForExec
 
 #         print(i)
 #         # print(tx.events["Test"][0].values())
@@ -1025,17 +1025,17 @@ from utils import *
 
 
 # # See how gas measurement accuracy changes as the calldata is large and the gas of the
-# # actual call increases, but the overall gas of the former is greater than the latter, while paying with ASC
-# def test_gas_usage_rawReq_payWithASC_change_callData_size_and_call_gas_addrs_specific(a, asc, mockTarget):
+# # actual call increases, but the overall gas of the former is greater than the latter, while paying with AUTO
+# def test_gas_usage_rawReq_payWithAUTO_change_callData_size_and_call_gas_addrs_specific(a, auto, mockTarget):
 #     addrs = a[:] * 5
 
 #     # Have an initial request executed so that _reqCounts etc are non-zero for the
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
-#     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
-#     callData = mockTarget.useGasCallDataAndSpecificAddrArrayVeri.encode_input(asc.BOB, [], 0)
-#     asc.r.newRawReq(mockTarget, callData, True, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#     auto.AUTO.approve(auto.r, MAX_TEST_STAKE, auto.FR_BOB)
+#     callData = mockTarget.useGasCallDataAndSpecificAddrArrayVeri.encode_input(auto.BOB, [], 0)
+#     auto.r.newRawReq(mockTarget, callData, True, True, 0, auto.DENICE, {'from': auto.BOB, 'value': 0})
+#     tx = auto.r.executeRawReq(0, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -1045,18 +1045,18 @@ from utils import *
 #     print()
 
 #     for i in range(0, 100):
-#         bobStartBal = asc.ASC.balanceOf(asc.BOB)
-#         execStartBal = asc.ASC.balanceOf(asc.ALICE)
+#         bobStartBal = auto.AUTO.balanceOf(auto.BOB)
+#         execStartBal = auto.AUTO.balanceOf(auto.ALICE)
 #         # Create request
-#         callData = mockTarget.useGasCallDataAndSpecificAddrArrayVeri.encode_input(asc.BOB, addrs, i)
+#         callData = mockTarget.useGasCallDataAndSpecificAddrArrayVeri.encode_input(auto.BOB, addrs, i)
 #         # print(callData)
-#         asc.r.newRawReq(mockTarget, callData, True, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
+#         auto.r.newRawReq(mockTarget, callData, True, True, 0, auto.DENICE, {'from': auto.BOB, 'value': 0})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#         tx = auto.r.executeRawReq(i+1, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
-#         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
-#         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
+#         AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
+#         assert auto.AUTO.balanceOf(auto.BOB) - bobStartBal == -AUTOForExec
+#         assert auto.AUTO.balanceOf(auto.ALICE) - execStartBal == AUTOForExec
 
 #         print(i)
 #         # print(tx.events["Test"][0].values())
@@ -1071,17 +1071,17 @@ from utils import *
 
 # # See how gas measurement accuracy changes as the calldata is large and the gas of the
 # # actual call increases, but the overall gas of the former is lesser than the latter,
-# # while paying with ASC
-# def test_gas_usage_rawReq_payWithASC_change_callData_size_and_call_gas_addrs_multiple(a, asc, mockTarget):
+# # while paying with AUTO
+# def test_gas_usage_rawReq_payWithAUTO_change_callData_size_and_call_gas_addrs_multiple(a, auto, mockTarget):
 #     addrs = a[:] * 1
 
 #     # Have an initial request executed so that _reqCounts etc are non-zero for the
 #     # rest of the test and therefore the only thing to affect gas is how the request
 #     # itself changes, since changing a variable from zero costs 20k as opposed to 5k for non-zero
-#     asc.ASC.approve(asc.r, MAX_TEST_STAKE, asc.FR_BOB)
-#     callData = mockTarget.useGasCallDataAndAddrArrayMultipleVeri.encode_input(asc.BOB, [], 0)
-#     asc.r.newRawReq(mockTarget, callData, True, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
-#     tx = asc.r.executeRawReq(0, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#     auto.AUTO.approve(auto.r, MAX_TEST_STAKE, auto.FR_BOB)
+#     callData = mockTarget.useGasCallDataAndAddrArrayMultipleVeri.encode_input(auto.BOB, [], 0)
+#     auto.r.newRawReq(mockTarget, callData, True, True, 0, auto.DENICE, {'from': auto.BOB, 'value': 0})
+#     tx = auto.r.executeRawReq(0, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 #     print(0)
 #     # print(tx.events["Test"][0].values())
@@ -1091,18 +1091,18 @@ from utils import *
 #     print()
 
 #     for i in range(0, 10):
-#         bobStartBal = asc.ASC.balanceOf(asc.BOB)
-#         execStartBal = asc.ASC.balanceOf(asc.ALICE)
+#         bobStartBal = auto.AUTO.balanceOf(auto.BOB)
+#         execStartBal = auto.AUTO.balanceOf(auto.ALICE)
 #         # Create request
-#         callData = mockTarget.useGasCallDataAndAddrArrayMultipleVeri.encode_input(asc.BOB, addrs, i)
+#         callData = mockTarget.useGasCallDataAndAddrArrayMultipleVeri.encode_input(auto.BOB, addrs, i)
 #         # print(callData)
-#         asc.r.newRawReq(mockTarget, callData, True, True, 0, asc.DENICE, {'from': asc.BOB, 'value': 0})
+#         auto.r.newRawReq(mockTarget, callData, True, True, 0, auto.DENICE, {'from': auto.BOB, 'value': 0})
         
-#         tx = asc.r.executeRawReq(i+1, {'from': asc.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+#         tx = auto.r.executeRawReq(i+1, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ASCForExec = getASCForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
-#         assert asc.ASC.balanceOf(asc.BOB) - bobStartBal == -ASCForExec
-#         assert asc.ASC.balanceOf(asc.ALICE) - execStartBal == ASCForExec
+#         AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
+#         assert auto.AUTO.balanceOf(auto.BOB) - bobStartBal == -AUTOForExec
+#         assert auto.AUTO.balanceOf(auto.ALICE) - execStartBal == AUTOForExec
 
 #         print(i)
 #         # print(tx.events["Test"][0].values())

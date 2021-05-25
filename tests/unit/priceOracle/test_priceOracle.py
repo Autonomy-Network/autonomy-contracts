@@ -4,49 +4,49 @@ from brownie.test import given, strategy
 from utils import *
 
 
-def test_constructor(asc):
-    assert asc.po.getAUTOPerETH() == INIT_AUTO_PER_ETH
-    assert asc.po.getGasPriceFast() == INIT_GAS_PRICE_FAST
-    assert asc.po.owner() == asc.DEPLOYER
+def test_constructor(auto):
+    assert auto.po.getAUTOPerETH() == INIT_AUTO_PER_ETH
+    assert auto.po.getGasPriceFast() == INIT_GAS_PRICE_FAST
+    assert auto.po.owner() == auto.DEPLOYER
 
 
 @given(newRate=strategy('uint'))
-def test_updateAUTOPerETH(asc, newRate):
-    asc.po.updateAUTOPerETH(newRate, asc.FR_DEPLOYER)
+def test_updateAUTOPerETH(auto, newRate):
+    auto.po.updateAUTOPerETH(newRate, auto.FR_DEPLOYER)
     
-    assert asc.po.getAUTOPerETH() == newRate
-    assert asc.po.getGasPriceFast() == INIT_GAS_PRICE_FAST
-    assert asc.po.owner() == asc.DEPLOYER
-    assert asc.o.getAUTOPerETH() == newRate
-    assert asc.o.getGasPriceFast() == INIT_GAS_PRICE_FAST
+    assert auto.po.getAUTOPerETH() == newRate
+    assert auto.po.getGasPriceFast() == INIT_GAS_PRICE_FAST
+    assert auto.po.owner() == auto.DEPLOYER
+    assert auto.o.getAUTOPerETH() == newRate
+    assert auto.o.getGasPriceFast() == INIT_GAS_PRICE_FAST
 
 
 @given(
     newRate=strategy('uint'),
     sender=strategy('address')
 )
-def test_updateAUTOPerETH_rev_owner(asc, newRate, sender):
-    if sender != asc.DEPLOYER:
+def test_updateAUTOPerETH_rev_owner(auto, newRate, sender):
+    if sender != auto.DEPLOYER:
         with reverts(REV_MSG_OWNER):
-            asc.po.updateAUTOPerETH(newRate, {'from': sender})
+            auto.po.updateAUTOPerETH(newRate, {'from': sender})
 
 
 @given(newRate=strategy('uint'))
-def test_updateGasPriceFast(asc, newRate):
-    asc.po.updateGasPriceFast(newRate, asc.FR_DEPLOYER)
+def test_updateGasPriceFast(auto, newRate):
+    auto.po.updateGasPriceFast(newRate, auto.FR_DEPLOYER)
     
-    assert asc.po.getAUTOPerETH() == INIT_AUTO_PER_ETH
-    assert asc.po.getGasPriceFast() == newRate
-    assert asc.po.owner() == asc.DEPLOYER
-    assert asc.o.getAUTOPerETH() == INIT_AUTO_PER_ETH
-    assert asc.o.getGasPriceFast() == newRate
+    assert auto.po.getAUTOPerETH() == INIT_AUTO_PER_ETH
+    assert auto.po.getGasPriceFast() == newRate
+    assert auto.po.owner() == auto.DEPLOYER
+    assert auto.o.getAUTOPerETH() == INIT_AUTO_PER_ETH
+    assert auto.o.getGasPriceFast() == newRate
 
 
 @given(
     newRate=strategy('uint'),
     sender=strategy('address')
 )
-def test_updateGasPriceFast_rev_owner(asc, newRate, sender):
-    if sender != asc.DEPLOYER:
+def test_updateGasPriceFast_rev_owner(auto, newRate, sender):
+    if sender != auto.DEPLOYER:
         with reverts(REV_MSG_OWNER):
-            asc.po.updateGasPriceFast(newRate, {'from': sender})
+            auto.po.updateGasPriceFast(newRate, {'from': sender})

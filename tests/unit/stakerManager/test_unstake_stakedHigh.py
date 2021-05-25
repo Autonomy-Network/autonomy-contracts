@@ -5,7 +5,7 @@ from brownie.test import given, strategy
 
 
 def unstakeTest(
-    asc,
+    auto,
     evmMaths,
     web3,
     numUnstakes,
@@ -15,56 +15,56 @@ def unstakeTest(
     startTotalNumStakes,
     startStakes
 ):
-    assert asc.sm.getTotalStaked() == startTotalNumStakes * STAN_STAKE
-    assert asc.sm.getStake(staker) == maxNumStakes * STAN_STAKE
-    assert asc.sm.getStakes() == startStakes
-    assert asc.sm.getStakesLength() == len(startStakes)
+    assert auto.sm.getTotalStaked() == startTotalNumStakes * STAN_STAKE
+    assert auto.sm.getStake(staker) == maxNumStakes * STAN_STAKE
+    assert auto.sm.getStakes() == startStakes
+    assert auto.sm.getStakesLength() == len(startStakes)
     # Should revert if requesting an index that is above the max
     with reverts():
-        asc.sm.getStakesSlice(0, len(startStakes) + 1)
-    assert asc.sm.getStakesSlice(0, len(startStakes)) == startStakes
-    assert asc.sm.getCurEpoch() == getEpoch(web3.eth.block_number)
-    assert asc.sm.getExecutor() == getExecutor(evmMaths, web3.eth.block_number, startStakes)
+        auto.sm.getStakesSlice(0, len(startStakes) + 1)
+    assert auto.sm.getStakesSlice(0, len(startStakes)) == startStakes
+    assert auto.sm.getCurEpoch() == getEpoch(web3.eth.block_number)
+    assert auto.sm.getExecutor() == getExecutor(evmMaths, web3.eth.block_number, startStakes)
     if web3.eth.block_number % BLOCKS_IN_EPOCH != BLOCKS_IN_EPOCH - 1:
-        assert asc.sm.isUpdatedExec(staker).return_value
+        assert auto.sm.isUpdatedExec(staker).return_value
     for addr in a:
-        assert asc.sm.isCurExec(addr) == (addr == curExec)
+        assert auto.sm.isCurExec(addr) == (addr == curExec)
     
     if numUnstakes == 0:
         with reverts(REV_MSG_NZ_UINT_ARR):
-            asc.sm.unstake([], {'from': staker})
+            auto.sm.unstake([], {'from': staker})
     elif numUnstakes > maxNumStakes:
         with reverts(REV_MSG_NOT_ENOUGH_STAKE):
-            asc.sm.unstake([i for i in range(maxNumStakes+1)], {'from': staker})
+            auto.sm.unstake([i for i in range(maxNumStakes+1)], {'from': staker})
     else:
         idxs, newStakes = getModStakes(startStakes, staker, numUnstakes, False)
 
-        tx = asc.sm.unstake(idxs, {'from': staker})
+        tx = auto.sm.unstake(idxs, {'from': staker})
 
-        assert asc.sm.getTotalStaked() == (startTotalNumStakes - len(idxs)) * STAN_STAKE
-        assert asc.sm.getStake(staker) == (maxNumStakes - len(idxs)) * STAN_STAKE
-        assert asc.sm.getStakes() == newStakes
-        assert asc.sm.getStakesLength() == len(newStakes)
+        assert auto.sm.getTotalStaked() == (startTotalNumStakes - len(idxs)) * STAN_STAKE
+        assert auto.sm.getStake(staker) == (maxNumStakes - len(idxs)) * STAN_STAKE
+        assert auto.sm.getStakes() == newStakes
+        assert auto.sm.getStakesLength() == len(newStakes)
         # Should revert if requesting an index that is above the max
         with reverts():
-            asc.sm.getStakesSlice(0, len(newStakes) + 1)
-        assert asc.sm.getStakesSlice(0, len(newStakes)) == newStakes
-        assert asc.sm.getCurEpoch() == getEpoch(web3.eth.block_number)
+            auto.sm.getStakesSlice(0, len(newStakes) + 1)
+        assert auto.sm.getStakesSlice(0, len(newStakes)) == newStakes
+        assert auto.sm.getCurEpoch() == getEpoch(web3.eth.block_number)
         newExec, epoch = getExecutor(evmMaths, web3.eth.block_number, startStakes)
-        assert asc.sm.getExecutor() == (newExec, epoch)
+        assert auto.sm.getExecutor() == (newExec, epoch)
         if web3.eth.block_number % BLOCKS_IN_EPOCH != BLOCKS_IN_EPOCH - 1:
-            assert asc.sm.isUpdatedExec(newExec).return_value
+            assert auto.sm.isUpdatedExec(newExec).return_value
         for addr in a:
             # If all stakes are unstaked, it'll return true for any address
-            assert asc.sm.isCurExec(addr) == ((addr == newExec) if len(idxs) != maxNumStakes else True)
+            assert auto.sm.isCurExec(addr) == ((addr == newExec) if len(idxs) != maxNumStakes else True)
         assert tx.events["Unstaked"][0].values() == [staker, len(idxs) * STAN_STAKE]
 
 
 @given(numUnstakes=strategy('uint256', max_value=INIT_NUM_STAKES + 20))
-def test_unstake(asc, evmMaths, stakedHigh, numUnstakes):
+def test_unstake(auto, evmMaths, stakedHigh, numUnstakes):
     startNumStakes, staker, __ = stakedHigh
     unstakeTest(
-        asc,
+        auto,
         evmMaths,
         web3,
         numUnstakes,
@@ -79,37 +79,37 @@ def test_unstake(asc, evmMaths, stakedHigh, numUnstakes):
 # Want to have some tests with specific, manual values because it's
 # possible that some of the slightly more complex algorithms in StakeManager have
 # errors and I've just replicated those errors in things like getModStakes()
-def test_unstake_7(asc, evmMaths, stakedHigh):
+def test_unstake_7(auto, evmMaths, stakedHigh):
     chain.mine(BLOCKS_IN_EPOCH)
-    startNumStakes, staker, = 100, asc.ALICE
+    startNumStakes, staker, = 100, auto.ALICE
     idxs = [0, 0, 0, 0, 0, 0, 0]
-    tx = asc.sm.unstake(idxs, {'from': staker})
+    tx = auto.sm.unstake(idxs, {'from': staker})
 
     curNumStakes = startNumStakes - len(idxs)
-    assert asc.sm.getTotalStaked() == curNumStakes * STAN_STAKE
-    assert asc.sm.getStake(staker) == curNumStakes * STAN_STAKE
+    assert auto.sm.getTotalStaked() == curNumStakes * STAN_STAKE
+    assert auto.sm.getStake(staker) == curNumStakes * STAN_STAKE
     stakes = [staker] * curNumStakes
-    assert asc.sm.getStakes() == stakes
-    assert asc.sm.getStakesLength() == len(stakes)
+    assert auto.sm.getStakes() == stakes
+    assert auto.sm.getStakesLength() == len(stakes)
     # Should revert if requesting an index that is above the max
     with reverts():
-        asc.sm.getStakesSlice(0, len(stakes) + 1)
-    assert asc.sm.getStakesSlice(0, len(stakes)) == stakes
-    assert asc.sm.getCurEpoch() == getEpoch(web3.eth.block_number)
+        auto.sm.getStakesSlice(0, len(stakes) + 1)
+    assert auto.sm.getStakesSlice(0, len(stakes)) == stakes
+    assert auto.sm.getCurEpoch() == getEpoch(web3.eth.block_number)
     newExec, epoch = getExecutor(evmMaths, web3.eth.block_number, [staker] * startNumStakes)
-    assert asc.sm.getExecutor() == (newExec, epoch)
+    assert auto.sm.getExecutor() == (newExec, epoch)
     if web3.eth.block_number % BLOCKS_IN_EPOCH != BLOCKS_IN_EPOCH - 1:
-        assert asc.sm.isUpdatedExec(newExec).return_value
+        assert auto.sm.isUpdatedExec(newExec).return_value
     for addr in a:
-        assert asc.sm.isCurExec(addr) == (addr == newExec)
+        assert auto.sm.isCurExec(addr) == (addr == newExec)
     assert tx.events["Unstaked"][0].values() == [staker, len(idxs) * STAN_STAKE]
 
 
-def test_unstake_rev_idxs(asc, stakedHigh):
+def test_unstake_rev_idxs(auto, stakedHigh):
     with reverts(REV_MSG_NZ_UINT_ARR):
-        asc.sm.unstake([], asc.FR_ALICE)
+        auto.sm.unstake([], auto.FR_ALICE)
 
 
-def test_unstake_rev_too_much_stake(asc, stakedHigh):
+def test_unstake_rev_too_much_stake(auto, stakedHigh):
     with reverts(REV_MSG_NOT_ENOUGH_STAKE):
-        asc.sm.unstake([0], asc.FR_BOB)
+        auto.sm.unstake([0], auto.FR_BOB)

@@ -41,7 +41,7 @@ MIN_FUND = 10000 * E_18
 
 REV_MSG_NO_PEND_REW = "Miner: no pending rewards"
 REV_MSG_CLAIM_TOO_LARGE = "Miner: claim too large"
-REV_MSG_BAL_TOO_HIGH = "Miner: ASC bal too high"
+REV_MSG_BAL_TOO_HIGH = "Miner: AUTO bal too high"
 REV_MSG_RATES_TOO_LOW = "Miner: new rates too low"
 REV_MSG_FUND_TOO_LOW = "Miner: funding too low, peasant"
 
@@ -65,7 +65,7 @@ REV_MSG_NOT_STAKER = "SM: idx is not you"
 # Registry
 # EXEC_GAS_OVERHEAD_NO_REF = 40000
 # EXEC_GAS_OVERHEAD_REF = 60000
-GAS_OVERHEAD_ASCOIN = 70500
+GAS_OVERHEAD_AUTO = 70500
 GAS_OVERHEAD_ETH = 47000
 BASE_BPS = 10000
 PAY_AUTO_FACTOR = 1.1
@@ -76,7 +76,7 @@ NULL_REQ = (ADDR_0, ADDR_0, ADDR_0, NULL_BYTES, 0, 0, False, False)
 # NULL_REQ_BYTES = b'\x80\x03O%\xfc\xea\xbf-\x0e\xdfP5\xb2"\xe6\x93$\x9f\x1b\xd3\x0bq\xe2\xc8\xfb\x07\x8a\xad9\x83\xd4j'
 # NULL_REQ_HEX = '0x' + NULL_REQ_BYTES.hex()
 NULL_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000'
-INIT_ASC_REW_POOL = 10**25
+INIT_AUTO_REW_POOL = 10**25
 INIT_GAS_PRICE_FAST = 10**9
 CID_PREFIX_STR = '1220'
 CID_PREFIX_BYTES = bytes.fromhex(CID_PREFIX_STR)
@@ -94,8 +94,8 @@ REV_MSG_FISHY = "Reg: something fishy here"
 REV_MSG_REENTRANCY = "ReentrancyGuard: reentrant call"
 
 
-# ASCoin
-ASCOIN_ADDR = "0x31E31e3703D367014BA5802B7C5E41d96E331723"
+# AUTO
+AUTO_ADDR = "0x31E31e3703D367014BA5802B7C5E41d96E331723"
 
 REV_MSG_EXCEED_BAL = "ERC20: transfer amount exceeds balance"
 REV_MSG_EXCEED_ALLOWANCE = "ERC20: transfer amount exceeds allowance"

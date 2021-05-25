@@ -2,39 +2,39 @@ from consts import *
 from brownie import reverts
 
 
-def test_constructor(asc):
-    assert asc.r.getASCoin() == asc.ASC
-    assert asc.r.GAS_OVERHEAD_ASCOIN() == GAS_OVERHEAD_ASCOIN
-    assert asc.r.GAS_OVERHEAD_ETH() == GAS_OVERHEAD_ETH
-    assert asc.r.BASE_BPS() == BASE_BPS
-    assert asc.r.PAY_AUTO_BPS() == PAY_AUTO_BPS
-    assert asc.r.PAY_ETH_BPS() == PAY_ETH_BPS
-    assert asc.r.getASCoin() == asc.ASC
-    assert asc.r.getStakeManager() == asc.sm
+def test_constructor(auto):
+    assert auto.r.getAUTO() == auto.AUTO
+    assert auto.r.GAS_OVERHEAD_AUTO() == GAS_OVERHEAD_AUTO
+    assert auto.r.GAS_OVERHEAD_ETH() == GAS_OVERHEAD_ETH
+    assert auto.r.BASE_BPS() == BASE_BPS
+    assert auto.r.PAY_AUTO_BPS() == PAY_AUTO_BPS
+    assert auto.r.PAY_ETH_BPS() == PAY_ETH_BPS
+    assert auto.r.getAUTO() == auto.AUTO
+    assert auto.r.getStakeManager() == auto.sm
 
-    assert asc.r.getRawReqs() == []
+    assert auto.r.getRawReqs() == []
     # Should revert when using indexes above the length
     with reverts():
-        asc.r.getRawReqsSlice(0, 1)
-    assert asc.r.getRawReqsSlice(0, 0) == []
-    assert asc.r.getRawReqLen() == 0
+        auto.r.getRawReqsSlice(0, 1)
+    assert auto.r.getRawReqsSlice(0, 0) == []
+    assert auto.r.getRawReqLen() == 0
     with reverts():
-        assert asc.r.getRawReq(0)
+        assert auto.r.getRawReq(0)
     
-    assert asc.r.getHashedReqs() == []
+    assert auto.r.getHashedReqs() == []
     # Should revert when using indexes above the length
     with reverts():
-        asc.r.getHashedReqsSlice(0, 1)
-    assert asc.r.getHashedReqsLen() == 0
+        auto.r.getHashedReqsSlice(0, 1)
+    assert auto.r.getHashedReqsLen() == 0
     with reverts():
-        asc.r.getHashedReq(0)
+        auto.r.getHashedReq(0)
     
-    assert asc.r.getHashedReqsUnveri() == []
+    assert auto.r.getHashedReqsUnveri() == []
     # Should revert when using indexes above the length
     with reverts():
-        asc.r.getHashedReqsUnveriSlice(0, 1)
-    assert asc.r.getHashedReqsUnveriSlice(0, 0) == []
-    assert asc.r.getHashedReqsUnveriLen() == 0
+        auto.r.getHashedReqsUnveriSlice(0, 1)
+    assert auto.r.getHashedReqsUnveriSlice(0, 0) == []
+    assert auto.r.getHashedReqsUnveriLen() == 0
     with reverts():
-        asc.r.getHashedReqUnveri(0)
+        auto.r.getHashedReqUnveri(0)
     

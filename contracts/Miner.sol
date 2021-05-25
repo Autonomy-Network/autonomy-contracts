@@ -7,16 +7,16 @@ import "./abstract/Shared.sol";
 
 contract Miner is Shared {
 
-    IERC20 private _ASCoin;
+    IERC20 private _AUTO;
     IRegistry private _reg;
-    uint private _ASCPerReq;
-    uint private _ASCPerExec;
-    uint private _ASCPerReferal;
-    // 1k ASC
+    uint private _AUTOPerReq;
+    uint private _AUTOPerExec;
+    uint private _AUTOPerReferal;
+    // 1k AUTO
     uint public constant MAX_UPDATE_BAL = 1000 * _E_18;
-    // 1 ASC
+    // 1 AUTO
     uint public constant MIN_REWARD = _E_18;
-    // 10k ASC
+    // 10k AUTO
     uint public constant MIN_FUND = 10000 * _E_18;
     // This counts the number of executed requests that the requester
     // has mined rewards for
@@ -29,21 +29,21 @@ contract Miner is Shared {
     mapping(address => uint) private _minedReferalCounts;
 
 
-    event RatesUpdated(uint newASCPerReq, uint newASCPerExec, uint newASCPerReferal);
+    event RatesUpdated(uint newAUTOPerReq, uint newAUTOPerExec, uint newAUTOPerReferal);
 
 
     constructor(
-        IERC20 ASCoin,
+        IERC20 AUTO,
         IRegistry reg,
-        uint ASCPerReq,
-        uint ASCPerExec,
-        uint ASCPerReferal
+        uint AUTOPerReq,
+        uint AUTOPerExec,
+        uint AUTOPerReferal
     ) {
-        _ASCoin = ASCoin;
+        _AUTO = AUTO;
         _reg = reg;
-        _ASCPerReq = ASCPerReq;
-        _ASCPerExec = ASCPerExec;
-        _ASCPerReferal = ASCPerReferal;
+        _AUTOPerReq = AUTOPerReq;
+        _AUTOPerExec = AUTOPerExec;
+        _AUTOPerReferal = AUTOPerReferal;
     }
 
 
@@ -61,19 +61,19 @@ contract Miner is Shared {
         _minedReqCounts[msg.sender] += reqRewardCount;
         _minedExecCounts[msg.sender] += execRewardCount;
         _minedReferalCounts[msg.sender] += referalRewardCount;
-        require(_ASCoin.transfer(msg.sender, rewards));
+        require(_AUTO.transfer(msg.sender, rewards));
     }
 
     function claimReqMiningReward(uint claimCount) external nzUint(claimCount) {
-        _claimSpecificMiningReward(_minedReqCounts, _reg.getReqCountOf(msg.sender), claimCount, _ASCPerReq);
+        _claimSpecificMiningReward(_minedReqCounts, _reg.getReqCountOf(msg.sender), claimCount, _AUTOPerReq);
     }
 
     function claimExecMiningReward(uint claimCount) external nzUint(claimCount) {
-        _claimSpecificMiningReward(_minedExecCounts, _reg.getExecCountOf(msg.sender), claimCount, _ASCPerExec);
+        _claimSpecificMiningReward(_minedExecCounts, _reg.getExecCountOf(msg.sender), claimCount, _AUTOPerExec);
     }
 
     function claimReferalMiningReward(uint claimCount) external nzUint(claimCount) {
-        _claimSpecificMiningReward(_minedReferalCounts, _reg.getReferalCountOf(msg.sender), claimCount, _ASCPerReferal);
+        _claimSpecificMiningReward(_minedReferalCounts, _reg.getReferalCountOf(msg.sender), claimCount, _AUTOPerReferal);
     }
 
     function _claimSpecificMiningReward(
@@ -88,7 +88,7 @@ contract Miner is Shared {
         );
 
         counter[msg.sender] += claimCount;
-        require(_ASCoin.transfer(msg.sender, claimCount * rate));
+        require(_AUTO.transfer(msg.sender, claimCount * rate));
     }
 
 
@@ -99,28 +99,28 @@ contract Miner is Shared {
     //////////////////////////////////////////////////////////////
 
     function updateAndFund(
-        uint newASCPerReq,
-        uint newASCPerExec,
-        uint newASCPerReferal,
+        uint newAUTOPerReq,
+        uint newAUTOPerExec,
+        uint newAUTOPerReferal,
         uint amountToFund
     ) external {
-        require(_ASCoin.balanceOf(address(this)) <= MAX_UPDATE_BAL, "Miner: ASC bal too high");
-        // So that nobody updates with a small amount of ASC and makes the rates
+        require(_AUTO.balanceOf(address(this)) <= MAX_UPDATE_BAL, "Miner: AUTO bal too high");
+        // So that nobody updates with a small amount of AUTO and makes the rates
         // 1 wei, effectively bricking the contract
         require(
-            newASCPerReq >= MIN_REWARD &&
-            newASCPerExec >= MIN_REWARD &&
-            newASCPerReferal >= MIN_REWARD,
+            newAUTOPerReq >= MIN_REWARD &&
+            newAUTOPerExec >= MIN_REWARD &&
+            newAUTOPerReferal >= MIN_REWARD,
             "Miner: new rates too low"
         );
         require(amountToFund >= MIN_FUND, "Miner: funding too low, peasant");
 
         // Update rates and fund the Miner
-        _ASCPerReq = newASCPerReq;
-        _ASCPerExec = newASCPerExec;
-        _ASCPerReferal = newASCPerReferal;
-        require(_ASCoin.transferFrom(msg.sender, address(this), amountToFund));
-        emit RatesUpdated(newASCPerReq, newASCPerExec, newASCPerReferal);
+        _AUTOPerReq = newAUTOPerReq;
+        _AUTOPerExec = newAUTOPerExec;
+        _AUTOPerReferal = newAUTOPerReferal;
+        require(_AUTO.transferFrom(msg.sender, address(this), amountToFund));
+        emit RatesUpdated(newAUTOPerReq, newAUTOPerExec, newAUTOPerReferal);
     }
 
 
@@ -130,16 +130,16 @@ contract Miner is Shared {
     //                                                          //
     //////////////////////////////////////////////////////////////
 
-    function getASCPerReq() external view returns (uint) {
-        return _ASCPerReq;
+    function getAUTOPerReq() external view returns (uint) {
+        return _AUTOPerReq;
     }
 
-    function getASCPerExec() external view returns (uint) {
-        return _ASCPerExec;
+    function getAUTOPerExec() external view returns (uint) {
+        return _AUTOPerExec;
     }
 
-    function getASCPerReferal() external view returns (uint) {
-        return _ASCPerReferal;
+    function getAUTOPerReferal() external view returns (uint) {
+        return _AUTOPerReferal;
     }
 
     function getMinedReqCountOf(address addr) external view returns (uint) {
@@ -160,9 +160,9 @@ contract Miner is Shared {
         uint referalRewardCount = _reg.getReferalCountOf(addr) - _minedReferalCounts[addr];
 
         uint rewards = 
-            (reqRewardCount * _ASCPerReq) +
-            (execRewardCount * _ASCPerExec) +
-            (referalRewardCount * _ASCPerReferal);
+            (reqRewardCount * _AUTOPerReq) +
+            (execRewardCount * _AUTOPerExec) +
+            (referalRewardCount * _AUTOPerReferal);
         
         return (reqRewardCount, execRewardCount, referalRewardCount, rewards);
     }

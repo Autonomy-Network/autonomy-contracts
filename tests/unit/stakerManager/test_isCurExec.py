@@ -5,62 +5,62 @@ from brownie import reverts
 
 
 # When there are no current stakers, should return true for any address
-def test_isCurExec_no_stakes(a, asc):
-    assert asc.sm.getTotalStaked() == 0
-    assert asc.sm.getStakesLength() == 0
+def test_isCurExec_no_stakes(a, auto):
+    assert auto.sm.getTotalStaked() == 0
+    assert auto.sm.getStakesLength() == 0
     with reverts():
-        asc.sm.getStakesSlice(0, 1)
-    assert asc.sm.getStakesSlice(0, 0) == []
-    assert asc.sm.getExecutor() == NULL_EXEC
+        auto.sm.getStakesSlice(0, 1)
+    assert auto.sm.getStakesSlice(0, 0) == []
+    assert auto.sm.getExecutor() == NULL_EXEC
 
     for addr in a:
-        assert asc.sm.isUpdatedExec(addr).return_value
-        assert asc.sm.isCurExec(addr)
+        assert auto.sm.isUpdatedExec(addr).return_value
+        assert auto.sm.isCurExec(addr)
     
     chain.mine(BLOCKS_IN_EPOCH)
 
     for addr in a:
-        assert asc.sm.isCurExec(addr)
+        assert auto.sm.isCurExec(addr)
 
 
-def test_isCurExec(a, asc, stakedMin):
+def test_isCurExec(a, auto, stakedMin):
     numStanStakes, exec, tx = stakedMin
-    assert asc.sm.getTotalStaked() == numStanStakes * STAN_STAKE
-    assert asc.sm.getStakesLength() == numStanStakes
-    assert asc.sm.getStakesSlice(0, numStanStakes) == [exec] * numStanStakes
-    assert asc.sm.getExecutor() == (exec, getEpoch(web3.eth.block_number))
+    assert auto.sm.getTotalStaked() == numStanStakes * STAN_STAKE
+    assert auto.sm.getStakesLength() == numStanStakes
+    assert auto.sm.getStakesSlice(0, numStanStakes) == [exec] * numStanStakes
+    assert auto.sm.getExecutor() == (exec, getEpoch(web3.eth.block_number))
 
     # Should only be true when the input is the executor
     for addr in a:
-        assert asc.sm.isUpdatedExec(addr).return_value == (addr == exec)
-        assert asc.sm.isCurExec(addr) == (addr == exec)
+        assert auto.sm.isUpdatedExec(addr).return_value == (addr == exec)
+        assert auto.sm.isCurExec(addr) == (addr == exec)
     
     chain.mine(BLOCKS_IN_EPOCH)
 
     # Should always be false in another epoch when the executor hasn't been updated
     for addr in a:
-        assert not asc.sm.isCurExec(addr)
+        assert not auto.sm.isCurExec(addr)
 
 
 # Should return true for every address after enough unstakes leave no stakes left
 # immediately and in future epochs
-def test_isCurExec_after_all_unstaked(a, asc, stakedMin):
+def test_isCurExec_after_all_unstaked(a, auto, stakedMin):
     numStanStakes, exec, tx = stakedMin
 
-    asc.sm.unstake([0], asc.FR_ALICE)
+    auto.sm.unstake([0], auto.FR_ALICE)
 
-    assert asc.sm.getTotalStaked() == 0
-    assert asc.sm.getStakesLength() == 0
+    assert auto.sm.getTotalStaked() == 0
+    assert auto.sm.getStakesLength() == 0
     with reverts():
-        asc.sm.getStakesSlice(0, 1)
-    assert asc.sm.getStakesSlice(0, 0) == []
-    assert asc.sm.getExecutor() == (exec, getEpoch(web3.eth.block_number))
+        auto.sm.getStakesSlice(0, 1)
+    assert auto.sm.getStakesSlice(0, 0) == []
+    assert auto.sm.getExecutor() == (exec, getEpoch(web3.eth.block_number))
 
     for addr in a:
-        assert asc.sm.isUpdatedExec(addr).return_value
-        assert asc.sm.isCurExec(addr)
+        assert auto.sm.isUpdatedExec(addr).return_value
+        assert auto.sm.isCurExec(addr)
     
     chain.mine(BLOCKS_IN_EPOCH)
 
     for addr in a:
-        assert asc.sm.isCurExec(addr)
+        assert auto.sm.isCurExec(addr)
