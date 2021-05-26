@@ -98,7 +98,7 @@ def test_executeHashedReq_validCalldata(auto, evmMaths, stakedMin, mockTarget, e
                 assert auto.AUTO.balanceOf(auto.r) == 0
             else:
                 # Eth bals
-                ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
+                ethForExec = getEthForExec(evmMaths, tx, INIT_GAS_PRICE_FAST)
                 assert auto.ALICE.balance() == INIT_ETH_BAL + ethForExec - (tx.gas_used * tx.gas_price)
                 assert sender.balance() == INIT_ETH_BAL - ethForCall - ethForExec
                 # AUTO bals
@@ -129,7 +129,7 @@ def test_executeHashedReq_validCalldata(auto, evmMaths, stakedMin, mockTarget, e
             assert auto.r.balance() == 0
 
 
-def test_executeHashedReq_no_ethForCall(auto, stakedMin, mockTarget, hashedReqs):
+def test_executeHashedReq_no_ethForCall(auto, evmMaths, stakedMin, mockTarget, hashedReqs):
     _, staker, __ = stakedMin
     reqs, reqHashes, msgValue, ethForCall = hashedReqs
     # reqHashes will modify the original even after this test has finished otherwise since it's a reference
@@ -147,7 +147,7 @@ def test_executeHashedReq_no_ethForCall(auto, stakedMin, mockTarget, hashedReqs)
     
     # Should've changed
     # Eth bals
-    ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
+    ethForExec = getEthForExec(evmMaths, tx, INIT_GAS_PRICE_FAST)
     assert auto.ALICE.balance() == INIT_ETH_BAL + ethForExec - (tx.gas_used * tx.gas_price)
     assert auto.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall)) + msgValue - ethForExec
     assert auto.r.balance() == msgValue + (2 * ethForCall)
@@ -178,7 +178,7 @@ def test_executeHashedReq_no_ethForCall(auto, stakedMin, mockTarget, hashedReqs)
     assert mockTarget.userAddr() == ADDR_0
 
 
-def test_executeHashedReq_with_ethForCall(auto, stakedMin, mockTarget, hashedReqs):
+def test_executeHashedReq_with_ethForCall(auto, evmMaths, stakedMin, mockTarget, hashedReqs):
     _, staker, __ = stakedMin
     reqs, reqHashes, msgValue, ethForCall = hashedReqs
     # reqHashes will modify the original even after this test has finished otherwise since it's a reference
@@ -196,7 +196,7 @@ def test_executeHashedReq_with_ethForCall(auto, stakedMin, mockTarget, hashedReq
     
     # Should've changed
     # Eth bals
-    ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
+    ethForExec = getEthForExec(evmMaths, tx, INIT_GAS_PRICE_FAST)
     assert auto.ALICE.balance() == INIT_ETH_BAL + ethForExec - (tx.gas_used * tx.gas_price)
     assert auto.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall)) + msgValue - ethForCall - ethForExec
     assert auto.r.balance() == msgValue + (2 * ethForCall)

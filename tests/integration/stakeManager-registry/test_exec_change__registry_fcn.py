@@ -11,24 +11,19 @@ def test_executeRawReq_wait_executeRawReq(a, auto, evmMaths, stakedMultiSmall, r
     chain.mine(BLOCKS_IN_EPOCH - (web3.eth.block_number % BLOCKS_IN_EPOCH) - 1)
     
     newExec = getExecutor(evmMaths, web3.eth.block_number + 1, startStakes)[0]
-    print(newExec)
     # Make sure execution reverts whenever called by everyone except the actual executor
     for addr in a:
-        print(addr, web3.eth.block_number)
         if addr != newExec:
             with reverts(REV_MSG_NOT_EXEC):
                 auto.r.executeRawReq(0, {'from': addr, 'gasPrice': INIT_GAS_PRICE_FAST})
-    print()
     # Execution should succeed with the actual executor
     auto.r.executeRawReq(0, {'from': newExec, 'gasPrice': INIT_GAS_PRICE_FAST})
 
     chain.mine(BLOCKS_IN_EPOCH - (web3.eth.block_number % BLOCKS_IN_EPOCH) - 1)
 
     newExec = getExecutor(evmMaths, web3.eth.block_number + 1, startStakes)[0]
-    print(newExec)
     # Make sure execution reverts whenever called by everyone except the actual executor
     for addr in a:
-        print(addr, web3.eth.block_number)
         if addr != newExec:
             with reverts(REV_MSG_NOT_EXEC):
                 auto.r.executeRawReq(1, {'from': addr, 'gasPrice': INIT_GAS_PRICE_FAST})

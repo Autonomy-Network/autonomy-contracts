@@ -30,10 +30,6 @@ def test_executeHashedReqUnveri_rev_nonReentrant(auto, mockTarget, mockReentranc
 
     auto.r.newHashedReqUnveri(reqHashBytes2, {'from': auto.BOB})
 
-    print(auto.sm.getExecutor())
-    print(auto.sm.getStakes())
-    print(auto.sm.getUpdatedExecRes())
-
     with reverts(REV_MSG_REENTRANCY):
         auto.r.executeHashedReqUnveri(1, req2, *getIpfsMetaData(auto, req2))
 

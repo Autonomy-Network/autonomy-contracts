@@ -6,6 +6,10 @@ contract EVMMaths {
         return a * b * c * d / (e * f);
     }
 
+    function mul3div1(uint a, uint b, uint c, uint d) external pure returns (uint) {
+        return a * b * c / d;
+    }
+
     function getRemainder(uint a, uint b) public pure returns (uint) {
         return a % b;
     }

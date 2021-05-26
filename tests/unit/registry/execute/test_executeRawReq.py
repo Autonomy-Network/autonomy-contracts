@@ -41,7 +41,7 @@ def test_executeRawReq_returns_no_revert_message(auto, stakedMin, mockTarget):
         auto.r.executeRawReq(0, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
-def test_executeRawReq_no_ethForCall(auto, stakedMin, mockTarget, reqsRaw):
+def test_executeRawReq_no_ethForCall(auto, evmMaths, stakedMin, mockTarget, reqsRaw):
     _, staker, __ = stakedMin
     reqNoEthForCall, reqEthForCall, reqPayAUTO, reqPayAUTOEthForCall, reqPayAUTOEthForCallVerifySender, msgValue, ethForCall = reqsRaw
     id = 0
@@ -57,7 +57,7 @@ def test_executeRawReq_no_ethForCall(auto, stakedMin, mockTarget, reqsRaw):
 
     # Should've changed
     # Eth bals
-    ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
+    ethForExec = getEthForExec(evmMaths, tx, INIT_GAS_PRICE_FAST)
     assert auto.ALICE.balance() == INIT_ETH_BAL + ethForExec - (tx.gas_used * tx.gas_price)
     assert auto.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall)) + msgValue - ethForExec
     assert auto.r.balance() == msgValue + (2 * ethForCall)
@@ -88,7 +88,7 @@ def test_executeRawReq_no_ethForCall(auto, stakedMin, mockTarget, reqsRaw):
     assert mockTarget.userAddr() == ADDR_0
 
 
-def test_executeRawReq_with_ethForCall(auto, stakedMin, mockTarget, reqsRaw):
+def test_executeRawReq_with_ethForCall(auto, evmMaths, stakedMin, mockTarget, reqsRaw):
     _, staker, __ = stakedMin
     reqNoEthForCall, reqEthForCall, reqPayAUTO, reqPayAUTOEthForCall, reqPayAUTOEthForCallVerifySender, msgValue, ethForCall = reqsRaw
     id = 1
@@ -104,7 +104,7 @@ def test_executeRawReq_with_ethForCall(auto, stakedMin, mockTarget, reqsRaw):
 
     # Should've changed
     # Eth bals
-    ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
+    ethForExec = getEthForExec(evmMaths, tx, INIT_GAS_PRICE_FAST)
     assert auto.ALICE.balance() == INIT_ETH_BAL + ethForExec - (tx.gas_used * tx.gas_price)
     assert auto.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall)) + msgValue - ethForCall - ethForExec
     assert auto.r.balance() == msgValue + (2 * ethForCall)

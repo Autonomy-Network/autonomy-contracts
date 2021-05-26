@@ -221,7 +221,7 @@ def evmMaths(auto, EVMMaths):
 @pytest.fixture(scope="module")
 def reqsRaw(auto, mockTarget):
     ethForCall = E_18
-    msgValue = 1.5 * ethForCall
+    msgValue = int(1.5 * ethForCall)
 
     callData = mockTarget.setX.encode_input(5)
     auto.r.newRawReq(mockTarget, auto.DENICE, callData, 0, False, False, {'from': auto.BOB, 'value': msgValue})
@@ -253,7 +253,7 @@ def reqsRaw(auto, mockTarget):
 @pytest.fixture(scope="module")
 def hashedReqs(auto, mockTarget):
     ethForCall = E_18
-    msgValue = 1.5 * ethForCall
+    msgValue = int(1.5 * ethForCall)
 
     callData = mockTarget.setX.encode_input(5)
     reqNoEthForCall = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, msgValue, 0, False, False)
@@ -302,7 +302,7 @@ def hashedReqUnveri(auto, mockTarget):
 @pytest.fixture(scope="module")
 def vulnerableReqsRaw(auto, mockTarget, vulnerableRegistry, stakedMin):
     ethForCall = E_18
-    msgValue = 1.5 * ethForCall
+    msgValue = int(1.5 * ethForCall)
 
     callData = mockTarget.callVulnerableTransfer.encode_input(auto.DENICE, 1)
     vulnerableRegistry.newRawReq(mockTarget, auto.DENICE, callData, ethForCall, False, False, {'from': auto.BOB, 'value': msgValue})
@@ -321,7 +321,7 @@ def vulnerableReqsRaw(auto, mockTarget, vulnerableRegistry, stakedMin):
 @pytest.fixture(scope="module")
 def vulnerableHashedReqs(auto, mockTarget, vulnerableRegistry, stakedMin):
     ethForCall = E_18
-    msgValue = 1.5 * ethForCall
+    msgValue = int(1.5 * ethForCall)
 
     callData = mockTarget.callVulnerableTransfer.encode_input(auto.DENICE, 1)
     reqEthForCall = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, msgValue, ethForCall, False, False)

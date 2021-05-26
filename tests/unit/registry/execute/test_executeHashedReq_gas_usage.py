@@ -39,7 +39,7 @@ from utils import *
 
 #         tx = auto.r.executeHashedReq(i+1, req, *getIpfsMetaData(auto, req), {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
+#         ethForExec = getEthForExec(evmMaths, tx, INIT_GAS_PRICE_FAST)
 #         ethSpent = (tx.gas_used * tx.gas_price)
 #         execProfit = ethForExec - ethSpent
 #         assert auto.BOB.balance() - bobStartBal == -ethForExec
@@ -90,7 +90,7 @@ from utils import *
 
 #         tx = auto.r.executeHashedReq(i+1, req, *getIpfsMetaData(auto, req), {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
+#         ethForExec = getEthForExec(evmMaths, tx, INIT_GAS_PRICE_FAST)
 #         ethSpent = (tx.gas_used * tx.gas_price)
 #         execProfit = ethForExec - ethSpent
 #         assert auto.BOB.balance() - bobStartBal == -ethForExec
@@ -141,7 +141,7 @@ from utils import *
 
 #         tx = auto.r.executeHashedReq(i+1, req, *getIpfsMetaData(auto, req), {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
+#         ethForExec = getEthForExec(evmMaths, tx, INIT_GAS_PRICE_FAST)
 #         ethSpent = (tx.gas_used * tx.gas_price)
 #         execProfit = ethForExec - ethSpent
 #         assert auto.BOB.balance() - bobStartBal == -ethForExec
@@ -194,7 +194,7 @@ from utils import *
 
 #         tx = auto.r.executeHashedReq(i+1, req, *getIpfsMetaData(auto, req), {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
+#         ethForExec = getEthForExec(evmMaths, tx, INIT_GAS_PRICE_FAST)
 #         ethSpent = (tx.gas_used * tx.gas_price)
 #         execProfit = ethForExec - ethSpent
 #         assert auto.BOB.balance() - bobStartBal == -ethForExec
@@ -247,7 +247,7 @@ from utils import *
 
 #         tx = auto.r.executeHashedReq(i+1, req, *getIpfsMetaData(auto, req), {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
+#         ethForExec = getEthForExec(evmMaths, tx, INIT_GAS_PRICE_FAST)
 #         ethSpent = (tx.gas_used * tx.gas_price)
 #         execProfit = ethForExec - ethSpent
 #         assert auto.BOB.balance() - bobStartBal == -ethForExec
@@ -300,7 +300,7 @@ from utils import *
 
 #         tx = auto.r.executeHashedReq(i+1, req, *getIpfsMetaData(auto, req), {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
+#         ethForExec = getEthForExec(evmMaths, tx, INIT_GAS_PRICE_FAST)
 #         ethSpent = (tx.gas_used * tx.gas_price)
 #         execProfit = ethForExec - ethSpent
 #         assert auto.BOB.balance() - bobStartBal == -ethForExec
@@ -663,7 +663,7 @@ from utils import *
 
 #         tx = auto.r.executeHashedReq(i+1, req, *getIpfsMetaData(auto, req), {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
+#         ethForExec = getEthForExec(evmMaths, tx, INIT_GAS_PRICE_FAST)
 #         ethSpent = (tx.gas_used * tx.gas_price)
 #         execProfit = ethForExec - ethSpent
 #         assert auto.BOB.balance() - bobStartBal == -ethForExec
@@ -714,7 +714,7 @@ from utils import *
 
 #         tx = auto.r.executeHashedReq(i+1, req, *getIpfsMetaData(auto, req), {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
+#         ethForExec = getEthForExec(evmMaths, tx, INIT_GAS_PRICE_FAST)
 #         ethSpent = (tx.gas_used * tx.gas_price)
 #         execProfit = ethForExec - ethSpent
 #         assert auto.BOB.balance() - bobStartBal == -ethForExec
@@ -765,7 +765,7 @@ from utils import *
 
 #         tx = auto.r.executeHashedReq(i+1, req, *getIpfsMetaData(auto, req), {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
+#         ethForExec = getEthForExec(evmMaths, tx, INIT_GAS_PRICE_FAST)
 #         ethSpent = (tx.gas_used * tx.gas_price)
 #         execProfit = ethForExec - ethSpent
 #         assert auto.BOB.balance() - bobStartBal == -ethForExec
@@ -818,7 +818,7 @@ from utils import *
 
 #         tx = auto.r.executeHashedReq(i+1, req, *getIpfsMetaData(auto, req), {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
+#         ethForExec = getEthForExec(evmMaths, tx, INIT_GAS_PRICE_FAST)
 #         ethSpent = (tx.gas_used * tx.gas_price)
 #         execProfit = ethForExec - ethSpent
 #         assert auto.BOB.balance() - bobStartBal == -ethForExec
@@ -871,7 +871,7 @@ from utils import *
 
 #         tx = auto.r.executeHashedReq(i+1, req, *getIpfsMetaData(auto, req), {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
+#         ethForExec = getEthForExec(evmMaths, tx, INIT_GAS_PRICE_FAST)
 #         ethSpent = (tx.gas_used * tx.gas_price)
 #         execProfit = ethForExec - ethSpent
 #         assert auto.BOB.balance() - bobStartBal == -ethForExec
@@ -924,7 +924,7 @@ from utils import *
 
 #         tx = auto.r.executeHashedReq(i+1, req, *getIpfsMetaData(auto, req), {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         ethForExec = getEthForExec(tx, INIT_GAS_PRICE_FAST)
+#         ethForExec = getEthForExec(evmMaths, tx, INIT_GAS_PRICE_FAST)
 #         ethSpent = (tx.gas_used * tx.gas_price)
 #         execProfit = ethForExec - ethSpent
 #         assert auto.BOB.balance() - bobStartBal == -ethForExec

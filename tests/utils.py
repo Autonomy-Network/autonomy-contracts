@@ -119,8 +119,8 @@ def addReqGetHashBytes(auto, req):
     return getHashBytesFromCID(addToIpfs(auto, req))
 
 
-def getEthForExec(tx, gasPriceFast):
-    return int(tx.return_value * gasPriceFast * PAY_ETH_FACTOR)
+def getEthForExec(evmMaths, tx, gasPriceFast):
+    return evmMaths.mul3div1(tx.return_value, gasPriceFast, PAY_ETH_BPS, BASE_BPS)
 
 
 def getAUTOForExec(evmMaths, tx, AUTOPerETH, gasPriceFast):
