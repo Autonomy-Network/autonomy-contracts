@@ -88,7 +88,13 @@ contract StakeManager is IStakeManager, Shared {
     function isCurExec(address addr) external view override returns (bool) {
         // So that the storage is only loaded once
         Executor memory ex = _executor;
-        if (ex.addr == addr && ex.forEpoch == getCurEpoch()) { return true; }
+        if (ex.forEpoch == getCurEpoch()) {
+            if (ex.addr == addr) {
+                return true;
+            } else {
+                return false;
+            }
+        }
         // If there're no stakes, allow anyone to be the executor so that a random
         // person can bootstrap the network and nobody needs to be sent any coins
         if (_stakes.length == 0) { return true; }
@@ -126,8 +132,12 @@ contract StakeManager is IStakeManager, Shared {
     function isUpdatedExec(address addr) external override noFish returns (bool) {
         // So that the storage is only loaded once
         Executor memory ex = _executor;
-        if (ex.forEpoch == getCurEpoch() && ex.addr == addr) {
-            return true;
+        if (ex.forEpoch == getCurEpoch()) {
+            if (ex.addr == addr) {
+                return true;
+            } else {
+                return false;
+            }
         } else {
             (, , , address exec) = _updateExecutor();
             if (exec == addr) { return true; }

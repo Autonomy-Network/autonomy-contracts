@@ -34,7 +34,7 @@ def deploy_initial_AUTO_contracts(AUTO, PriceOracle, Oracle, StakeManager, Regis
     # Calling `updateExecutor` requires the epoch to be > 0
     chain.mine(BLOCKS_IN_EPOCH)
 
-    auto.AUTO = auto.DEPLOYER.deploy(AUTO, "Active Smart Contract Protocol", "AUTO")
+    auto.AUTO = auto.DEPLOYER.deploy(AUTO, "Autonomy Network", "AUTO")
     auto.po = auto.DEPLOYER.deploy(PriceOracle, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
     auto.o = auto.DEPLOYER.deploy(Oracle, auto.po)
     auto.sm = auto.DEPLOYER.deploy(StakeManager, auto.o, auto.AUTO)
@@ -211,8 +211,8 @@ def mockReentrancyAttack(auto, MockReentrancyAttack):
 # Need to test gas usage with the exact same rounding profile that Solidity
 # uses vs Python
 @pytest.fixture(scope="module")
-def evmMaths(auto, EVMMaths):
-    x = auto.DEPLOYER.deploy(EVMMaths)
+def evmMaths(cleanAUTO, EVMMaths):
+    x = cleanAUTO.DEPLOYER.deploy(EVMMaths)
     return x
 
 

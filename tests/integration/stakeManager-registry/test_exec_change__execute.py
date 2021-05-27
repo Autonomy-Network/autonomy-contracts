@@ -3,7 +3,6 @@ from utils import *
 from brownie import chain, reverts, web3
 
 
-# To test isUpdatedExec
 def test_executeRawReq_wait_executeRawReq(a, auto, evmMaths, stakedMultiSmall, reqsRaw):
     nums, stakers, startStakes, _ = stakedMultiSmall
 
@@ -32,7 +31,6 @@ def test_executeRawReq_wait_executeRawReq(a, auto, evmMaths, stakedMultiSmall, r
     auto.r.executeRawReq(1, {'from': newExec, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
-# To test isUpdatedExec
 def test_executeRawReq_wait_executeHashedReq(a, auto, evmMaths, stakedMultiSmall, hashedReqs):
     nums, stakers, startStakes, _ = stakedMultiSmall
     reqs, reqHashes, msgValue, ethForCall = hashedReqs
@@ -65,7 +63,6 @@ def test_executeRawReq_wait_executeHashedReq(a, auto, evmMaths, stakedMultiSmall
     auto.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(auto, reqs[id]), {'from': newExec, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
-# To test isUpdatedExec
 def test_executeRawReq_wait_executeHashedReqUnveri(a, auto, mockTarget, evmMaths, stakedMultiSmall):
     nums, stakers, startStakes, _ = stakedMultiSmall
 

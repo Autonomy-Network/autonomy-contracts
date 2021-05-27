@@ -47,24 +47,28 @@ def test_updateExecutor_same_epoch(a, auto, evmMaths, stakedMin):
         assert auto.sm.isCurExec(addr) == (addr == staker)
     
     # Make Bob the only one with stake in the contract to ensure that if updateExecutor
-    # called such that it changed executor, it would change to Bob
+    # is called such that it changed executor, it would change to Bob
     auto.sm.unstake([i for i in range(numStanStakes)], auto.FR_ALICE)
     
+    # Alice is still the exec until the next epoch tho
     staker2 = auto.BOB
     assert auto.sm.isUpdatedExec(staker).return_value
-    assert auto.sm.isUpdatedExec(staker2).return_value
+    assert not auto.sm.isUpdatedExec(staker2).return_value
     assert auto.sm.getExecutor() == (staker, getEpoch(web3.eth.block_number))
-    # isCurExec always true when no stake
+    assert auto.sm.isCurExec(staker)
     for addr in a:
-        assert auto.sm.isCurExec(addr)
+        if addr != staker:
+            assert not auto.sm.isCurExec(addr)
     
     auto.sm.stake(INIT_NUM_STAKES, auto.FR_BOB)
 
     assert auto.sm.isUpdatedExec(staker).return_value
     assert not auto.sm.isUpdatedExec(staker2).return_value
     assert auto.sm.getExecutor() == (staker, getEpoch(web3.eth.block_number))
+    assert auto.sm.isCurExec(staker)
     for addr in a:
-        assert auto.sm.isCurExec(addr) == (addr == staker)
+        if addr != staker:
+            assert not auto.sm.isCurExec(addr)
 
     stakes = [staker2] * INIT_NUM_STAKES
     assert auto.sm.getStakes() == stakes
@@ -78,6 +82,7 @@ def test_updateExecutor_same_epoch(a, auto, evmMaths, stakedMin):
     while web3.eth.block_number % BLOCKS_IN_EPOCH != 99:
         assert auto.sm.updateExecutor(auto.FR_ALICE).return_value == (getEpoch(web3.eth.block_number), 0, 0, ADDR_0)
         assert auto.sm.getExecutor() == (staker, getEpoch(web3.eth.block_number))
+        assert auto.sm.isCurExec(staker)
         for addr in a:
             assert auto.sm.isCurExec(addr) == (addr == staker)
     

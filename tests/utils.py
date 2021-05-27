@@ -16,20 +16,26 @@ def getRandNum(seed):
 def getExecutor(evmMaths, blockNum, stakes):
     epoch = getEpoch(blockNum)
     # -1 because blockhash(seed) in Oracle will return 0x00 if the
-    # seed == this block's height
     randNum = getRandNum(epoch - 1)
-    # i = randNum % len(stakes)
     i = evmMaths.getRemainder(randNum, len(stakes))
-    # print(randNum, epoch, i, stakes[i], stakes)
     return stakes[i], epoch
+
+
+def isCurExec(exec, addr, curEpoch, stakesLen):
+    if exec == (addr, curEpoch) or stakesLen == 0:
+        return True
+    return False
+
 
 
 def getUpdatedExecResult(evmMaths, curHeight, stakes):
     epoch = getEpoch(web3.eth.block_number)
-    randNum = getRandNum(epoch - 1)
-    idx = evmMaths.getRemainder(randNum, len(stakes))
-
-    return (epoch, randNum, idx, stakes[idx])
+    if len(stakes) > 0:
+        randNum = getRandNum(epoch - 1)
+        idx = evmMaths.getRemainder(randNum, len(stakes))
+        return (epoch, randNum, idx, stakes[idx])
+    else:
+        return (epoch, 0, 0, ADDR_0)
 
 
 def getFirstIndexes(stakes, val, n):

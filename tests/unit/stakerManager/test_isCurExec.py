@@ -43,7 +43,7 @@ def test_isCurExec(a, auto, stakedMin):
 
 
 # Should return true for every address after enough unstakes leave no stakes left
-# immediately and in future epochs
+# in future epochs
 def test_isCurExec_after_all_unstaked(a, auto, stakedMin):
     numStanStakes, exec, tx = stakedMin
 
@@ -56,11 +56,15 @@ def test_isCurExec_after_all_unstaked(a, auto, stakedMin):
     assert auto.sm.getStakesSlice(0, 0) == []
     assert auto.sm.getExecutor() == (exec, getEpoch(web3.eth.block_number))
 
+    assert auto.sm.isUpdatedExec(exec).return_value
+    assert auto.sm.isCurExec(exec)
     for addr in a:
-        assert auto.sm.isUpdatedExec(addr).return_value
-        assert auto.sm.isCurExec(addr)
-    
+        if addr != exec:
+            assert not auto.sm.isUpdatedExec(addr).return_value
+            assert not auto.sm.isCurExec(addr)
+
     chain.mine(BLOCKS_IN_EPOCH)
 
     for addr in a:
+        assert auto.sm.isUpdatedExec(addr).return_value
         assert auto.sm.isCurExec(addr)

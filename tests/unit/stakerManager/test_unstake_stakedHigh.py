@@ -56,7 +56,7 @@ def unstakeTest(
             assert auto.sm.isUpdatedExec(newExec).return_value
         for addr in a:
             # If all stakes are unstaked, it'll return true for any address
-            assert auto.sm.isCurExec(addr) == ((addr == newExec) if len(idxs) != maxNumStakes else True)
+            assert auto.sm.isCurExec(addr) == (addr == curExec)
         assert tx.events["Unstaked"][0].values() == [staker, len(idxs) * STAN_STAKE]
 
 
