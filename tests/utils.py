@@ -14,23 +14,29 @@ def getRandNum(seed):
 
 
 def getExecutor(evmMaths, blockNum, stakes):
-    epoch = getEpoch(blockNum)
-    # -1 because blockhash(seed) in Oracle will return 0x00 if the
-    randNum = getRandNum(epoch - 1)
-    i = evmMaths.getRemainder(randNum, len(stakes))
-    return stakes[i], epoch
+    if len(stakes) == 0:
+        return NULL_EXEC
+    else:
+        epoch = getEpoch(blockNum)
+        # -1 because blockhash(seed) in Oracle will return 0x00 if the
+        randNum = getRandNum(epoch - 1)
+        i = evmMaths.getRemainder(randNum, len(stakes))
+        return stakes[i], epoch
 
 
 def isCurExec(exec, addr, curEpoch, stakesLen):
-    if exec == (addr, curEpoch) or stakesLen == 0:
+    if exec[1] == curEpoch:
+        return exec[0] == addr
+    if stakesLen == 0:
         return True
+
     return False
 
 
 
-def getUpdatedExecResult(evmMaths, curHeight, stakes):
-    epoch = getEpoch(web3.eth.block_number)
-    if len(stakes) > 0:
+def getUpdatedExecResult(evmMaths, curHeight, stakes, curExecEpoch):
+    epoch = getEpoch(curHeight)
+    if epoch != curExecEpoch and len(stakes) > 0:
         randNum = getRandNum(epoch - 1)
         idx = evmMaths.getRemainder(randNum, len(stakes))
         return (epoch, randNum, idx, stakes[idx])
@@ -41,15 +47,17 @@ def getUpdatedExecResult(evmMaths, curHeight, stakes):
 def getFirstIndexes(stakes, val, n):
     cntr = 0
     idxs = []
+    # So it doesn't change the list used as input to this fcn
+    newStakes = stakes.copy()
 
     for i in range(n):
-        idx = stakes.index(val)
+        idx = newStakes.index(val)
         idxs.append(idx)
-        stakes[idx] = stakes[-1]
-        stakes = stakes[:-1]
+        newStakes[idx] = newStakes[-1]
+        newStakes = newStakes[:-1]
 
 
-    # for i, el in enumerate(stakes):
+    # for i, el in enumerate(newStakes):
     #     if el == val:
     #         idxs.append(i)
     #         cntr += 1
@@ -61,7 +69,22 @@ def getFirstIndexes(stakes, val, n):
     # found than expected
     assert len(idxs) == n
 
-    return idxs
+    return idxs, newStakes
+
+
+def unstakeErrors(stakes, idxs, staker):
+    # So it doesn't change the list used as input to this fcn
+    newStakes = stakes.copy()
+
+    for i in idxs:
+        if i > len(newStakes)-1:
+            return True, None, None
+        elif newStakes[i] != staker:
+            return None, True, None
+        newStakes[i] = newStakes[-1]
+        newStakes = newStakes[:-1]
+    
+    return False, False, newStakes
 
 
 def getModStakes(stakes, staker, numStakes, isStaking):
@@ -69,7 +92,8 @@ def getModStakes(stakes, staker, numStakes, isStaking):
         return stakes + ([staker] * numStakes)
     else:
         idxs = []
-        newStakes = list(stakes)
+        # So it doesn't change the list used as input to this fcn
+        newStakes = stakes.copy()
         for i in range(numStakes):
             idx = newStakes.index(staker)
             idxs.append(idx)

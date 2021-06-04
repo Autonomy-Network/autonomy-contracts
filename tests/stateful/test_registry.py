@@ -11,7 +11,7 @@ def test_stakeManager(BaseStateMachine, state_machine, a, cleanAUTO, evmMaths):
     INIT_TOKEN_AMNT = 10**25
     # Run into block gas limit past 500 and web3 times out past 50
     MAX_NUM_TO_STAKE = 50
-    NUM_SENDERS = 5
+    NUM_STAKERS = 5
     
     class StateMachine(BaseStateMachine):
 
@@ -19,10 +19,10 @@ def test_stakeManager(BaseStateMachine, state_machine, a, cleanAUTO, evmMaths):
         def __init__(cls, a, cleanAUTO):
             super().__init__(cls, a, cleanAUTO)
             
-            cls.allAddrs = a[:NUM_SENDERS] + [cls.sm]
+            cls.allAddrs = a[:NUM_STAKERS] + [cls.sm]
 
-            # Distribute tokens evenly to NUM_SENDERS and call approve from each of them
-            for addr in a[:NUM_SENDERS]:
+            # Distribute tokens evenly to NUM_STAKERS and call approve from each of them
+            for addr in a[:NUM_STAKERS]:
                 cls.AUTO.transfer(addr, INIT_TOKEN_AMNT, {'from': a[0]})
                 cls.AUTO.approve(cls.sm, BIG_NUM, {'from': addr})
             
@@ -45,8 +45,8 @@ def test_stakeManager(BaseStateMachine, state_machine, a, cleanAUTO, evmMaths):
 
 
         st_numStakes = strategy("uint", max_value=MAX_NUM_TO_STAKE)
-        st_sender = strategy("address", length=NUM_SENDERS)
-        st_sender2 = strategy("address", length=NUM_SENDERS)
+        st_sender = strategy("address", length=NUM_STAKERS)
+        st_sender2 = strategy("address", length=NUM_STAKERS)
         st_idxs = strategy("uint[]", max_length=MAX_NUM_TO_STAKE)
         st_numIdxs = strategy("uint", max_value=MAX_NUM_TO_STAKE)
         st_mine_num = strategy("uint", min_value=1, max_value=BLOCKS_IN_EPOCH)

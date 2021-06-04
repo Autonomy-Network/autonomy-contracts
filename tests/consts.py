@@ -6,6 +6,7 @@ ADDR_0 = "0x0000000000000000000000000000000000000000"
 NULL_BYTES = "0x"
 E_18 = int(1e18)
 INIT_ETH_BAL = 100 * E_18
+BIG_NUM = 2**255
 
 
 # Oracle
@@ -60,6 +61,7 @@ NULL_EXEC = (ADDR_0, 0)
 REV_MSG_NOT_ENOUGH_STAKE = "SM: not enough stake, peasant"
 REV_MSG_NOFISH = "SM: something fishy here"
 REV_MSG_NOT_STAKER = "SM: idx is not you"
+REV_MSG_OUT_OF_RANGE = "Index out of range"
 
 
 # Registry

@@ -40,7 +40,7 @@ def test_updateExecutor_same_epoch(a, auto, evmMaths, stakedMin):
     tx = auto.sm.updateExecutor(auto.FR_ALICE)
 
     assert web3.eth.block_number % BLOCKS_IN_EPOCH == 0
-    assert tx.return_value == getUpdatedExecResult(evmMaths, web3.eth.block_number, [staker])
+    assert tx.return_value == getUpdatedExecResult(evmMaths, web3.eth.block_number, [staker], 0)
     assert auto.sm.isUpdatedExec(staker).return_value
     assert auto.sm.getExecutor() == (staker, getEpoch(web3.eth.block_number))
     for addr in a:
@@ -91,7 +91,7 @@ def test_updateExecutor_same_epoch(a, auto, evmMaths, stakedMin):
     
     tx = auto.sm.updateExecutor(auto.FR_ALICE)
     
-    assert tx.return_value == getUpdatedExecResult(evmMaths, web3.eth.block_number, stakes)
+    assert tx.return_value == getUpdatedExecResult(evmMaths, web3.eth.block_number, stakes, getEpoch(web3.eth.block_number)-BLOCKS_IN_EPOCH)
     assert web3.eth.block_number % BLOCKS_IN_EPOCH == 0
     assert auto.sm.getExecutor() == (staker2, getEpoch(web3.eth.block_number))
     assert not auto.sm.isUpdatedExec(staker).return_value
@@ -108,7 +108,7 @@ def test_updateExecutor_stakedMulti(auto, evmMaths, stakedMulti):
         exec, epoch = getExecutor(evmMaths, web3.eth.block_number, stakes)
         assert auto.sm.getExecutor() == (exec, epoch)
         if web3.eth.block_number % BLOCKS_IN_EPOCH == 0:
-            assert tx.return_value == getUpdatedExecResult(evmMaths, web3.eth.block_number, stakes)
+            assert tx.return_value == getUpdatedExecResult(evmMaths, web3.eth.block_number, stakes, epoch - BLOCKS_IN_EPOCH)
         else:
             assert tx.return_value == (epoch, 0, 0, ADDR_0)
         for addr in a:
