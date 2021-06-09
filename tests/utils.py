@@ -5,6 +5,11 @@ import ipfshttpclient
 from hashlib import sha256
 
 
+# More concise way of getting the current block number since it's quite long
+def bn():
+    return web3.eth.block_number
+
+
 def getEpoch(blockNum):
     return int(blockNum / BLOCKS_IN_EPOCH) * BLOCKS_IN_EPOCH
 
@@ -13,9 +18,9 @@ def getRandNum(seed):
     return web3.toInt(web3.eth.get_block(seed).hash)
 
 
-def getExecutor(evmMaths, blockNum, stakes):
+def getExecutor(evmMaths, blockNum, stakes, curExec):
     if len(stakes) == 0:
-        return NULL_EXEC
+        return curExec
     else:
         epoch = getEpoch(blockNum)
         # -1 because blockhash(seed) in Oracle will return 0x00 if the
@@ -31,7 +36,6 @@ def isCurExec(exec, addr, curEpoch, stakesLen):
         return True
 
     return False
-
 
 
 def getUpdatedExecResult(evmMaths, curHeight, stakes, curExecEpoch):

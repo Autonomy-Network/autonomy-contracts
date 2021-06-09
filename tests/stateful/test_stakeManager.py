@@ -4,13 +4,15 @@ from brownie import reverts, chain, web3
 from brownie.test import strategy
 
 
-settings = {"stateful_step_count": 25, "max_examples": 100}
+settings = {"stateful_step_count": 50, "max_examples": 200}
 
 def test_stakeManager(BaseStateMachine, state_machine, a, cleanAUTO, evmMaths):
 
     INIT_TOKEN_AMNT = 10**25
-    # Run into block gas limit past 500 and web3 times out past 50
+    # Web3 times out past 50
     MAX_NUM_TO_STAKE = 50
+    # Run into block gas limit and read timeouts past 500
+    MAX_STAKE_LEN = 500
     NUM_SENDERS = 5
     
     class StateMachine(BaseStateMachine):
@@ -56,23 +58,28 @@ def test_stakeManager(BaseStateMachine, state_machine, a, cleanAUTO, evmMaths):
         # so that most of it isn't unstaking
         def _stake(self, st_numStakes, st_sender):
             amount = st_numStakes * STAN_STAKE
-            if st_numStakes == 0:
+            if len(self.stakes) + st_numStakes > MAX_STAKE_LEN:
+                print('        PAST MAX_STAKE_LEN rule_stake', bn()+1, len(self.stakes), st_numStakes, st_sender)
+            elif st_numStakes == 0:
+                print('        REV_MSG_NZ_UINT rule_stake', bn()+1, len(self.stakes), st_numStakes, st_sender)
                 with reverts(REV_MSG_NZ_UINT):
                     self.sm.stake(st_numStakes, {'from': st_sender})
             elif self.autoBals[st_sender] < amount:
+                print('        REV_MSG_EXCEED_BAL rule_stake', bn()+1, len(self.stakes), st_numStakes, st_sender)
                 with reverts(REV_MSG_EXCEED_BAL):
                     self.sm.stake(st_numStakes, {'from': st_sender})
             else:
+                print('                    rule_stake', bn()+1, len(self.stakes), st_numStakes, st_sender)
                 self.sm.stake(st_numStakes, {'from': st_sender})
 
                 self.autoBals[self.sm] += amount
                 self.autoBals[st_sender] -= amount
                 self.totalStaked += amount
                 self.stakerToStakedAmount[st_sender] += amount
-                if self.exec[1] != getEpoch(web3.eth.block_number):
+                if self.exec[1] != getEpoch(bn()):
                     # Use self.stakes that hasn't been updated yet because the exec
                     # is updated before modifications to stakes
-                    self.exec = getExecutor(evmMaths, web3.eth.block_number, self.stakes)
+                    self.exec = getExecutor(evmMaths, bn(), self.stakes, self.exec)
                 self.stakes.extend([st_sender] * st_numStakes)
 
 
@@ -93,28 +100,33 @@ def test_stakeManager(BaseStateMachine, state_machine, a, cleanAUTO, evmMaths):
             isOutBounds, isNotStaker, newStakes = unstakeErrors(self.stakes, st_idxs, st_sender)
 
             if amount == 0:
+                print('        REV_MSG_NZ_UINT_ARR rule_unstake_random_idxs', bn()+1, len(self.stakes),  st_idxs, st_sender)
                 with reverts(REV_MSG_NZ_UINT_ARR):
                     self.sm.unstake(st_idxs, {'from': st_sender})
             elif self.stakerToStakedAmount[st_sender] < amount:
+                print('        REV_MSG_NOT_ENOUGH_STAKE rule_unstake_random_idxs', bn()+1, len(self.stakes),  st_idxs, st_sender)
                 with reverts(REV_MSG_NOT_ENOUGH_STAKE):
                     self.sm.unstake(st_idxs, {'from': st_sender})
             elif isOutBounds:
+                print('        REV_MSG_OUT_OF_RANGE rule_unstake_random_idxs', bn()+1, len(self.stakes),  st_idxs, st_sender)
                 with reverts(REV_MSG_OUT_OF_RANGE):
                     self.sm.unstake(st_idxs, {'from': st_sender})
             elif isNotStaker:
+                print('        REV_MSG_NOT_STAKER rule_unstake_random_idxs', bn()+1, len(self.stakes),  st_idxs, st_sender)
                 with reverts(REV_MSG_NOT_STAKER):
                     self.sm.unstake(st_idxs, {'from': st_sender})
             else:
+                print('                    rule_unstake_random_idxs', bn()+1, len(self.stakes), st_idxs, st_sender)
                 self.sm.unstake(st_idxs, {'from': st_sender})
 
                 self.autoBals[st_sender] += amount
                 self.autoBals[self.sm] -= amount
                 self.totalStaked -= amount
                 self.stakerToStakedAmount[st_sender] -= amount
-                if self.exec[1] != getEpoch(web3.eth.block_number):
+                if self.exec[1] != getEpoch(bn()):
                     # Use self.stakes that hasn't been updated yet because the exec
                     # is updated before modifications to stakes
-                    self.exec = getExecutor(evmMaths, web3.eth.block_number, self.stakes)
+                    self.exec = getExecutor(evmMaths, bn(), self.stakes, self.exec)
                 self.stakes = newStakes
 
 
@@ -123,26 +135,30 @@ def test_stakeManager(BaseStateMachine, state_machine, a, cleanAUTO, evmMaths):
             if self.stakes.count(st_sender) >= st_numIdxs:
                 idxs, newStakes = getFirstIndexes(self.stakes, st_sender, st_numIdxs)
 
-                print(st_numIdxs, amount)
                 if amount == 0:
-                    print('derp')
+                    print('        REV_MSG_NZ_UINT_ARR rule_unstake_working_idxs', bn()+1, len(self.stakes),  st_numIdxs, st_sender)
                     with reverts(REV_MSG_NZ_UINT_ARR):
                         self.sm.unstake(idxs, {'from': st_sender})
                 elif self.stakerToStakedAmount[st_sender] < amount:
+                    print('        REV_MSG_NOT_ENOUGH_STAKE rule_unstake_working_idxs', bn()+1, len(self.stakes),  st_numIdxs, st_sender)
                     with reverts(REV_MSG_NOT_ENOUGH_STAKE):
                         self.sm.unstake(idxs, {'from': st_sender})
                 else:
+                    print('                    rule_unstake_working_idxs', bn()+1, len(self.stakes), st_numIdxs, st_sender)
                     self.sm.unstake(idxs, {'from': st_sender})
 
                     self.autoBals[st_sender] += amount
                     self.autoBals[self.sm] -= amount
                     self.totalStaked -= amount
                     self.stakerToStakedAmount[st_sender] -= amount
-                    if self.exec[1] != getEpoch(web3.eth.block_number):
+                    if self.exec[1] != getEpoch(bn()):
                         # Use self.stakes that hasn't been updated yet because the exec
                         # is updated before modifications to stakes
-                        self.exec = getExecutor(evmMaths, web3.eth.block_number, self.stakes)
+                        self.exec = getExecutor(evmMaths, bn(), self.stakes, self.exec)
                     self.stakes = newStakes
+            else:
+                print('        NOT_ENOUGH_COUNTS rule_unstake_working_idxs', bn()+1, len(self.stakes),  st_numIdxs, st_sender)
+
 
 
         # Specifically make a staker unstake all their stake to make this more common in
@@ -150,43 +166,47 @@ def test_stakeManager(BaseStateMachine, state_machine, a, cleanAUTO, evmMaths):
         def rule_unstake_all_for_staker(self, st_sender):
             n = self.stakes.count(st_sender)
             if n == 0:
+                print('        REV_MSG_NOT_ENOUGH_STAKE rule_unstake_all_for_staker', bn()+1, len(self.stakes), st_sender)
                 with reverts(REV_MSG_NOT_ENOUGH_STAKE):
                     self.sm.unstake([0], {'from': st_sender})
             else:
                 idxs, newStakes = getFirstIndexes(self.stakes, st_sender, n)
                 amount = len(idxs) * STAN_STAKE
 
+                print('                    rule_unstake_all_for_staker', bn()+1, len(self.stakes), st_sender)
                 self.sm.unstake(idxs, {'from': st_sender})
 
                 self.autoBals[st_sender] += amount
                 self.autoBals[self.sm] -= amount
                 self.totalStaked -= amount
                 self.stakerToStakedAmount[st_sender] -= amount
-                if self.exec[1] != getEpoch(web3.eth.block_number):
+                if self.exec[1] != getEpoch(bn()):
                     # Use self.stakes that hasn't been updated yet because the exec
                     # is updated before modifications to stakes
-                    self.exec = getExecutor(evmMaths, web3.eth.block_number, self.stakes)
+                    self.exec = getExecutor(evmMaths, bn(), self.stakes, self.exec)
                 self.stakes = newStakes
 
 
         def rule_updateExecutor(self, st_sender):
+            print('                    rule_updateExecutor', bn()+1, len(self.stakes), st_sender)
             self.sm.updateExecutor({'from': st_sender})
 
-            if self.exec[1] != getEpoch(web3.eth.block_number):
+            if self.exec[1] != getEpoch(bn()):
                 # Use self.stakes that hasn't been updated yet because the exec
                 # is updated before modifications to stakes
-                self.exec = getExecutor(evmMaths, web3.eth.block_number, self.stakes)
+                self.exec = getExecutor(evmMaths, bn(), self.stakes, self.exec)
 
 
         def rule_isUpdatedExec(self, st_sender, st_sender2):
+            print('                    rule_isUpdatedExec', bn()+1, len(self.stakes), st_sender, st_sender2)
             tx = self.sm.isUpdatedExec(st_sender, {'from': st_sender2})
 
-            if self.exec[1] == getEpoch(web3.eth.block_number):
+            if self.exec[1] == getEpoch(bn()):
                 assert tx.return_value == (self.exec[0] == st_sender)
             else:
                 # Use self.stakes that hasn't been updated yet because the exec
                 # is updated before modifications to stakes
-                self.exec = getExecutor(evmMaths, web3.eth.block_number, self.stakes)
+                self.exec = getExecutor(evmMaths, bn(), self.stakes, self.exec)
                 if self.exec[0] == st_sender or len(self.stakes) == 0:
                     assert tx.return_value == True
                 else:
@@ -194,6 +214,7 @@ def test_stakeManager(BaseStateMachine, state_machine, a, cleanAUTO, evmMaths):
                 
 
         def rule_mine(self, st_mine_num):
+            print('                    rule_mine', bn()+1, len(self.stakes), st_mine_num)
             chain.mine(st_mine_num)
 
 
@@ -220,11 +241,11 @@ def test_stakeManager(BaseStateMachine, state_machine, a, cleanAUTO, evmMaths):
             assert self.sm.getStakes() == self.stakes
             assert self.sm.getStakesLength() == len(self.stakes)
             assert self.sm.getStakesSlice(0, len(self.stakes)) == self.stakes
-            curEpoch = getEpoch(web3.eth.block_number)
+            curEpoch = getEpoch(bn())
             assert self.sm.getCurEpoch() == curEpoch
             assert self.sm.getExecutor() == self.exec
             if self.exec[1] != curEpoch:
-                assert self.sm.getUpdatedExecRes() == getUpdatedExecResult(evmMaths, web3.eth.block_number, self.stakes, self.exec[1])
+                assert self.sm.getUpdatedExecRes() == getUpdatedExecResult(evmMaths, bn(), self.stakes, self.exec[1])
             else:
                 assert self.sm.getUpdatedExecRes() == (curEpoch, 0, 0, ADDR_0)
 

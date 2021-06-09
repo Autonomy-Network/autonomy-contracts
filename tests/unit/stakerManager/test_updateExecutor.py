@@ -13,7 +13,7 @@ def test_updateExecutor_no_stake_do_nothing(a, auto):
 
     tx = auto.sm.updateExecutor(auto.FR_ALICE)
 
-    assert tx.return_value == (getEpoch(web3.eth.block_number), 0, 0, ADDR_0)
+    assert tx.return_value == (getEpoch(bn()), 0, 0, ADDR_0)
     assert auto.sm.getExecutor() == NULL_EXEC
     for addr in a:
         assert auto.sm.isCurExec(addr)
@@ -23,7 +23,7 @@ def test_updateExecutor_no_stake_do_nothing(a, auto):
 def test_updateExecutor_stakedMin(auto, evmMaths, stakedMin):
     numStanStakes, staker, tx = stakedMin
     assert auto.sm.getTotalStaked() == numStanStakes * STAN_STAKE
-    assert auto.sm.getExecutor() == getExecutor(evmMaths, web3.eth.block_number, [staker])
+    assert auto.sm.getExecutor() == getExecutor(evmMaths, bn(), [staker])
     for addr in a:
         assert auto.sm.isCurExec(addr) == (addr == staker)
 
@@ -33,16 +33,16 @@ def test_updateExecutor_same_epoch(a, auto, evmMaths, stakedMin):
     numStanStakes, staker, tx = stakedMin
     # Make sure we're on block number xxx99 so that updateExecutor will be called
     # at the start of the next epoch and we can test every single block in the epoch
-    chain.mine(BLOCKS_IN_EPOCH - (web3.eth.block_number % BLOCKS_IN_EPOCH) - 1)
-    assert web3.eth.block_number % BLOCKS_IN_EPOCH == BLOCKS_IN_EPOCH - 1
+    chain.mine(BLOCKS_IN_EPOCH - (bn() % BLOCKS_IN_EPOCH) - 1)
+    assert bn() % BLOCKS_IN_EPOCH == BLOCKS_IN_EPOCH - 1
 
     # Ensure the current executor is set at the start of the epoch
     tx = auto.sm.updateExecutor(auto.FR_ALICE)
 
-    assert web3.eth.block_number % BLOCKS_IN_EPOCH == 0
-    assert tx.return_value == getUpdatedExecResult(evmMaths, web3.eth.block_number, [staker], 0)
+    assert bn() % BLOCKS_IN_EPOCH == 0
+    assert tx.return_value == getUpdatedExecResult(evmMaths, bn(), [staker], 0)
     assert auto.sm.isUpdatedExec(staker).return_value
-    assert auto.sm.getExecutor() == (staker, getEpoch(web3.eth.block_number))
+    assert auto.sm.getExecutor() == (staker, getEpoch(bn()))
     for addr in a:
         assert auto.sm.isCurExec(addr) == (addr == staker)
     
@@ -54,7 +54,7 @@ def test_updateExecutor_same_epoch(a, auto, evmMaths, stakedMin):
     staker2 = auto.BOB
     assert auto.sm.isUpdatedExec(staker).return_value
     assert not auto.sm.isUpdatedExec(staker2).return_value
-    assert auto.sm.getExecutor() == (staker, getEpoch(web3.eth.block_number))
+    assert auto.sm.getExecutor() == (staker, getEpoch(bn()))
     assert auto.sm.isCurExec(staker)
     for addr in a:
         if addr != staker:
@@ -64,7 +64,7 @@ def test_updateExecutor_same_epoch(a, auto, evmMaths, stakedMin):
 
     assert auto.sm.isUpdatedExec(staker).return_value
     assert not auto.sm.isUpdatedExec(staker2).return_value
-    assert auto.sm.getExecutor() == (staker, getEpoch(web3.eth.block_number))
+    assert auto.sm.getExecutor() == (staker, getEpoch(bn()))
     assert auto.sm.isCurExec(staker)
     for addr in a:
         if addr != staker:
@@ -79,21 +79,21 @@ def test_updateExecutor_same_epoch(a, auto, evmMaths, stakedMin):
     assert auto.sm.getStakesSlice(0, len(stakes)) == stakes
 
     # Make sure that updateExecutor doesn't change the executor for every remaining block in the epoch
-    while web3.eth.block_number % BLOCKS_IN_EPOCH != 99:
-        assert auto.sm.updateExecutor(auto.FR_ALICE).return_value == (getEpoch(web3.eth.block_number), 0, 0, ADDR_0)
-        assert auto.sm.getExecutor() == (staker, getEpoch(web3.eth.block_number))
+    while bn() % BLOCKS_IN_EPOCH != 99:
+        assert auto.sm.updateExecutor(auto.FR_ALICE).return_value == (getEpoch(bn()), 0, 0, ADDR_0)
+        assert auto.sm.getExecutor() == (staker, getEpoch(bn()))
         assert auto.sm.isCurExec(staker)
         for addr in a:
             assert auto.sm.isCurExec(addr) == (addr == staker)
     
     # Check that it does change the executor to Bob in the next block
-    assert web3.eth.block_number % BLOCKS_IN_EPOCH == 99
+    assert bn() % BLOCKS_IN_EPOCH == 99
     
     tx = auto.sm.updateExecutor(auto.FR_ALICE)
     
-    assert tx.return_value == getUpdatedExecResult(evmMaths, web3.eth.block_number, stakes, getEpoch(web3.eth.block_number)-BLOCKS_IN_EPOCH)
-    assert web3.eth.block_number % BLOCKS_IN_EPOCH == 0
-    assert auto.sm.getExecutor() == (staker2, getEpoch(web3.eth.block_number))
+    assert tx.return_value == getUpdatedExecResult(evmMaths, bn(), stakes, getEpoch(bn())-BLOCKS_IN_EPOCH)
+    assert bn() % BLOCKS_IN_EPOCH == 0
+    assert auto.sm.getExecutor() == (staker2, getEpoch(bn()))
     assert not auto.sm.isUpdatedExec(staker).return_value
     assert auto.sm.isUpdatedExec(staker2).return_value
     for addr in a:
@@ -105,10 +105,10 @@ def test_updateExecutor_stakedMulti(auto, evmMaths, stakedMulti):
     for i in range(BLOCKS_IN_EPOCH * 2):
         tx = auto.sm.updateExecutor(auto.FR_ALICE)
 
-        exec, epoch = getExecutor(evmMaths, web3.eth.block_number, stakes)
+        exec, epoch = getExecutor(evmMaths, bn(), stakes)
         assert auto.sm.getExecutor() == (exec, epoch)
-        if web3.eth.block_number % BLOCKS_IN_EPOCH == 0:
-            assert tx.return_value == getUpdatedExecResult(evmMaths, web3.eth.block_number, stakes, epoch - BLOCKS_IN_EPOCH)
+        if bn() % BLOCKS_IN_EPOCH == 0:
+            assert tx.return_value == getUpdatedExecResult(evmMaths, bn(), stakes, epoch - BLOCKS_IN_EPOCH)
         else:
             assert tx.return_value == (epoch, 0, 0, ADDR_0)
         for addr in a:

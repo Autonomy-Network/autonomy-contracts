@@ -28,7 +28,7 @@ def stakeTest(auto, num, staker, tx):
     assert auto.sm.getStake(staker) == amount
     assert auto.sm.getTotalStaked() == amount
     assert auto.sm.isCurExec(staker)
-    assert auto.sm.getExecutor() == (staker, getEpoch(web3.eth.block_number))
+    assert auto.sm.getExecutor() == (staker, getEpoch(bn()))
     assert tx.events["Staked"][0].values() == [staker, amount]
 
 
@@ -50,12 +50,12 @@ def test_stake_min(auto, stakedMin):
 # game the staker selection algo
 def test_stake_1st_stake_of_epoch_no_exec_change(auto, stakedMin):
     numStakes, staker, oldTx = stakedMin
-    blockNum = web3.eth.block_number
+    blockNum = bn()
     
     # Can't know what the current numerical value of the block number is so
     # mine until xx99 such that the next tx is in the new epoch
     chain.mine(BLOCKS_IN_EPOCH - (blockNum % BLOCKS_IN_EPOCH) - 1)
-    assert web3.eth.block_number % BLOCKS_IN_EPOCH == BLOCKS_IN_EPOCH - 1
+    assert bn() % BLOCKS_IN_EPOCH == BLOCKS_IN_EPOCH - 1
 
     # Stake a different staker with a large amount such that it's very likely
     # they would be the new executor if it was a new epoch after their stake
@@ -74,7 +74,7 @@ def test_stake_1st_stake_of_epoch_no_exec_change(auto, stakedMin):
     assert auto.sm.getStake(newStaker) == newNumStakes * STAN_STAKE
     assert auto.sm.getTotalStaked() == (numStakes + newNumStakes) * STAN_STAKE
     # Old staker but new epoch
-    assert auto.sm.getExecutor() == (staker, getEpoch(web3.eth.block_number))
+    assert auto.sm.getExecutor() == (staker, getEpoch(bn()))
     assert auto.sm.isCurExec(staker)
     assert auto.sm.isUpdatedExec(staker).return_value
     assert tx.events["Staked"][0].values() == [newStaker, newNumStakes * STAN_STAKE]

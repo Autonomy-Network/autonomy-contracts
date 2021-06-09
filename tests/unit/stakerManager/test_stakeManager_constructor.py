@@ -8,4 +8,4 @@ def test_constructor(auto, web3):
     assert auto.sm.getTotalStaked() == 0
     assert auto.sm.getStake(auto.DEPLOYER) == 0
     assert len(auto.sm.getStakes()) == 0
-    assert auto.sm.getCurEpoch() == getEpoch(web3.eth.block_number)
+    assert auto.sm.getCurEpoch() == getEpoch(bn())

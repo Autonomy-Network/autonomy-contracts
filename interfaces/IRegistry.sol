@@ -165,6 +165,8 @@ interface IRegistry {
     function getAUTO() external view returns (IERC20);
     
     function getStakeManager() external view returns (address);
+
+    function getOracle() external view returns (address);
     
     function getVerifiedForwarder() external view returns (address);
     

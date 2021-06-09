@@ -4,9 +4,9 @@ from brownie import web3, chain
 
 
 def test_getEpoch(auto):
-    chain.mine(BLOCKS_IN_EPOCH - (web3.eth.block_number % BLOCKS_IN_EPOCH))
-    assert web3.eth.block_number % BLOCKS_IN_EPOCH == 0
-    startBlockNum = web3.eth.block_number
+    chain.mine(BLOCKS_IN_EPOCH - (bn() % BLOCKS_IN_EPOCH))
+    assert bn() % BLOCKS_IN_EPOCH == 0
+    startBlockNum = bn()
 
     for i in range(10):
         for j in range(BLOCKS_IN_EPOCH):

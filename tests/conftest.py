@@ -136,8 +136,8 @@ def stakedMultiSmall(auto, evmMaths, stakedMin):
 
     assert auto.sm.getTotalStaked() == totalNumStakes * STAN_STAKE
     assert auto.sm.getStakes() == stakes
-    assert auto.sm.getCurEpoch() == getEpoch(web3.eth.block_number)
-    newExec, epoch = getExecutor(evmMaths, web3.eth.block_number + 1, stakes)
+    assert auto.sm.getCurEpoch() == getEpoch(bn())
+    newExec, epoch = getExecutor(evmMaths, bn() + 1, stakes)
     assert auto.sm.isUpdatedExec(newExec).return_value
     assert auto.sm.getExecutor() == (newExec, epoch)
     for addr in a:

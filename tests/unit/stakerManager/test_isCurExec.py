@@ -28,7 +28,7 @@ def test_isCurExec(a, auto, stakedMin):
     assert auto.sm.getTotalStaked() == numStanStakes * STAN_STAKE
     assert auto.sm.getStakesLength() == numStanStakes
     assert auto.sm.getStakesSlice(0, numStanStakes) == [exec] * numStanStakes
-    assert auto.sm.getExecutor() == (exec, getEpoch(web3.eth.block_number))
+    assert auto.sm.getExecutor() == (exec, getEpoch(bn()))
 
     # Should only be true when the input is the executor
     for addr in a:
@@ -54,7 +54,7 @@ def test_isCurExec_after_all_unstaked(a, auto, stakedMin):
     with reverts():
         auto.sm.getStakesSlice(0, 1)
     assert auto.sm.getStakesSlice(0, 0) == []
-    assert auto.sm.getExecutor() == (exec, getEpoch(web3.eth.block_number))
+    assert auto.sm.getExecutor() == (exec, getEpoch(bn()))
 
     assert auto.sm.isUpdatedExec(exec).return_value
     assert auto.sm.isCurExec(exec)

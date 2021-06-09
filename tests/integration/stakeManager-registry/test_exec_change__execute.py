@@ -7,9 +7,9 @@ def test_executeRawReq_wait_executeRawReq(a, auto, evmMaths, stakedMultiSmall, r
     nums, stakers, startStakes, _ = stakedMultiSmall
 
     # Go to the start of an epoch so the executor doesn't change midway and obsolete this test
-    chain.mine(BLOCKS_IN_EPOCH - (web3.eth.block_number % BLOCKS_IN_EPOCH) - 1)
+    chain.mine(BLOCKS_IN_EPOCH - (bn() % BLOCKS_IN_EPOCH) - 1)
     
-    newExec = getExecutor(evmMaths, web3.eth.block_number + 1, startStakes)[0]
+    newExec = getExecutor(evmMaths, bn() + 1, startStakes)[0]
     # Make sure execution reverts whenever called by everyone except the actual executor
     for addr in a:
         if addr != newExec:
@@ -18,9 +18,9 @@ def test_executeRawReq_wait_executeRawReq(a, auto, evmMaths, stakedMultiSmall, r
     # Execution should succeed with the actual executor
     auto.r.executeRawReq(0, {'from': newExec, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-    chain.mine(BLOCKS_IN_EPOCH - (web3.eth.block_number % BLOCKS_IN_EPOCH) - 1)
+    chain.mine(BLOCKS_IN_EPOCH - (bn() % BLOCKS_IN_EPOCH) - 1)
 
-    newExec = getExecutor(evmMaths, web3.eth.block_number + 1, startStakes)[0]
+    newExec = getExecutor(evmMaths, bn() + 1, startStakes)[0]
     # Make sure execution reverts whenever called by everyone except the actual executor
     for addr in a:
         if addr != newExec:
@@ -36,9 +36,9 @@ def test_executeRawReq_wait_executeHashedReq(a, auto, evmMaths, stakedMultiSmall
     reqs, reqHashes, msgValue, ethForCall = hashedReqs
 
     # Go to the start of an epoch so the executor doesn't change midway and obsolete this test
-    chain.mine(BLOCKS_IN_EPOCH - (web3.eth.block_number % BLOCKS_IN_EPOCH) - 1)
+    chain.mine(BLOCKS_IN_EPOCH - (bn() % BLOCKS_IN_EPOCH) - 1)
     
-    newExec = getExecutor(evmMaths, web3.eth.block_number + 1, startStakes)[0]
+    newExec = getExecutor(evmMaths, bn() + 1, startStakes)[0]
     id = 0
     # Make sure execution reverts whenever called by everyone except the actual executor
     for addr in a:
@@ -49,9 +49,9 @@ def test_executeRawReq_wait_executeHashedReq(a, auto, evmMaths, stakedMultiSmall
     # Execution should succeed with the actual executor
     auto.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(auto, reqs[id]), {'from': newExec, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-    chain.mine(BLOCKS_IN_EPOCH - (web3.eth.block_number % BLOCKS_IN_EPOCH) - 1)
+    chain.mine(BLOCKS_IN_EPOCH - (bn() % BLOCKS_IN_EPOCH) - 1)
 
-    newExec = getExecutor(evmMaths, web3.eth.block_number + 1, startStakes)[0]
+    newExec = getExecutor(evmMaths, bn() + 1, startStakes)[0]
     id = 1
     # Make sure execution reverts whenever called by everyone except the actual executor
     for addr in a:
@@ -75,9 +75,9 @@ def test_executeRawReq_wait_executeHashedReqUnveri(a, auto, mockTarget, evmMaths
     auto.r.newHashedReqUnveri(reqHashBytes, {'from': auto.BOB, 'value': 0})
 
     # Go to the start of an epoch so the executor doesn't change midway and obsolete this test
-    chain.mine(BLOCKS_IN_EPOCH - (web3.eth.block_number % BLOCKS_IN_EPOCH) - 1)
+    chain.mine(BLOCKS_IN_EPOCH - (bn() % BLOCKS_IN_EPOCH) - 1)
     
-    newExec = getExecutor(evmMaths, web3.eth.block_number + 1, startStakes)[0]
+    newExec = getExecutor(evmMaths, bn() + 1, startStakes)[0]
     id = 0
     # Make sure execution reverts whenever called by everyone except the actual executor
     for addr in a:
@@ -88,9 +88,9 @@ def test_executeRawReq_wait_executeHashedReqUnveri(a, auto, mockTarget, evmMaths
     # Execution should succeed with the actual executor
     auto.r.executeHashedReqUnveri(id, req, *getIpfsMetaData(auto, req), {'from': newExec, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-    chain.mine(BLOCKS_IN_EPOCH - (web3.eth.block_number % BLOCKS_IN_EPOCH) - 1)
+    chain.mine(BLOCKS_IN_EPOCH - (bn() % BLOCKS_IN_EPOCH) - 1)
 
-    newExec = getExecutor(evmMaths, web3.eth.block_number + 1, startStakes)[0]
+    newExec = getExecutor(evmMaths, bn() + 1, startStakes)[0]
     id = 1
     # Make sure execution reverts whenever called by everyone except the actual executor
     for addr in a:

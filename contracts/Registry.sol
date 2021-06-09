@@ -274,6 +274,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         
         emit RawReqRemoved(id, true);
 
+        // Stack too deep... have to put this here
         if (r.payWithAUTO) {
             require(address(this).balance >= ethStartBal - r.ethForCall, "Reg: something fishy here");
         } else {
@@ -505,6 +506,10 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     
     function getStakeManager() external view override returns (address) {
         return address(_stakeMan);
+    }
+    
+    function getOracle() external view override returns (address) {
+        return address(_oracle);
     }
     
     function getVerifiedForwarder() external view override returns (address) {
