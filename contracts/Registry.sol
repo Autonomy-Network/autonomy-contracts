@@ -263,7 +263,6 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     //////////////////////////////////////////////////////////////
 
     function executeRawReq(uint id) external override validExec nonReentrant returns (uint gasUsed) {
-        uint gasss = gasleft();
         Request memory r = _rawReqs[id];
         require(r.requester != _ADDR_0, "Reg: already executed");
         uint ethStartBal = address(this).balance;
