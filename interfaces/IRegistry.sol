@@ -27,6 +27,20 @@ interface IRegistry {
     //                                                          //
     //////////////////////////////////////////////////////////////
     
+    /**
+     * @notice  Creates a new, raw request. Everything is saved on-chain
+     *          in full.
+     * @param target    The contract address that needs to be called
+     * @param callData  The calldata of the call that the request is to make, i.e.
+     *                  the fcn identifier + inputs, encoded
+     * @param verifySender  Whether the 1st input of the calldata equals the sender
+     * @param payWithAUTO   Whether the sender wants to pay for the request in AUTO
+     *                      or ETH. Paying in AUTO reduces the fee
+     * @param ethForCall    The ETH to send with the call
+     * @param referer       The referer to get rewarded for referring the sender
+     *                      to using Autonomy. Usally the address of a dapp owner
+     * @return id           The id of the request
+     */
     function newRawReq(
         address target,
         address payable referer,
