@@ -12,17 +12,12 @@ contract MockReentrancyAttack {
         reg = registry;
     }
 
-    function callExecuteRawReq(uint id) public {
-        reg.executeRawReq(id);
-    }
 
     function callExecuteHashedReq(
         uint id,
-        IRegistry.Request calldata r,
-        bytes memory dataPrefix,
-        bytes memory dataSuffix
+        IRegistry.Request calldata r
     ) public {
-        reg.executeHashedReq(id, r, dataPrefix, dataSuffix);
+        reg.executeHashedReq(id, r);
     }
 
     function callExecuteHashedReqUnveri(
@@ -34,17 +29,11 @@ contract MockReentrancyAttack {
         reg.executeHashedReqUnveri(id, r, dataPrefix, dataSuffix);
     }
 
-    function callCancelRawReq(uint id) public {
-        reg.cancelRawReq(id);
-    }
-
     function callCancelHashedReq(
         uint id,
-        IRegistry.Request memory r,
-        bytes memory dataPrefix,
-        bytes memory dataSuffix
+        IRegistry.Request memory r
     ) public {
-        reg.cancelHashedReq(id, r, dataPrefix, dataSuffix);
+        reg.cancelHashedReq(id, r);
     }
 
     function callCancelHashedReqUnveri(

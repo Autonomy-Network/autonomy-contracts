@@ -23,10 +23,10 @@ interface IRegistry {
 
     //////////////////////////////////////////////////////////////
     //                                                          //
-    //                       Raw Requests                       //
+    //                      Hashed Requests                     //
     //                                                          //
     //////////////////////////////////////////////////////////////
-    
+
     /**
      * @notice  Creates a new, raw request. Everything is saved on-chain
      *          in full.
@@ -41,37 +41,14 @@ interface IRegistry {
      *                      to using Autonomy. Usally the address of a dapp owner
      * @return id           The id of the request
      */
-    function newRawReq(
+
+    function newReq(
         address target,
         address payable referer,
         bytes calldata callData,
         uint120 ethForCall,
         bool verifySender,
         bool payWithAUTO
-    ) external payable returns (uint id);
-
-    function getRawReqs() external view returns (Request[] memory);
-
-    function getRawReqLen() external view returns (uint);
-    
-    function getRawReq(uint id) external view returns (Request memory);
-
-
-    //////////////////////////////////////////////////////////////
-    //                                                          //
-    //                      Hashed Requests                     //
-    //                                                          //
-    //////////////////////////////////////////////////////////////
-
-    function newHashedReq(
-        address target,
-        address payable referer,
-        bytes calldata callData,
-        uint120 ethForCall,
-        bool verifySender,
-        bool payWithAUTO,
-        bytes memory dataPrefix,
-        bytes memory dataSuffix
     ) external payable returns (uint id);
 
     function getHashedReqs() external view returns (bytes32[] memory);
@@ -125,13 +102,9 @@ interface IRegistry {
     //                                                          //
     //////////////////////////////////////////////////////////////
 
-    function executeRawReq(uint id) external returns (uint gasUsed);
-
     function executeHashedReq(
         uint id,
-        Request calldata r,
-        bytes memory dataPrefix,
-        bytes memory dataSuffix
+        Request calldata r
     ) external returns (uint gasUsed);
 
     /**
@@ -153,13 +126,9 @@ interface IRegistry {
     //                                                          //
     //////////////////////////////////////////////////////////////
     
-    function cancelRawReq(uint id) external;
-    
     function cancelHashedReq(
         uint id,
-        Request memory r,
-        bytes memory dataPrefix,
-        bytes memory dataSuffix
+        Request memory r
     ) external;
     
     function cancelHashedReqUnveri(

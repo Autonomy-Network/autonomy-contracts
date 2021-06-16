@@ -26,7 +26,6 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     IStakeManager private _stakeMan;
     IOracle private _oracle;
     IForwarder private _veriForwarder;
-    Request[] private _rawReqs;
     // We need to have 2 separete arrays for adding requests with and without
     // eth because, when comparing the hash of a request to be executed to the
     // stored hash, we have no idea what the request had for the eth values
@@ -59,10 +58,8 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     //     bool payWithAUTO;
     // }
 
-    event RawReqAdded(uint indexed id);
-    event RawReqRemoved(uint indexed id, bool wasExecuted);
-    event HashedReqAdded(uint indexed id);
-    event HashedReqRemoved(uint indexed id, bool wasExecuted);
+    event ReqAdded(uint indexed id, Request r);
+    event ReqRemoved(uint indexed id, bool wasExecuted);
     event HashedReqUnveriAdded(uint indexed id);
     event HashedReqUnveriRemoved(uint indexed id, bool wasExecuted);
 
@@ -82,11 +79,11 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
 
     //////////////////////////////////////////////////////////////
     //                                                          //
-    //                       Raw Requests                       //
+    //                      Hashed Requests                     //
     //                                                          //
     //////////////////////////////////////////////////////////////
-    
-    function newRawReq(
+
+    function newReq(
         address target,
         address payable referer,
         bytes calldata callData,
@@ -102,71 +99,11 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         validEth(payWithAUTO, ethForCall)
         returns (uint id)
     {
-        // Annoyingly, this has to be pasted from validCalldata because of
-        // a 'stack too deep' error otherwise
-        if (verifySender) {
-            require(abi.decode(callData[4:36], (address)) == msg.sender, "Reg: calldata not verified");
-        }
-
-        id = _rawReqs.length;
-        emit RawReqAdded(id);
-        _rawReqs.push(Request(payable(msg.sender), target, referer, callData, uint120(msg.value), ethForCall, verifySender, payWithAUTO));
-    }
-
-    function getRawReqs() external view override returns (Request[] memory) {
-        return _rawReqs;
-    }
-
-    function getRawReqsSlice(uint startIdx, uint endIdx) external view returns (Request[] memory) {
-        Request[] memory slice = new Request[](endIdx - startIdx);
-        uint sliceIdx = 0;
-        for (uint arrIdx = startIdx; arrIdx < endIdx; arrIdx++) {
-            slice[sliceIdx] = _rawReqs[arrIdx];
-            sliceIdx++;
-        }
-
-        return slice;
-    }
-
-    function getRawReqLen() external view override returns (uint) {
-        return _rawReqs.length;
-    }
-    
-    function getRawReq(uint id) external view override returns (Request memory) {
-        return _rawReqs[id];
-    }
-
-
-    //////////////////////////////////////////////////////////////
-    //                                                          //
-    //                      Hashed Requests                     //
-    //                                                          //
-    //////////////////////////////////////////////////////////////
-
-    function newHashedReq(
-        address target,
-        address payable referer,
-        bytes calldata callData,
-        uint120 ethForCall,
-        bool verifySender,
-        bool payWithAUTO,
-        bytes memory dataPrefix,
-        bytes memory dataSuffix
-    // Stack too deep with the extra nz checks
-    // ) external payable nzAddr(target) targetNotThis(target) validEth(ethForCall) returns (uint id) {
-    )
-        external
-        payable
-        override
-        targetNotThis(target)
-        validEth(payWithAUTO, ethForCall)
-        returns (uint id)
-    {
         Request memory r = Request(payable(msg.sender), target, referer, callData, uint120(msg.value), ethForCall, verifySender, payWithAUTO);
-        bytes32 hashedIpfsReq = getHashedIpfsReq(getReqBytes(r), dataPrefix, dataSuffix);
+        bytes32 hashedIpfsReq = keccak256(getReqBytes(r));
 
         id = _hashedReqs.length;
-        emit HashedReqAdded(id);
+        emit ReqAdded(id, r);
         _hashedReqs.push(hashedIpfsReq);
     }
 
@@ -262,24 +199,6 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     //                                                          //
     //////////////////////////////////////////////////////////////
 
-    function executeRawReq(uint id) external override validExec nonReentrant returns (uint gasUsed) {
-        Request memory r = _rawReqs[id];
-        require(r.requester != _ADDR_0, "Reg: already executed");
-        uint ethStartBal = address(this).balance;
-        
-        uint startGas = gasleft();
-        delete _rawReqs[id];
-        gasUsed = _execute(r, startGas - gasleft(), 19500);
-        
-        emit RawReqRemoved(id, true);
-
-        // Stack too deep... have to put this here
-        if (r.payWithAUTO) {
-            require(address(this).balance >= ethStartBal - r.ethForCall, "Reg: something fishy here");
-        } else {
-            require(address(this).balance >= ethStartBal - r.initEthSent, "Reg: something fishy here");
-        }
-    }
 
     /**
      * @dev validCalldata needs to be before anything that would convert it to memory
@@ -291,9 +210,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
      */
     function executeHashedReq(
         uint id,
-        Request calldata r,
-        bytes memory dataPrefix,
-        bytes memory dataSuffix
+        Request calldata r
     )
         external
         override
@@ -301,14 +218,14 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         nonReentrant
         noFish(r)
         validCalldata(r)
-        verReq(id, r, dataPrefix, dataSuffix, _hashedReqs)
+        verReq(id, r)
         returns (uint gasUsed)
     {
         uint startGas = gasleft();
         delete _hashedReqs[id];
         gasUsed = _execute(r, startGas - gasleft(), msg.data.length * 20);
         
-        emit HashedReqRemoved(id, true);
+        emit ReqRemoved(id, true);
     }
 
     /**
@@ -328,7 +245,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         nonReentrant
         noFish(r)
         targetNotThis(r.target)
-        verReq(id, r, dataPrefix, dataSuffix, _hashedReqsUnveri)
+        verReqIPFS(id, r, dataPrefix, dataSuffix)
         returns (uint gasUsed)
     {
         require(
@@ -437,35 +354,20 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     //                                                          //
     //////////////////////////////////////////////////////////////
     
-    function cancelRawReq(uint id) external override nonReentrant {
-        Request memory r = _rawReqs[id];
-        require(msg.sender == r.requester, "Reg: not the requester");
-        
-        // Cancel the request
-        delete _rawReqs[id];
-        emit RawReqRemoved(id, false);
-        
-        // Send refund
-        if (r.initEthSent > 0) {
-            r.requester.transfer(r.initEthSent);
-        }
-    }
     
     function cancelHashedReq(
         uint id,
-        Request memory r,
-        bytes memory dataPrefix,
-        bytes memory dataSuffix
+        Request memory r
     )
         external
         override
         nonReentrant
-        verReq(id, r, dataPrefix, dataSuffix, _hashedReqs)
+        verReq(id, r)
     {
         require(msg.sender == r.requester, "Reg: not the requester");
         
         // Cancel the request
-        emit HashedReqRemoved(id, false);
+        emit ReqRemoved(id, false);
         delete _hashedReqs[id];
         
         // Send refund
@@ -483,7 +385,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         external
         override
         nonReentrant
-        verReq(id, r, dataPrefix, dataSuffix, _hashedReqsUnveri)
+        verReqIPFS(id, r, dataPrefix, dataSuffix)
     {
         require(msg.sender == r.requester, "Reg: not the requester");
         
@@ -592,14 +494,27 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     // request isn't going to be address(0)
     modifier verReq(
         uint id,
-        Request memory r,
-        bytes memory dataPrefix,
-        bytes memory dataSuffix,
-        bytes32[] storage hashedIpfsReqs
+        Request memory r
     ) {
         require(
-            getHashedIpfsReq(getReqBytes(r), dataPrefix, dataSuffix) == hashedIpfsReqs[id], 
+            keccak256(getReqBytes(r)) == _hashedReqs[id], 
             "Reg: request not the same"
+        );
+        _;
+    }
+
+    // Verify that a request is the same as the one initially stored. This also
+    // implicitly checks that the request hasn't been deleted as the hash of the
+    // request isn't going to be address(0)
+    modifier verReqIPFS(
+        uint id,
+        Request memory r,
+        bytes memory dataPrefix,
+        bytes memory dataSuffix
+    ) {
+        require(
+            getHashedIpfsReq(getReqBytes(r), dataPrefix, dataSuffix) == _hashedReqsUnveri[id], 
+            "Reg: unveri request not the same"
         );
         _;
     }
