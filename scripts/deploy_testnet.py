@@ -8,9 +8,6 @@ sys.path.pop()
 
 
 AUTONOMY_SEED = os.environ['AUTONOMY_SEED']
-# Annoyingly you need to use cf_accs in order to access the private keys directly,
-# they can't be found via accounts[0] etc since it doesn't replace the accounts
-# and the private keys of the default accounts can't be accessed directly
 auto_accs = accounts.from_mnemonic(AUTONOMY_SEED, count=10)
 
 
