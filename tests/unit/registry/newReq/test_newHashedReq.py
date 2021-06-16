@@ -106,7 +106,7 @@ def test_newHashedReq_rev_target_is_registry(auto, mockTarget):
 def test_newHashedReq_rev_target_is_AUTO(auto, mockTarget):
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_TARGET):
-        tx = auto.r.newHashedReq(auto.r, auto.DENICE, callData, 0, False, True, "", "", auto.FR_BOB)
+        tx = auto.r.newHashedReq(auto.AUTO, auto.DENICE, callData, 0, False, True, "", "", auto.FR_BOB)
 
 
 @given(
