@@ -28,7 +28,7 @@ def test_stake_multi(auto, evmMaths, stakedMulti):
         cumNumStanStakes += n
         assert tx.events["Staked"][0].values() == [s, n * STAN_STAKE]
     
-    exec, epoch = getExecutor(evmMaths, bn() + 1, stakes)
+    exec, epoch = getExecutor(evmMaths, bn() + 1, stakes, None)
     assert auto.sm.isUpdatedExec(exec).return_value
     for s in stakerToNum:
         assert auto.sm.getStake(s) == stakerToNum[s] * STAN_STAKE

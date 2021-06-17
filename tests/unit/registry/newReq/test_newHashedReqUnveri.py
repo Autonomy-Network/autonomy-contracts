@@ -25,15 +25,6 @@ def test_newHashedReqUnveri(auto, mockTarget, hashedIpfsReq, sender):
     assert auto.r.getHashedReqsUnveriLen() == 1
     assert auto.r.getHashedReqUnveri(0) == bytesToHex(hashedIpfsReq)
 
-    assert auto.r.getRawReqs() == []
-    # Should revert when using indexes above the length
-    with reverts():
-        auto.r.getRawReqsSlice(0, 1)
-    assert auto.r.getRawReqsSlice(0, 0) == []
-    assert auto.r.getRawReqLen() == 0
-    with reverts():
-        auto.r.getRawReq(0)
-    
     assert auto.r.getHashedReqs() == []
     # Should revert when using indexes above the length
     with reverts():
@@ -81,15 +72,6 @@ def test_newHashedReqUnveri_real(auto, mockTarget):
     assert auto.r.getHashedReqsUnveriLen() == 1
     assert auto.r.getHashedReqUnveri(0) == getHashFromCID(ipfsCID)
 
-    assert auto.r.getRawReqs() == []
-    # Should revert when using indexes above the length
-    with reverts():
-        auto.r.getRawReqsSlice(0, 1)
-    assert auto.r.getRawReqsSlice(0, 0) == []
-    assert auto.r.getRawReqLen() == 0
-    with reverts():
-        auto.r.getRawReq(0)
-    
     assert auto.r.getHashedReqs() == []
     # Should revert when using indexes above the length
     with reverts():
@@ -112,17 +94,6 @@ def test_newHashedReqUnveri_real(auto, mockTarget):
     assert auto.r.getReqCountOf(auto.BOB) == 0
     assert auto.r.getExecCountOf(auto.ALICE) == 0
     assert auto.r.getReferalCountOf(auto.DENICE) == 0
-
-
-    # Ensure that the hash used with newHashedReqUnveri is the same as 
-    # the one generated with newHashedReq
-    reqBytesIdx = ipfsBlock.index(reqBytes)
-    dataPrefix = ipfsBlock[:reqBytesIdx]
-    dataSuffix = ipfsBlock[reqBytesIdx + len(reqBytes) : ]
-
-    tx2 = auto.r.newHashedReq(mockTarget, auto.DENICE, callData, 0, False, True, dataPrefix, dataSuffix, auto.FR_BOB)
-
-    assert auto.r.getHashedReq(0) == hash
 
 
 def test_newHashedReqUnveri_rev_empty_hashedIpfsReq(auto, mockTarget):

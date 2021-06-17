@@ -15,17 +15,17 @@ def test_executeHashedReq_rev_nonReentrant(auto, mockTarget, mockReentrancyAttac
     req1 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE, callData, 0, 0, False, True)
     addToIpfs(auto, req1)
 
-    auto.r.newHashedReq(mockTarget, auto.DENICE, callData, 0, False, True, *getIpfsMetaData(auto, req1), {'from': auto.BOB})
+    auto.r.newReq(mockTarget, auto.DENICE, callData, 0, False, True, {'from': auto.BOB})
 
     # Create request to be executed directly
-    callData = mockReentrancyAttack.callExecuteHashedReq.encode_input(0, req1, *getIpfsMetaData(auto, req1))
+    callData = mockReentrancyAttack.callExecuteHashedReq.encode_input(0, req1)
     req2 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE, callData, 0, 0, False, True)
     addToIpfs(auto, req2)
 
-    auto.r.newHashedReq(mockReentrancyAttack, auto.DENICE, callData, 0, False, True, *getIpfsMetaData(auto, req2), {'from': auto.BOB})
+    auto.r.newReq(mockReentrancyAttack, auto.DENICE, callData, 0, False, True, {'from': auto.BOB})
 
     with reverts(REV_MSG_REENTRANCY):
-        auto.r.executeHashedReq(1, req2, *getIpfsMetaData(auto, req2))
+        auto.r.executeHashedReq(1, req2)
 
 
 # Check that the revert message from the target contract is passed on correctly
@@ -34,10 +34,10 @@ def test_executeHashedReq_returns_revert_message(auto, stakedMin, mockTarget):
     
     callData = mockTarget.revertWithMessage.encode_input()
     req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, E_18, 0, False, False)
-    tx = auto.r.newHashedReq(mockTarget, auto.DENICE, callData, 0, False, False, *getIpfsMetaData(auto, req), {'from': auto.BOB, 'value': E_18})
+    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, 0, False, False, {'from': auto.BOB, 'value': E_18})
 
     with reverts(REV_MSG_GOOFED):
-        auto.r.executeHashedReq(0, req, *getIpfsMetaData(auto, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+        auto.r.executeHashedReq(0, req, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 # Check that no revert message from the target contract is passed on correctly
@@ -46,10 +46,10 @@ def test_executeHashedReq_returns_no_revert_message(auto, stakedMin, mockTarget)
     
     callData = mockTarget.revertWithoutMessage.encode_input()
     req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, E_18, 0, False, False)
-    tx = auto.r.newHashedReq(mockTarget, auto.DENICE, callData, 0, False, False, *getIpfsMetaData(auto, req), {'from': auto.BOB, 'value': E_18})
+    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, 0, False, False, {'from': auto.BOB, 'value': E_18})
 
     with reverts(''):
-        auto.r.executeHashedReq(0, req, *getIpfsMetaData(auto, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+        auto.r.executeHashedReq(0, req, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 # Randomly generate addresses for the sender and calldata input independently
@@ -77,13 +77,13 @@ def test_executeHashedReq_validCalldata(auto, evmMaths, stakedMin, mockTarget, e
         auto.AUTO.approve(auto.r, MAX_TEST_STAKE, {'from': sender})
         auto.AUTO.transfer(sender, MAX_TEST_STAKE, auto.FR_DEPLOYER)
         senderAUTOStartBal = auto.AUTO.balanceOf(sender)
-        auto.r.newHashedReq(mockTarget, auto.DENICE, callData, ethForCall, True, payWithAUTO, *getIpfsMetaData(auto, req), {'from': sender, 'value': msgValue})
+        auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, True, payWithAUTO, {'from': sender, 'value': msgValue})
 
         if userAddr != sender:
             with reverts(REV_MSG_CALLDATA_NOT_VER):
-                auto.r.executeHashedReq(id, req, *getIpfsMetaData(auto, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+                auto.r.executeHashedReq(id, req, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
         else:
-            tx = auto.r.executeHashedReq(id, req, *getIpfsMetaData(auto, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+            tx = auto.r.executeHashedReq(id, req, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
             assert mockTarget.balance() == ethForCall
             if payWithAUTO:
@@ -143,7 +143,7 @@ def test_executeHashedReq_no_ethForCall(auto, evmMaths, stakedMin, mockTarget, h
     assert auto.AUTO.balanceOf(auto.DENICE) == 0
     assert auto.AUTO.balanceOf(auto.r) == 0
 
-    tx = auto.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(auto, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    tx = auto.r.executeHashedReq(id, reqs[id], {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
@@ -192,7 +192,7 @@ def test_executeHashedReq_with_ethForCall(auto, evmMaths, stakedMin, mockTarget,
     assert auto.AUTO.balanceOf(auto.DENICE) == 0
     assert auto.AUTO.balanceOf(auto.r) == 0
 
-    tx = auto.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(auto, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    tx = auto.r.executeHashedReq(id, reqs[id], {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
@@ -245,7 +245,7 @@ def test_executeHashedReq_pay_AUTO(auto, evmMaths, stakedMin, mockTarget, hashed
     assert auto.AUTO.balanceOf(auto.DENICE) == 0
     assert auto.AUTO.balanceOf(auto.r) == 0
 
-    tx = auto.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(auto, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    tx = auto.r.executeHashedReq(id, reqs[id], {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
@@ -294,7 +294,7 @@ def test_executeHashedReq_pay_AUTO_with_ethForCall(auto, evmMaths, stakedMin, mo
     assert auto.AUTO.balanceOf(auto.DENICE) == 0
     assert auto.AUTO.balanceOf(auto.r) == 0
 
-    tx = auto.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(auto, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    tx = auto.r.executeHashedReq(id, reqs[id], {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
@@ -343,7 +343,7 @@ def test_executeHashedReq_pay_AUTO_with_ethForCall_and_verifySender(auto, evmMat
     assert auto.AUTO.balanceOf(auto.DENICE) == 0
     assert auto.AUTO.balanceOf(auto.r) == 0
 
-    tx = auto.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(auto, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    tx = auto.r.executeHashedReq(id, reqs[id], {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
@@ -381,7 +381,7 @@ def test_executeHashedReq_pay_AUTO_with_ethForCall_and_verifySender(auto, evmMat
 def test_executeHashedReq_rev_not_executor(auto, stakedMin, hashedReqs):
     reqs, reqHashes, msgValue, ethForCall = hashedReqs
     with reverts(REV_MSG_NOT_EXEC):
-        auto.r.executeHashedReq(0, reqs[0], *getIpfsMetaData(auto, reqs[0]), {'from': auto.DENICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+        auto.r.executeHashedReq(0, reqs[0], {'from': auto.DENICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReq_rev_req_not_the_same(auto, stakedMin, hashedReqs):
@@ -390,17 +390,17 @@ def test_executeHashedReq_rev_req_not_the_same(auto, stakedMin, hashedReqs):
     invalidReq = list(reqs[0])
     invalidReq[4] = 1
     with reverts(REV_MSG_NOT_SAME):
-        auto.r.executeHashedReq(0, invalidReq, *getIpfsMetaData(auto, invalidReq), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+        auto.r.executeHashedReq(0, invalidReq, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReq_rev_already_executeHashedReqd(auto, stakedMin, hashedReqs):
     _, staker, __ = stakedMin
     reqs, reqHashes, msgValue, ethForCall = hashedReqs
 
-    auto.r.executeHashedReq(0, reqs[0], *getIpfsMetaData(auto, reqs[0]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    auto.r.executeHashedReq(0, reqs[0], {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
     with reverts(REV_MSG_NOT_SAME):
-        auto.r.executeHashedReq(0, reqs[0], *getIpfsMetaData(auto, reqs[0]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+        auto.r.executeHashedReq(0, reqs[0], {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReq_rev_noFish_pay_eth(auto, vulnerableRegistry, vulnerableHashedReqs, stakedMin):
@@ -409,7 +409,7 @@ def test_executeHashedReq_rev_noFish_pay_eth(auto, vulnerableRegistry, vulnerabl
     id = 0
 
     with reverts(REV_MSG_FISHY):
-        vulnerableRegistry.executeHashedReq(id, reqs[id], *getIpfsMetaData(auto, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+        vulnerableRegistry.executeHashedReq(id, reqs[id], {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReq_rev_noFish_payWithAUTO(auto, vulnerableRegistry, vulnerableHashedReqs, stakedMin):
@@ -418,4 +418,4 @@ def test_executeHashedReq_rev_noFish_payWithAUTO(auto, vulnerableRegistry, vulne
     id = 1
 
     with reverts(REV_MSG_FISHY):
-        vulnerableRegistry.executeHashedReq(id, reqs[id], *getIpfsMetaData(auto, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+        vulnerableRegistry.executeHashedReq(id, reqs[id], {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})

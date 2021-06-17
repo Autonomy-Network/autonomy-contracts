@@ -58,8 +58,8 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     //     bool payWithAUTO;
     // }
 
-    event ReqAdded(uint indexed id, Request r);
-    event ReqRemoved(uint indexed id, bool wasExecuted);
+    event HashedReqAdded(uint indexed id, Request r);
+    event HashedReqRemoved(uint indexed id, bool wasExecuted);
     event HashedReqUnveriAdded(uint indexed id);
     event HashedReqUnveriRemoved(uint indexed id, bool wasExecuted);
 
@@ -103,7 +103,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         bytes32 hashedIpfsReq = keccak256(getReqBytes(r));
 
         id = _hashedReqs.length;
-        emit ReqAdded(id, r);
+        emit HashedReqAdded(id, r);
         _hashedReqs.push(hashedIpfsReq);
     }
 
@@ -204,9 +204,9 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
      * @dev validCalldata needs to be before anything that would convert it to memory
      *      since that is persistent and would prevent validCalldata, that requries
      *      calldata, from working. Can't do the check in _execute for the same reason.
-     *      Note: targetNotThis and validEth are used in newHashedReq.
+     *      Note: targetNotThis and validEth are used in newReq.
      *      validCalldata is only used here because it causes an unknown
-     *      'InternalCompilerError' when using it with newHashedReq
+     *      'InternalCompilerError' when using it with newReq
      */
     function executeHashedReq(
         uint id,
@@ -225,7 +225,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         delete _hashedReqs[id];
         gasUsed = _execute(r, startGas - gasleft(), msg.data.length * 20);
         
-        emit ReqRemoved(id, true);
+        emit HashedReqRemoved(id, true);
     }
 
     /**
@@ -367,7 +367,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         require(msg.sender == r.requester, "Reg: not the requester");
         
         // Cancel the request
-        emit ReqRemoved(id, false);
+        emit HashedReqRemoved(id, false);
         delete _hashedReqs[id];
         
         // Send refund

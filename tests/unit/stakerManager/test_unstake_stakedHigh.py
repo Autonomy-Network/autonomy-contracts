@@ -24,7 +24,8 @@ def unstakeTest(
         auto.sm.getStakesSlice(0, len(startStakes) + 1)
     assert auto.sm.getStakesSlice(0, len(startStakes)) == startStakes
     assert auto.sm.getCurEpoch() == getEpoch(bn())
-    assert auto.sm.getExecutor() == getExecutor(evmMaths, bn(), startStakes)
+    prevExec = getExecutor(evmMaths, bn(), startStakes, None)
+    assert auto.sm.getExecutor() == prevExec
     if bn() % BLOCKS_IN_EPOCH != BLOCKS_IN_EPOCH - 1:
         assert auto.sm.isUpdatedExec(staker).return_value
     for addr in a:
@@ -50,7 +51,7 @@ def unstakeTest(
             auto.sm.getStakesSlice(0, len(newStakes) + 1)
         assert auto.sm.getStakesSlice(0, len(newStakes)) == newStakes
         assert auto.sm.getCurEpoch() == getEpoch(bn())
-        newExec, epoch = getExecutor(evmMaths, bn(), startStakes)
+        newExec, epoch = getExecutor(evmMaths, bn(), startStakes, prevExec)
         assert auto.sm.getExecutor() == (newExec, epoch)
         if bn() % BLOCKS_IN_EPOCH != BLOCKS_IN_EPOCH - 1:
             assert auto.sm.isUpdatedExec(newExec).return_value
@@ -96,7 +97,7 @@ def test_unstake_7(auto, evmMaths, stakedHigh):
         auto.sm.getStakesSlice(0, len(stakes) + 1)
     assert auto.sm.getStakesSlice(0, len(stakes)) == stakes
     assert auto.sm.getCurEpoch() == getEpoch(bn())
-    newExec, epoch = getExecutor(evmMaths, bn(), [staker] * startNumStakes)
+    newExec, epoch = getExecutor(evmMaths, bn(), [staker] * startNumStakes, None)
     assert auto.sm.getExecutor() == (newExec, epoch)
     if bn() % BLOCKS_IN_EPOCH != BLOCKS_IN_EPOCH - 1:
         assert auto.sm.isUpdatedExec(newExec).return_value

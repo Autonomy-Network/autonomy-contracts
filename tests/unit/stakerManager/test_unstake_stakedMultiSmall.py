@@ -40,7 +40,7 @@ def test_unstake_3_of_4th_staker_from_stakedMultiSmall(auto, evmMaths, stakedMul
         auto.sm.getStakesSlice(0, len(newStakes) + 1)
     assert auto.sm.getStakesSlice(0, len(newStakes)) == newStakes
     assert auto.sm.getCurEpoch() == getEpoch(bn())
-    newExec, epoch = getExecutor(evmMaths, bn(), startStakes)
+    newExec, epoch = getExecutor(evmMaths, bn(), startStakes, None)
     assert auto.sm.getExecutor() == (newExec, epoch)
     if bn() % BLOCKS_IN_EPOCH != BLOCKS_IN_EPOCH - 1:
         assert auto.sm.isUpdatedExec(newExec).return_value
@@ -78,7 +78,7 @@ def test_unstake_1_of_2nd_staker_from_stakedMultiSmall(auto, evmMaths, stakedMul
         auto.sm.getStakesSlice(0, len(newStakes) + 1)
     assert auto.sm.getStakesSlice(0, len(newStakes)) == newStakes
     assert auto.sm.getCurEpoch() == getEpoch(bn())
-    newExec, epoch = getExecutor(evmMaths, bn(), startStakes)
+    newExec, epoch = getExecutor(evmMaths, bn(), startStakes, None)
     assert auto.sm.getExecutor() == (newExec, epoch)
     if bn() % BLOCKS_IN_EPOCH != BLOCKS_IN_EPOCH - 1:
         assert auto.sm.isUpdatedExec(newExec).return_value
@@ -117,7 +117,7 @@ def test_unstake_2_of_3rd_staker_from_stakedMultiSmall(auto, evmMaths, stakedMul
         auto.sm.getStakesSlice(0, len(newStakes) + 1)
     assert auto.sm.getStakesSlice(0, len(newStakes)) == newStakes
     assert auto.sm.getCurEpoch() == getEpoch(bn())
-    newExec, epoch = getExecutor(evmMaths, bn(), startStakes)
+    newExec, epoch = getExecutor(evmMaths, bn(), startStakes, None)
     assert auto.sm.getExecutor() == (newExec, epoch)
     if bn() % BLOCKS_IN_EPOCH != BLOCKS_IN_EPOCH - 1:
         assert auto.sm.isUpdatedExec(newExec).return_value

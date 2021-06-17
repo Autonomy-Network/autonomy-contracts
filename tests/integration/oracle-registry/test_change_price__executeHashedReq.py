@@ -24,7 +24,7 @@ def test_updateGasPriceFast_lower_executeHashedReq_with_ethForCall(auto, evmMath
     
     assert auto.po.getGasPriceFast() == newGasPriceFast
 
-    tx = auto.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(auto, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    tx = auto.r.executeHashedReq(id, reqs[id], {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
@@ -84,7 +84,7 @@ def test_updateGasPriceFast_higher_executeHashedReq_payAUTO(auto, evmMaths, stak
     
     assert auto.po.getGasPriceFast() == newGasPriceFast
 
-    tx = auto.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(auto, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    tx = auto.r.executeHashedReq(id, reqs[id], {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
@@ -140,7 +140,7 @@ def test_updateAUTOPerETH_higher_executeHashedReq_payAUTO(auto, evmMaths, staked
     
     assert auto.po.getAUTOPerETH() == newAUTOPerETH
 
-    tx = auto.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(auto, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    tx = auto.r.executeHashedReq(id, reqs[id], {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals

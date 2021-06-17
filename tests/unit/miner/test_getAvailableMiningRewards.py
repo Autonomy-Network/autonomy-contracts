@@ -18,8 +18,9 @@ def test_getAvailableMiningRewards(auto, mockTarget, ethForCall, requester):
         
         callData = mockTarget.setAddrPayVerified.encode_input(requester)
         msgValue = ethForCall + int(0.5 * E_18)
-        auto.r.newRawReq(mockTarget, auto.DENICE, callData, ethForCall, True, False, {'from': requester, 'value': msgValue})
-        auto.r.executeRawReq(0, auto.FR_ALICE)
+        auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, True, False, {'from': requester, 'value': msgValue})
+        req = (requester, mockTarget, auto.DENICE, callData, msgValue, ethForCall, True, False)
+        auto.r.executeHashedReq(0, req, auto.FR_ALICE)
 
         # Should've changed
         assert auto.m.getAvailableMiningRewards(requester) == (1, 0, 0, INIT_REQUESTER_REWARD)
@@ -61,8 +62,9 @@ def test_getAvailableMiningRewards_all_parties_random(auto, mockTarget, referer,
     
     callData = mockTarget.setAddrPayVerified.encode_input(requester)
     msgValue = ethForCall + int(0.5 * E_18)
-    auto.r.newRawReq(mockTarget, referer, callData, ethForCall, True, False, {'from': requester, 'value': msgValue})
-    auto.r.executeRawReq(0, {'from': executor})
+    auto.r.newReq(mockTarget, referer, callData, ethForCall, True, False, {'from': requester, 'value': msgValue})
+    req = (requester, mockTarget, referer, callData, msgValue, ethForCall, True, False)
+    auto.r.executeHashedReq(0, req, {'from': executor})
 
     # Should've changed
     for addr in addrs:
@@ -97,8 +99,9 @@ def test_getAvailableMiningRewards_requester_executor_referer_same(auto, mockTar
     ethForCall = 0
     msgValue = E_18
     auto.AUTO.approve(auto.r, MAX_TEST_STAKE, {'from': auto.ALICE})
-    auto.r.newRawReq(mockTarget, auto.ALICE, callData, ethForCall, True, False, {'from': auto.ALICE, 'value': msgValue})
-    auto.r.executeRawReq(0, auto.FR_ALICE)
+    auto.r.newReq(mockTarget, auto.ALICE, callData, ethForCall, True, False, {'from': auto.ALICE, 'value': msgValue})
+    req = (auto.ALICE, mockTarget, auto.ALICE, callData, msgValue, ethForCall, True, False)
+    auto.r.executeHashedReq(0, req, auto.FR_ALICE)
 
     # Should've changed
     assert auto.m.getAvailableMiningRewards(auto.ALICE) == (1, 1, 1, INIT_REQUESTER_REWARD + INIT_EXECUTOR_REWARD + INIT_REFERAL_REWARD)

@@ -21,8 +21,9 @@ def test_getHashedReqsSlice(auto, mockTarget, requesters, startIdxs, endIdxs):
     for requester in requesters:
         req = (requester.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, False)
         cid = addToIpfs(auto, req)
-        auto.r.newHashedReq(mockTarget, auto.DENICE, callData, 0, False, False, *getIpfsMetaData(auto, req), {'from': requester})
-        hashedReqs.append(getHashFromCID(cid))
+        auto.r.newReq(mockTarget, auto.DENICE, callData, 0, False, False, {'from': requester})
+        hashedReqs.append(keccakReq(auto, req))
+
     
     assert auto.r.getHashedReqsSlice(0, len(requesters)) == hashedReqs
     assert auto.r.getHashedReqsSlice(0, len(requesters)) == auto.r.getHashedReqs()

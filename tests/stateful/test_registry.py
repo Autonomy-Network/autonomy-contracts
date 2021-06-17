@@ -61,28 +61,28 @@
 #         st_id_src = strategy("uint")
 
 
-#         def rule_newRawReq_setX(self, st_x, st_referer, st_msgValue, st_ethForCall, st_verifySender, st_payWithAUTO, st_sender):
+#         def rule_newReq_setX(self, st_x, st_referer, st_msgValue, st_ethForCall, st_verifySender, st_payWithAUTO, st_sender):
 #             inputs = st_x, self.target, st_referer, st_msgValue, st_ethForCall, st_verifySender, st_payWithAUTO, st_sender
 #             callData = self.target.setX.encode_input(st_x)
 
 #             if st_payWithAUTO and st_ethForCall != st_msgValue:
-#                 print('        REV_MSG_ETHFORCALL_NOT_MSGVALUE rule_newRawReq_setX', inputs)
+#                 print('        REV_MSG_ETHFORCALL_NOT_MSGVALUE rule_newReq_setX', inputs)
 #                 with reverts(REV_MSG_ETHFORCALL_NOT_MSGVALUE):
-#                     self.r.newRawReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
+#                     self.r.newReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
 
 #             elif (not st_payWithAUTO) and st_ethForCall > st_msgValue:
-#                 print('        REV_MSG_ETHFORCALL_HIGH rule_newRawReq_setX', inputs)
+#                 print('        REV_MSG_ETHFORCALL_HIGH rule_newReq_setX', inputs)
 #                 with reverts(REV_MSG_ETHFORCALL_HIGH):
-#                     self.r.newRawReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
+#                     self.r.newReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
             
 #             elif st_verifySender:
-#                 print('        CANNOT_DECODE_TO_ADDRESS rule_newRawReq_setX', inputs)
+#                 print('        CANNOT_DECODE_TO_ADDRESS rule_newReq_setX', inputs)
 #                 with reverts(''):
-#                     self.r.newRawReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
+#                     self.r.newReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
 
 #             else:
-#                 print('                    rule_newRawReq_setX', inputs)
-#                 self.r.newRawReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
+#                 print('                    rule_newReq_setX', inputs)
+#                 self.r.newReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
 
 #                 req = (st_sender, self.target, st_referer, callData, st_msgValue, st_ethForCall, st_verifySender, st_payWithAUTO)
 #                 self.rawReqs.append(req)
@@ -91,13 +91,13 @@
 
 
 #         # Parameters where it won't fail most of the time
-#         def rule_newRawReq_setX_working(self, st_x, st_referer, st_msgValue, st_payWithAUTO, st_sender):
+#         def rule_newReq_setX_working(self, st_x, st_referer, st_msgValue, st_payWithAUTO, st_sender):
 #             if st_payWithAUTO: st_msgValue = 0
 #             inputs = st_x, self.target, st_referer, st_msgValue, st_payWithAUTO, st_sender
 #             callData = self.target.setX.encode_input(st_x)
             
-#             print('                    rule_newRawReq_setX_working', inputs)
-#             self.r.newRawReq(self.target, st_referer, callData, 0, False, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
+#             print('                    rule_newReq_setX_working', inputs)
+#             self.r.newReq(self.target, st_referer, callData, 0, False, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
 
 #             req = (st_sender, self.target, st_referer, callData, st_msgValue, 0, False, st_payWithAUTO)
 #             self.rawReqs.append(req)
@@ -105,28 +105,28 @@
 #             self.ethBals[st_sender] -= st_msgValue
 
 
-#         def rule_newRawReq_setXPay(self, st_x, st_referer, st_msgValue, st_ethForCall, st_verifySender, st_payWithAUTO, st_sender):
+#         def rule_newReq_setXPay(self, st_x, st_referer, st_msgValue, st_ethForCall, st_verifySender, st_payWithAUTO, st_sender):
 #             inputs = st_x, self.target, st_referer, st_msgValue, st_ethForCall, st_verifySender, st_payWithAUTO, st_sender
 #             callData = self.target.setXPay.encode_input(st_x)
 
 #             if st_payWithAUTO and st_ethForCall != st_msgValue:
-#                 print('        REV_MSG_ETHFORCALL_NOT_MSGVALUE rule_newRawReq_setXPay', inputs)
+#                 print('        REV_MSG_ETHFORCALL_NOT_MSGVALUE rule_newReq_setXPay', inputs)
 #                 with reverts(REV_MSG_ETHFORCALL_NOT_MSGVALUE):
-#                     self.r.newRawReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
+#                     self.r.newReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
 
 #             elif (not st_payWithAUTO) and st_ethForCall > st_msgValue:
-#                 print('        REV_MSG_ETHFORCALL_HIGH rule_newRawReq_setXPay', inputs)
+#                 print('        REV_MSG_ETHFORCALL_HIGH rule_newReq_setXPay', inputs)
 #                 with reverts(REV_MSG_ETHFORCALL_HIGH):
-#                     self.r.newRawReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
+#                     self.r.newReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
             
 #             elif st_verifySender:
-#                 print('        CANNOT_DECODE_TO_ADDRESS rule_newRawReq_setXPay', inputs)
+#                 print('        CANNOT_DECODE_TO_ADDRESS rule_newReq_setXPay', inputs)
 #                 with reverts(''):
-#                     self.r.newRawReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
+#                     self.r.newReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
 
 #             else:
-#                 print('                    rule_newRawReq_setXPay', inputs)
-#                 self.r.newRawReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
+#                 print('                    rule_newReq_setXPay', inputs)
+#                 self.r.newReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
 
 #                 req = (st_sender, self.target, st_referer, callData, st_msgValue, st_ethForCall, st_verifySender, st_payWithAUTO)
 #                 self.rawReqs.append(req)
@@ -135,12 +135,12 @@
 
 
 #         # Parameters where it won't fail most of the time
-#         def rule_newRawReq_setXPay_working(self, st_x, st_referer, st_ethForCall, st_msgValue, st_payWithAUTO, st_sender):
+#         def rule_newReq_setXPay_working(self, st_x, st_referer, st_ethForCall, st_msgValue, st_payWithAUTO, st_sender):
 #             inputs = st_x, self.target, st_referer, st_msgValue, st_payWithAUTO, st_sender
 #             callData = self.target.setXPay.encode_input(st_x)
             
-#             print('                    rule_newRawReq_setXPay_working', inputs)
-#             self.r.newRawReq(self.target, st_referer, callData, 0, False, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
+#             print('                    rule_newReq_setXPay_working', inputs)
+#             self.r.newReq(self.target, st_referer, callData, 0, False, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
 
 #             req = (st_sender, self.target, st_referer, callData, st_msgValue, 0, False, st_payWithAUTO)
 #             self.rawReqs.append(req)
@@ -148,28 +148,28 @@
 #             self.ethBals[st_sender] -= st_msgValue
 
 
-#         def rule_newRawReq_setAddrPayVerified(self, st_newUserAddr, st_referer, st_msgValue, st_ethForCall, st_verifySender, st_payWithAUTO, st_sender):
+#         def rule_newReq_setAddrPayVerified(self, st_newUserAddr, st_referer, st_msgValue, st_ethForCall, st_verifySender, st_payWithAUTO, st_sender):
 #             inputs = st_newUserAddr, self.target, st_referer, st_msgValue, st_ethForCall, st_verifySender, st_payWithAUTO, st_sender
 #             callData = self.target.setAddrPayVerified.encode_input(st_newUserAddr)
 
 #             if st_payWithAUTO and st_ethForCall != st_msgValue:
-#                 print('        REV_MSG_ETHFORCALL_NOT_MSGVALUE rule_newRawReq_setAddrPayVerified', inputs)
+#                 print('        REV_MSG_ETHFORCALL_NOT_MSGVALUE rule_newReq_setAddrPayVerified', inputs)
 #                 with reverts(REV_MSG_ETHFORCALL_NOT_MSGVALUE):
-#                     self.r.newRawReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
+#                     self.r.newReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
 
 #             elif (not st_payWithAUTO) and st_ethForCall > st_msgValue:
-#                 print('        REV_MSG_ETHFORCALL_HIGH rule_newRawReq_setAddrPayVerified', inputs)
+#                 print('        REV_MSG_ETHFORCALL_HIGH rule_newReq_setAddrPayVerified', inputs)
 #                 with reverts(REV_MSG_ETHFORCALL_HIGH):
-#                     self.r.newRawReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
+#                     self.r.newReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
             
 #             elif st_verifySender and st_newUserAddr != st_sender:
-#                 print('        REV_MSG_CALLDATA_NOT_VER rule_newRawReq_setAddrPayVerified', inputs)
+#                 print('        REV_MSG_CALLDATA_NOT_VER rule_newReq_setAddrPayVerified', inputs)
 #                 with reverts(REV_MSG_CALLDATA_NOT_VER):
-#                     self.r.newRawReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
+#                     self.r.newReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
 
 #             else:
-#                 print('                    rule_newRawReq_setAddrPayVerified', inputs)
-#                 self.r.newRawReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
+#                 print('                    rule_newReq_setAddrPayVerified', inputs)
+#                 self.r.newReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
 
 #                 req = (st_sender, self.target, st_referer, callData, st_msgValue, st_ethForCall, st_verifySender, st_payWithAUTO)
 #                 self.rawReqs.append(req)
@@ -184,7 +184,7 @@
 #                 id = st_id_src % int(len(self.rawReqs)*1.01)
 
 #                 if id >= len(self.rawReqs):
-#                     print('        REV_MSG_CALLDATA_NOT_VER rule_newRawReq_setAddrPayVerified', inputs)
+#                     print('        REV_MSG_CALLDATA_NOT_VER rule_newReq_setAddrPayVerified', inputs)
 #                     with reverts(REV_MSG_CALLDATA_NOT_VER):
 #                         self.r.executeRawReq(id)
 

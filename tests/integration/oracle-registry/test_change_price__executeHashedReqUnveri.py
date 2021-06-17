@@ -3,7 +3,7 @@ from utils import *
 from brownie import chain, reverts, web3
 
 
-def test_updateGasPriceFast_lower_executeRawReq_with_ethForCall(auto, evmMaths, stakedMin, mockTarget, hashedReqUnveri):
+def test_updateGasPriceFast_lower_executeHashedReqUnveri_with_ethForCall(auto, evmMaths, stakedMin, mockTarget, hashedReqUnveri):
     _, staker, __ = stakedMin
     req, reqHashBytes = hashedReqUnveri
     id = 0
@@ -57,7 +57,7 @@ def test_updateGasPriceFast_lower_executeRawReq_with_ethForCall(auto, evmMaths, 
     assert mockTarget.userAddr() == ADDR_0
 
 
-def test_updateGasPriceFast_higher_executeRawReq_payAUTO(auto, evmMaths, stakedMin, mockTarget, hashedReqUnveri):
+def test_updateGasPriceFast_higher_executeHashedReqUnveri_payAUTO(auto, evmMaths, stakedMin, mockTarget, hashedReqUnveri):
     _, staker, __ = stakedMin
     req, reqHashBytes = hashedReqUnveri
     id = 0
@@ -111,7 +111,7 @@ def test_updateGasPriceFast_higher_executeRawReq_payAUTO(auto, evmMaths, stakedM
     assert mockTarget.userAddr() == ADDR_0
 
 
-def test_updateAUTOPerETH_higher_executeRawReq_payAUTO(auto, evmMaths, stakedMin, mockTarget, hashedReqUnveri):
+def test_updateAUTOPerETH_higher_executeHashedReqUnveri_payAUTO(auto, evmMaths, stakedMin, mockTarget, hashedReqUnveri):
     _, staker, __ = stakedMin
     req, reqHashBytes = hashedReqUnveri
     id = 0

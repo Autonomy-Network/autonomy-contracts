@@ -182,7 +182,7 @@ def test_executeHashedReqUnveri_rev_req_not_the_same(auto, stakedMin, hashedReqU
     req, reqHashBytes = hashedReqUnveri
     invalidReq = list(req)
     invalidReq[6] = 1
-    with reverts(REV_MSG_NOT_SAME):
+    with reverts(REV_MSG_NOT_SAME_IPFS):
         auto.r.executeHashedReqUnveri(0, invalidReq, *getIpfsMetaData(auto, invalidReq), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
@@ -192,7 +192,7 @@ def test_executeHashedReqUnveri_rev_already_executed(auto, stakedMin, hashedReqU
 
     auto.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(auto, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-    with reverts(REV_MSG_NOT_SAME):
+    with reverts(REV_MSG_NOT_SAME_IPFS):
         auto.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(auto, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 

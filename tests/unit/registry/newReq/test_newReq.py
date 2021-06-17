@@ -17,8 +17,9 @@ import base58 as b58
     verifySender=strategy('bool'),
     payWithAUTO=strategy('bool')
 )
-def test_newHashedReq(auto, mockTarget, user, target, referer, callData, msgValue, ethForCall, verifySender, payWithAUTO):
+def test_newReq(auto, mockTarget, user, target, referer, callData, msgValue, ethForCall, verifySender, payWithAUTO):
     if user != target and user != referer:
+        callData = bytesToHex(callData)
         # assert user.balance() == INIT_ETH_BAL
         userETHStartBal = user.balance()
         # assert referer.balance() == INIT_ETH_BAL
@@ -41,38 +42,22 @@ def test_newHashedReq(auto, mockTarget, user, target, referer, callData, msgValu
             msgValue = ethForCall if msgValue < ethForCall else msgValue
 
         req = (user, target, referer, callData, msgValue, ethForCall, verifySender, payWithAUTO)
-        reqBytes = auto.r.getReqBytes(req)
-        
-        with ipfshttpclient.connect() as client:
-            ipfsCID = client.add_bytes(reqBytes)
-            ipfsBlock = client.block.get(ipfsCID)
-        
-        reqBytesIdx = ipfsBlock.index(reqBytes)
-        dataPrefix = ipfsBlock[:reqBytesIdx]
-        dataSuffix = ipfsBlock[reqBytesIdx + len(reqBytes) : ]
 
-        tx = auto.r.newHashedReq(target, referer, callData, ethForCall, verifySender, payWithAUTO, dataPrefix, dataSuffix, {'from': user, 'value': msgValue})
+        tx = auto.r.newReq(target, referer, callData, ethForCall, verifySender, payWithAUTO, {'from': user, 'value': msgValue})
 
         assert tx.return_value == 0
-        assert tx.events["HashedReqAdded"][0].values() == [0]
-        CIDs = [getCID(hash) for hash in auto.r.getHashedReqs()]
-        assert CIDs == [ipfsCID]
+        assert tx.events["HashedReqAdded"][0].values() == [0, req]
+
+        hashes = [keccakReq(auto, req)]
+        print(hashes[0])
+        assert auto.r.getHashedReqs() == hashes
         # Should revert when using indexes above the length
         with reverts():
-            auto.r.getHashedReqsSlice(0, len(CIDs) + 1)
-        assert [getCID(hash) for hash in auto.r.getHashedReqsSlice(0, len(CIDs))] == CIDs
+            auto.r.getHashedReqsSlice(0, len(hashes) + 1)
+        assert auto.r.getHashedReqsSlice(0, len(hashes)) == hashes
         assert auto.r.getHashedReqsLen() == 1
-        assert auto.r.getHashedReq(0) == getHashFromCID(ipfsCID)
+        assert auto.r.getHashedReq(0) == hashes[0]
 
-        assert auto.r.getRawReqs() == []
-        # Should revert when using indexes above the lengthgetHashedReqs
-        with reverts():
-            auto.r.getRawReqsSlice(0, 1)
-        assert auto.r.getRawReqsSlice(0, 0) == []
-        assert auto.r.getRawReqLen() == 0
-        with reverts():
-            auto.r.getRawReq(0)
-        
         assert auto.r.getHashedReqsUnveri() == []
         # Should revert when using indexes above the length
         with reverts():
@@ -97,35 +82,35 @@ def test_newHashedReq(auto, mockTarget, user, target, referer, callData, msgValu
         assert auto.r.getReferalCountOf(auto.DENICE) == 0
 
 
-def test_newHashedReq_rev_target_is_registry(auto, mockTarget):
+def test_newReq_rev_target_is_registry(auto, mockTarget):
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_TARGET):
-        tx = auto.r.newHashedReq(auto.r, auto.DENICE, callData, 0, False, True, "", "", auto.FR_BOB)
+        tx = auto.r.newReq(auto.r, auto.DENICE, callData, 0, False, True, auto.FR_BOB)
 
 
-def test_newHashedReq_rev_target_is_AUTO(auto, mockTarget):
+def test_newReq_rev_target_is_AUTO(auto, mockTarget):
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_TARGET):
-        tx = auto.r.newHashedReq(auto.AUTO, auto.DENICE, callData, 0, False, True, "", "", auto.FR_BOB)
+        tx = auto.r.newReq(auto.AUTO, auto.DENICE, callData, 0, False, True, auto.FR_BOB)
 
 
 @given(
     msgValue=strategy('uint256', max_value=E_18),
     ethForCall=strategy('uint256', max_value=E_18),
 )
-def test_newHashedReq_rev_validEth_payWithAUTO(auto, mockTarget, msgValue, ethForCall):
+def test_newReq_rev_validEth_payWithAUTO(auto, mockTarget, msgValue, ethForCall):
     if msgValue != ethForCall:
         callData = mockTarget.setX.encode_input(5)
         with reverts(REV_MSG_ETHFORCALL_NOT_MSGVALUE):
-            tx = auto.r.newHashedReq(mockTarget, auto.DENICE, "", ethForCall, False, True, "", "", {'from': auto.BOB, 'value': msgValue})
+            tx = auto.r.newReq(mockTarget, auto.DENICE, "", ethForCall, False, True, {'from': auto.BOB, 'value': msgValue})
 
 
 @given(
     msgValue=strategy('uint256', max_value=E_18),
     ethForCall=strategy('uint256', max_value=E_18),
 )
-def test_newHashedReq_rev_validEth_not_payWithAUTO(auto, mockTarget, msgValue, ethForCall):
+def test_newReq_rev_validEth_not_payWithAUTO(auto, mockTarget, msgValue, ethForCall):
     ethForCall = msgValue + 1 if ethForCall <= msgValue else ethForCall
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_ETHFORCALL_HIGH):
-        tx = auto.r.newHashedReq(mockTarget, auto.DENICE, "", ethForCall, False, False, "", "", {'from': auto.BOB, 'value': msgValue})
+        tx = auto.r.newReq(mockTarget, auto.DENICE, "", ethForCall, False, False, {'from': auto.BOB, 'value': msgValue})

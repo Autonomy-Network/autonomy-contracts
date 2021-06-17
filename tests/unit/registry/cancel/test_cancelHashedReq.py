@@ -15,17 +15,17 @@ def test_cancelHashedReq_rev_nonReentrant(auto, mockTarget, mockReentrancyAttack
     req1 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE, callData, False, True, 0, 0)
     addToIpfs(auto, req1)
 
-    auto.r.newHashedReq(mockTarget, auto.DENICE, callData, 0, False, True, *getIpfsMetaData(auto, req1), {'from': auto.BOB})
+    auto.r.newReq(mockTarget, auto.DENICE, callData, 0, False, True, {'from': auto.BOB})
 
     # Create request to be executed directly
-    callData = mockReentrancyAttack.callCancelHashedReq.encode_input(0, req1, *getIpfsMetaData(auto, req1))
+    callData = mockReentrancyAttack.callCancelHashedReq.encode_input(0, req1)
     req2 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE, callData, 0, 0, False, True)
     addToIpfs(auto, req2)
 
-    auto.r.newHashedReq(mockReentrancyAttack, auto.DENICE, callData, 0, False, True, *getIpfsMetaData(auto, req2), {'from': auto.BOB})
+    auto.r.newReq(mockReentrancyAttack, auto.DENICE, callData, 0, False, True, {'from': auto.BOB})
 
     with reverts(REV_MSG_REENTRANCY):
-        auto.r.executeHashedReq(1, req2, *getIpfsMetaData(auto, req2))
+        auto.r.executeHashedReq(1, req2)
 
 
 def test_cancelHashedReq_no_ethForCall(auto, stakedMin, mockTarget, hashedReqs):
@@ -33,7 +33,7 @@ def test_cancelHashedReq_no_ethForCall(auto, stakedMin, mockTarget, hashedReqs):
     # reqHashes will modify the original even after this test has finished otherwise since it's a reference
     reqHashes = reqHashes[:]
     id = 0
-    tx = auto.r.cancelHashedReq(id, reqs[id], *getIpfsMetaData(auto, reqs[id]), auto.FR_BOB)
+    tx = auto.r.cancelHashedReq(id, reqs[id], auto.FR_BOB)
 
     # Should've changed
     reqHashes[id] = NULL_HASH
@@ -74,7 +74,7 @@ def test_cancelHashedReq_with_ethForCall(auto, stakedMin, mockTarget, hashedReqs
     reqHashes = reqHashes[:]
     id = 1
 
-    tx = auto.r.cancelHashedReq(id, reqs[id], *getIpfsMetaData(auto, reqs[id]), auto.FR_BOB)
+    tx = auto.r.cancelHashedReq(id, reqs[id], auto.FR_BOB)
 
     # Should've changed
     reqHashes[id] = NULL_HASH
@@ -115,7 +115,7 @@ def test_cancelHashedReq_payAUTO(auto, stakedMin, mockTarget, hashedReqs):
     reqHashes = reqHashes[:]
     id = 2
 
-    tx = auto.r.cancelHashedReq(id, reqs[id], *getIpfsMetaData(auto, reqs[id]), auto.FR_BOB)
+    tx = auto.r.cancelHashedReq(id, reqs[id], auto.FR_BOB)
 
     # Should've changed
     reqHashes[id] = NULL_HASH
@@ -156,7 +156,7 @@ def test_cancelHashedReq_pay_AUTO_with_ethForCall(auto, stakedMin, mockTarget, h
     reqHashes = reqHashes[:]
     id = 3
 
-    tx = auto.r.cancelHashedReq(id, reqs[id], *getIpfsMetaData(auto, reqs[id]), auto.FR_BOB)
+    tx = auto.r.cancelHashedReq(id, reqs[id], auto.FR_BOB)
 
     # Should've changed
     reqHashes[id] = NULL_HASH
@@ -197,7 +197,7 @@ def test_cancelHashedReq_pay_AUTO_with_ethForCall_and_verifySender(auto, stakedM
     reqHashes = reqHashes[:]
     id = 4
 
-    tx = auto.r.cancelHashedReq(id, reqs[id], *getIpfsMetaData(auto, reqs[id]), auto.FR_BOB)
+    tx = auto.r.cancelHashedReq(id, reqs[id], auto.FR_BOB)
 
     # Should've changed
     reqHashes[id] = NULL_HASH
@@ -237,17 +237,17 @@ def test_cancelHashedReq_rev_req_not_the_same(auto, stakedMin, mockTarget, hashe
     id = 1
 
     with reverts(REV_MSG_NOT_SAME):
-        auto.r.cancelHashedReq(id, reqs[2], *getIpfsMetaData(auto, reqs[id]), auto.FR_BOB)
+        auto.r.cancelHashedReq(id, reqs[2], auto.FR_BOB)
 
 
 def test_cancelHashedReq_rev_already_executed(auto, stakedMin, mockTarget, hashedReqs):
     _, staker, __ = stakedMin
     reqs, reqHashes, msgValue, ethForCall = hashedReqs
     id = 1
-    auto.r.executeHashedReq(id, reqs[id], *getIpfsMetaData(auto, reqs[id]), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    auto.r.executeHashedReq(id, reqs[id], {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
     with reverts(REV_MSG_NOT_SAME):
-        auto.r.cancelHashedReq(id, reqs[id], *getIpfsMetaData(auto, reqs[id]), auto.FR_BOB)
+        auto.r.cancelHashedReq(id, reqs[id], auto.FR_BOB)
 
 
 def test_cancelHashedReq_rev_not_the_requester(auto, stakedMin, mockTarget, hashedReqs):
@@ -255,4 +255,4 @@ def test_cancelHashedReq_rev_not_the_requester(auto, stakedMin, mockTarget, hash
     id = 1
 
     with reverts(REV_MSG_NOT_REQUESTER):
-        auto.r.cancelHashedReq(id, reqs[id], *getIpfsMetaData(auto, reqs[id]), auto.FR_ALICE)
+        auto.r.cancelHashedReq(id, reqs[id], auto.FR_ALICE)

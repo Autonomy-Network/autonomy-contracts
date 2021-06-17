@@ -72,7 +72,7 @@ def test_cancelHashedReqUnveri_rev_req_not_the_same(auto, stakedMin, mockTarget,
     invalidReq[6] = 1
     id = 0
 
-    with reverts(REV_MSG_NOT_SAME):
+    with reverts(REV_MSG_NOT_SAME_IPFS):
         auto.r.cancelHashedReqUnveri(id, invalidReq, *getIpfsMetaData(auto, req), auto.FR_BOB)
 
 
@@ -82,7 +82,7 @@ def test_cancelHashedReqUnveri_rev_already_executed(auto, stakedMin, mockTarget,
     id = 0
     auto.r.executeHashedReqUnveri(id, req, *getIpfsMetaData(auto, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-    with reverts(REV_MSG_NOT_SAME):
+    with reverts(REV_MSG_NOT_SAME_IPFS):
         auto.r.cancelHashedReqUnveri(id, req, *getIpfsMetaData(auto, req), auto.FR_BOB)
 
 

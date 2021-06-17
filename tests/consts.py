@@ -86,6 +86,7 @@ CID_PREFIX_BYTES = bytes.fromhex(CID_PREFIX_STR)
 REV_MSG_TARGET = "Reg: nice try ;)"
 REV_MSG_ALREADY_EXECUTED = "Reg: already executed"
 REV_MSG_NOT_SAME = "Reg: request not the same"
+REV_MSG_NOT_SAME_IPFS = "Reg: unveri request not the same"
 REV_MSG_CANNOT_VERIFY = "Reg: cannot verify. Nice try ;)"
 REV_MSG_NOT_EXEC = "Reg: not executor or expired"
 REV_MSG_ETHFORCALL_NOT_MSGVALUE = "Reg: ethForCall not msg.value"

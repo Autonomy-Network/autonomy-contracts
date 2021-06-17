@@ -12,15 +12,6 @@ def test_constructor(auto):
     assert auto.r.getAUTO() == auto.AUTO
     assert auto.r.getStakeManager() == auto.sm
 
-    assert auto.r.getRawReqs() == []
-    # Should revert when using indexes above the length
-    with reverts():
-        auto.r.getRawReqsSlice(0, 1)
-    assert auto.r.getRawReqsSlice(0, 0) == []
-    assert auto.r.getRawReqLen() == 0
-    with reverts():
-        assert auto.r.getRawReq(0)
-    
     assert auto.r.getHashedReqs() == []
     # Should revert when using indexes above the length
     with reverts():

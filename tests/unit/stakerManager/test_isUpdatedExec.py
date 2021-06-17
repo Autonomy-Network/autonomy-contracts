@@ -41,7 +41,7 @@ def test_isUpdatedExec_true(a, auto, evmMaths, stakedMin):
     chain.mine(BLOCKS_IN_EPOCH)
 
     for i in range(5 * BLOCKS_IN_EPOCH):
-        exec, epoch = getExecutor(evmMaths, bn() + 1, stakes)
+        exec, epoch = getExecutor(evmMaths, bn() + 1, stakes, None)
         assert auto.sm.isUpdatedExec(exec).return_value
         assert auto.sm.isCurExec(exec)
 
@@ -61,7 +61,7 @@ def test_isUpdatedExec_false(a, auto, evmMaths, stakedMin):
     chain.mine(BLOCKS_IN_EPOCH)
 
     for i in range(5 * BLOCKS_IN_EPOCH):
-        exec, epoch = getExecutor(evmMaths, bn() + 1, stakes)
+        exec, epoch = getExecutor(evmMaths, bn() + 1, stakes, None)
         addr = choice(a)
         if addr != exec:
             assert not auto.sm.isUpdatedExec(addr).return_value

@@ -23,7 +23,7 @@ def test_updateExecutor_no_stake_do_nothing(a, auto):
 def test_updateExecutor_stakedMin(auto, evmMaths, stakedMin):
     numStanStakes, staker, tx = stakedMin
     assert auto.sm.getTotalStaked() == numStanStakes * STAN_STAKE
-    assert auto.sm.getExecutor() == getExecutor(evmMaths, bn(), [staker])
+    assert auto.sm.getExecutor() == getExecutor(evmMaths, bn(), [staker], None)
     for addr in a:
         assert auto.sm.isCurExec(addr) == (addr == staker)
 
@@ -105,7 +105,7 @@ def test_updateExecutor_stakedMulti(auto, evmMaths, stakedMulti):
     for i in range(BLOCKS_IN_EPOCH * 2):
         tx = auto.sm.updateExecutor(auto.FR_ALICE)
 
-        exec, epoch = getExecutor(evmMaths, bn(), stakes)
+        exec, epoch = getExecutor(evmMaths, bn(), stakes, None)
         assert auto.sm.getExecutor() == (exec, epoch)
         if bn() % BLOCKS_IN_EPOCH == 0:
             assert tx.return_value == getUpdatedExecResult(evmMaths, bn(), stakes, epoch - BLOCKS_IN_EPOCH)

@@ -116,6 +116,13 @@ def getCID(hash):
     return str(b58.b58encode(cidBytes), 'ascii')
 
 
+def keccakReq(auto, req):
+    h = web3.keccak(auto.r.getReqBytes(req)).hex()
+    print(h)
+    print(type(h))
+    return h
+
+
 def bytesToHex(b):
     return '0x' + b.hex()
 
