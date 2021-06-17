@@ -58,7 +58,18 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     //     bool payWithAUTO;
     // }
 
-    event HashedReqAdded(uint indexed id, Request r);
+    // Easier to parse when using native types rather than structs
+    event HashedReqAdded(
+        uint indexed id,
+        address payable requester,
+        address target,
+        address payable referer,
+        bytes callData,
+        uint120 initEthSent,
+        uint120 ethForCall,
+        bool verifySender,
+        bool payWithAUTO
+    );
     event HashedReqRemoved(uint indexed id, bool wasExecuted);
     event HashedReqUnveriAdded(uint indexed id);
     event HashedReqUnveriRemoved(uint indexed id, bool wasExecuted);
@@ -103,7 +114,17 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         bytes32 hashedIpfsReq = keccak256(getReqBytes(r));
 
         id = _hashedReqs.length;
-        emit HashedReqAdded(id, r);
+        emit HashedReqAdded(
+            id,
+            r.requester,
+            r.target,
+            r.referer,
+            r.callData,
+            r.initEthSent,
+            r.ethForCall,
+            r.verifySender,
+            r.payWithAUTO
+        );
         _hashedReqs.push(hashedIpfsReq);
     }
 

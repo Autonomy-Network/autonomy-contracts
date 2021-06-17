@@ -46,7 +46,7 @@ def test_newReq(auto, mockTarget, user, target, referer, callData, msgValue, eth
         tx = auto.r.newReq(target, referer, callData, ethForCall, verifySender, payWithAUTO, {'from': user, 'value': msgValue})
 
         assert tx.return_value == 0
-        assert tx.events["HashedReqAdded"][0].values() == [0, req]
+        assert tx.events["HashedReqAdded"][0].values() == [0, *req]
 
         hashes = [keccakReq(auto, req)]
         print(hashes[0])
