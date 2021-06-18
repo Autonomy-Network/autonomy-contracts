@@ -325,19 +325,17 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         IOracle orac = _oracle;
         uint gasPrice = orac.getGasPriceFast();
 
-        uint numStorageRefunds = (gasUsedInDelete / 5000) - 1;
-        
         uint callGasUsed = (startGas - gasleft());
-        gasUsed = gasUsedInDelete + callGasUsed + extraOverhead;
+        gasUsed = 5000 + callGasUsed + extraOverhead;
 
-        uint gasRefunded = numStorageRefunds * 15000;
+        uint gasRefunded = 15000;
 
         if (r.payWithAUTO) {
             gasUsed += GAS_OVERHEAD_AUTO;
             if (gasRefunded > gasUsed / 2) {
-                gasUsed = (gasUsed / 2) + (numStorageRefunds * 700);
+                gasUsed = (gasUsed / 2) + 700;
             } else {
-                gasUsed += (numStorageRefunds * 855);
+                gasUsed += 855;
                 gasUsed -= gasRefunded;
             }
 
@@ -348,9 +346,9 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         } else {
             gasUsed += GAS_OVERHEAD_ETH;
             if (gasRefunded > gasUsed / 2) {
-                gasUsed = (gasUsed / 2) + (numStorageRefunds * 700);
+                gasUsed = (gasUsed / 2) + 700;
             } else {
-                gasUsed += (numStorageRefunds * 855);
+                gasUsed += 855;
                 gasUsed -= gasRefunded;
             }
 
@@ -366,6 +364,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
             if (excess > 0) {
                 r.requester.transfer(excess);
             }
+
         }
     }
 

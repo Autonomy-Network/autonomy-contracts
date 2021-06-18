@@ -20,10 +20,11 @@ contract StakeManager is IStakeManager, Shared {
     Executor private _executor;
 
 
-    struct Executor{
-        address addr;
-        uint forEpoch;
-    }
+    // Pasted for convenience here, defined in IStakeManager
+    // struct Executor{
+    //     address addr;
+    //     uint forEpoch;
+    // }
 
 
     event Staked(address staker, uint amount);
@@ -42,31 +43,31 @@ contract StakeManager is IStakeManager, Shared {
     //                                                          //
     //////////////////////////////////////////////////////////////
 
-    function getOracle() external view returns (IOracle) {
+    function getOracle() external view override returns (IOracle) {
         return _oracle;
     }
 
-    function getAUTO() external view returns (address) {
+    function getAUTO() external view override returns (address) {
         return address(_AUTO);
     }
 
-    function getTotalStaked() external view returns (uint) {
+    function getTotalStaked() external view override returns (uint) {
         return _totalStaked;
     }
 
-    function getStake(address staker) external view returns (uint) {
+    function getStake(address staker) external view override returns (uint) {
         return _stakerToStakedAmount[staker];
     }
 
-    function getStakes() external view returns (address[] memory) {
+    function getStakes() external view override returns (address[] memory) {
         return _stakes;
     }
 
-    function getStakesLength() external view returns (uint) {
+    function getStakesLength() external view override returns (uint) {
         return _stakes.length;
     }
 
-    function getStakesSlice(uint startIdx, uint endIdx) external view returns (address[] memory) {
+    function getStakesSlice(uint startIdx, uint endIdx) external view override returns (address[] memory) {
         address[] memory slice = new address[](endIdx - startIdx);
         uint sliceIdx = 0;
         for (uint stakeIdx = startIdx; stakeIdx < endIdx; stakeIdx++) {
@@ -77,11 +78,11 @@ contract StakeManager is IStakeManager, Shared {
         return slice;
     }
 
-    function getCurEpoch() public view returns (uint) {
+    function getCurEpoch() public view override returns (uint) {
         return (block.number / BLOCKS_IN_EPOCH) * BLOCKS_IN_EPOCH;
     }
 
-    function getExecutor() external view returns (Executor memory) {
+    function getExecutor() external view override returns (Executor memory) {
         return _executor;
     }
 
@@ -102,7 +103,7 @@ contract StakeManager is IStakeManager, Shared {
         return false;
     }
 
-    function getUpdatedExecRes() public view returns (uint epoch, uint randNum, uint idxOfExecutor, address exec) {
+    function getUpdatedExecRes() public view override returns (uint epoch, uint randNum, uint idxOfExecutor, address exec) {
         epoch = getCurEpoch();
         // So that the storage is only loaded once
         address[] memory stakes = _stakes;
