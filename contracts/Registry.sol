@@ -132,7 +132,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         return _hashedReqs;
     }
 
-    function getHashedReqsSlice(uint startIdx, uint endIdx) external view returns (bytes32[] memory) {
+    function getHashedReqsSlice(uint startIdx, uint endIdx) external override view returns (bytes32[] memory) {
         return _getBytes32Slice(_hashedReqs, startIdx, endIdx);
     }
 
@@ -166,7 +166,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         return _hashedReqsUnveri;
     }
 
-    function getHashedReqsUnveriSlice(uint startIdx, uint endIdx) external view returns (bytes32[] memory) {
+    function getHashedReqsUnveriSlice(uint startIdx, uint endIdx) external view override returns (bytes32[] memory) {
         return _getBytes32Slice(_hashedReqsUnveri, startIdx, endIdx);
     }
 
