@@ -31,8 +31,11 @@ interface IRegistry {
      * @notice  Creates a new request, logs the request info in an event, then saves
      *          a hash of it on-chain in `_hashedReqs`
      * @param target    The contract address that needs to be called
+     * @param referer       The referer to get rewarded for referring the sender
+     *                      to using Autonomy. Usally the address of a dapp owner
      * @param callData  The calldata of the call that the request is to make, i.e.
      *                  the fcn identifier + inputs, encoded
+     * @param ethForCall    The ETH to send with the call
      * @param verifySender  Whether the 1st input of the calldata equals the sender. Needed
      *                      for dapps to know who the sender is whilst ensuring that the sender intended
      *                      that fcn and contract to be called - dapps will require that msg.sender is
@@ -41,9 +44,6 @@ interface IRegistry {
      *                      to have the 1st argument be the sender
      * @param payWithAUTO   Whether the sender wants to pay for the request in AUTO
      *                      or ETH. Paying in AUTO reduces the fee
-     * @param ethForCall    The ETH to send with the call
-     * @param referer       The referer to get rewarded for referring the sender
-     *                      to using Autonomy. Usally the address of a dapp owner
      * @return id   The id of the request, equal to the index in `_hashedReqs`
      */
     function newReq(
