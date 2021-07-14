@@ -36,12 +36,15 @@ interface IRegistry {
      * @param callData  The calldata of the call that the request is to make, i.e.
      *                  the fcn identifier + inputs, encoded
      * @param ethForCall    The ETH to send with the call
-     * @param verifySender  Whether the 1st input of the calldata equals the sender. Needed
-     *                      for dapps to know who the sender is whilst ensuring that the sender intended
-     *                      that fcn and contract to be called - dapps will require that msg.sender is
-     *                      the Verified Forwarder, and only requests that have `verifySender` = true will
-     *                      be forwarded via the Verified Forwarder, so any calls coming from it are guaranteed
-     *                      to have the 1st argument be the sender
+     * @param verifySender  Whether the 1st input of the calldata equals the sender.
+     *                      Needed for dapps to know who the sender is whilst
+     *                      ensuring that the sender intended
+     *                      that fcn and contract to be called - dapps will
+     *                      require that msg.sender is the Verified Forwarder,
+     *                      and only requests that have `verifySender` = true will
+     *                      be forwarded via the Verified Forwarder, so any calls
+     *                      coming from it are guaranteed to have the 1st argument
+     *                      be the sender
      * @param payWithAUTO   Whether the sender wants to pay for the request in AUTO
      *                      or ETH. Paying in AUTO reduces the fee
      * @return id   The id of the request, equal to the index in `_hashedReqs`
