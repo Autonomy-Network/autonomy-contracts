@@ -12,20 +12,20 @@ from utils import *
 def test_cancelHashedReq_rev_nonReentrant(auto, mockTarget, mockReentrancyAttack):
     # Create request to call in reentrance
     callData = mockTarget.setX.encode_input(5)
-    req1 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE, callData, False, True, 0, 0)
+    req1 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE, callData, False, False, True, 0, 0)
     addToIpfs(auto, req1)
 
-    auto.r.newReq(mockTarget, auto.DENICE, callData, 0, False, True, {'from': auto.BOB})
+    auto.r.newReq(mockTarget, auto.DENICE, callData, 0, False, False, True, {'from': auto.BOB})
 
     # Create request to be executed directly
     callData = mockReentrancyAttack.callCancelHashedReq.encode_input(0, req1)
-    req2 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE, callData, 0, 0, False, True)
+    req2 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE, callData, 0, 0, False, False, True)
     addToIpfs(auto, req2)
 
-    auto.r.newReq(mockReentrancyAttack, auto.DENICE, callData, 0, False, True, {'from': auto.BOB})
+    auto.r.newReq(mockReentrancyAttack, auto.DENICE, callData, 0, False, False, True, {'from': auto.BOB})
 
     with reverts(REV_MSG_REENTRANCY):
-        auto.r.executeHashedReq(1, req2)
+        auto.r.executeHashedReq(1, req2, MIN_GAS)
 
 
 def test_cancelHashedReq_no_ethForCall(auto, stakedMin, mockTarget, hashedReqs):
@@ -42,11 +42,11 @@ def test_cancelHashedReq_no_ethForCall(auto, stakedMin, mockTarget, hashedReqs):
     with reverts():
         auto.r.getHashedReqsSlice(0, len(reqHashes) + 1)
     assert auto.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
-    assert auto.r.getHashedReqsLen() == 5
+    assert auto.r.getHashedReqsLen() == 8
     for i, reqHash in enumerate(reqHashes):
         assert auto.r.getHashedReq(i) == reqHash
     assert tx.events["HashedReqRemoved"][0].values() == [id, False]
-    assert auto.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (2 * ethForCall) + msgValue
+    assert auto.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (5 * ethForCall) + msgValue
 
     # Shouldn't've changed
     assert mockTarget.x() == 0
@@ -83,11 +83,11 @@ def test_cancelHashedReq_with_ethForCall(auto, stakedMin, mockTarget, hashedReqs
     with reverts():
         auto.r.getHashedReqsSlice(0, len(reqHashes) + 1)
     assert auto.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
-    assert auto.r.getHashedReqsLen() == 5
+    assert auto.r.getHashedReqsLen() == 8
     for i, reqHash in enumerate(reqHashes):
         assert auto.r.getHashedReq(i) == reqHash
     assert tx.events["HashedReqRemoved"][0].values() == [id, False]
-    assert auto.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (2 * ethForCall) + msgValue
+    assert auto.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (5 * ethForCall) + msgValue
 
     # Shouldn't've changed
     assert mockTarget.x() == 0
@@ -124,7 +124,7 @@ def test_cancelHashedReq_payAUTO(auto, stakedMin, mockTarget, hashedReqs):
     with reverts():
         auto.r.getHashedReqsSlice(0, len(reqHashes) + 1)
     assert auto.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
-    assert auto.r.getHashedReqsLen() == 5
+    assert auto.r.getHashedReqsLen() == 8
     for i, reqHash in enumerate(reqHashes):
         assert auto.r.getHashedReq(i) == reqHash
     assert tx.events["HashedReqRemoved"][0].values() == [id, False]
@@ -135,7 +135,7 @@ def test_cancelHashedReq_payAUTO(auto, stakedMin, mockTarget, hashedReqs):
     assert mockTarget.msgSender() == ADDR_0
 
     assert auto.ALICE.balance() == INIT_ETH_BAL
-    assert auto.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (2 * ethForCall)
+    assert auto.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (5 * ethForCall)
     assert auto.DENICE.balance() == INIT_ETH_BAL
 
     assert auto.AUTO.balanceOf(auto.ALICE) == MAX_TEST_STAKE - STAN_STAKE
@@ -165,11 +165,11 @@ def test_cancelHashedReq_pay_AUTO_with_ethForCall(auto, stakedMin, mockTarget, h
     with reverts():
         auto.r.getHashedReqsSlice(0, len(reqHashes) + 1)
     assert auto.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
-    assert auto.r.getHashedReqsLen() == 5
+    assert auto.r.getHashedReqsLen() == 8
     for i, reqHash in enumerate(reqHashes):
         assert auto.r.getHashedReq(i) == reqHash
     assert tx.events["HashedReqRemoved"][0].values() == [id, False]
-    assert auto.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (2 * ethForCall) + ethForCall
+    assert auto.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (5 * ethForCall) + ethForCall
 
     # Shouldn't've changed
     assert mockTarget.x() == 0
@@ -206,11 +206,11 @@ def test_cancelHashedReq_pay_AUTO_with_ethForCall_and_verifySender(auto, stakedM
     with reverts():
         auto.r.getHashedReqsSlice(0, len(reqHashes) + 1)
     assert auto.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
-    assert auto.r.getHashedReqsLen() == 5
+    assert auto.r.getHashedReqsLen() == 8
     for i, reqHash in enumerate(reqHashes):
         assert auto.r.getHashedReq(i) == reqHash
     assert tx.events["HashedReqRemoved"][0].values() == [id, False]
-    assert auto.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (2 * ethForCall) + ethForCall
+    assert auto.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (5 * ethForCall) + ethForCall
 
     # Shouldn't've changed
     assert mockTarget.x() == 0
@@ -244,7 +244,8 @@ def test_cancelHashedReq_rev_already_executed(auto, stakedMin, mockTarget, hashe
     _, staker, __ = stakedMin
     reqs, reqHashes, msgValue, ethForCall = hashedReqs
     id = 1
-    auto.r.executeHashedReq(id, reqs[id], {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    # expectedGas = auto.r.executeHashedReq.call(id, reqs[id], 0, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    auto.r.executeHashedReq(id, reqs[id], 0, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
     with reverts(REV_MSG_NOT_SAME):
         auto.r.cancelHashedReq(id, reqs[id], auto.FR_BOB)

@@ -117,10 +117,7 @@ def getCID(hash):
 
 
 def keccakReq(auto, req):
-    h = web3.keccak(auto.r.getReqBytes(req)).hex()
-    print(h)
-    print(type(h))
-    return h
+    return web3.keccak(auto.r.getReqBytes(req)).hex()
 
 
 def bytesToHex(b):
@@ -170,8 +167,5 @@ def getAUTOForExec(evmMaths, tx, AUTOPerETH, gasPriceFast):
 
 
 def checkAreCallers(auto, addrs, callers):
-    print()
-    print(callers)
     for addr in addrs:
-        print(addr, auto.vf.canCall(addr), addr in callers)
-        assert auto.vf.canCall(addr) == (addr in callers)
+        assert auto.uf.canCall(addr) == (addr in callers)

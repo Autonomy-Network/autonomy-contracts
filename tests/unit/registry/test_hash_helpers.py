@@ -57,11 +57,12 @@ def test_recreate_request_CID(auto, vulnerableHashedReqUnveri):
     callData=strategy('bytes'),
     msgValue=strategy('uint256', max_value=E_18),
     ethForCall=strategy('uint256', max_value=E_18),
-    verifySender=strategy('bool'),
+    verifyUser=strategy('bool'),
+    insertFeeAmount=strategy('bool'),
     payWithAUTO=strategy('bool')
 )
-def test_getReqFromBytes(auto, mockTarget, referer, user, target, callData, msgValue, ethForCall, verifySender, payWithAUTO):
-    req = (user, target, referer, bytesToHex(callData), msgValue, ethForCall, verifySender, payWithAUTO)
+def test_getReqFromBytes(auto, mockTarget, referer, user, target, callData, msgValue, ethForCall, verifyUser, insertFeeAmount, payWithAUTO):
+    req = (user, target, referer, bytesToHex(callData), msgValue, ethForCall, verifyUser, insertFeeAmount, payWithAUTO)
     reqBytes = auto.r.getReqBytes(req)
     
     assert auto.r.getReqFromBytes(reqBytes) == req

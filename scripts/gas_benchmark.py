@@ -10,7 +10,7 @@ sys.path.pop()
 
 def main():
     auto = deploy_initial_AUTO_contracts(AUTO, PriceOracle, Oracle, StakeManager, Registry, Forwarder, Miner)
-    mockTarget = auto.DEPLOYER.deploy(MockTarget, auto.vf, ADDR_0)
+    mockTarget = auto.DEPLOYER.deploy(MockTarget, auto.uf, ADDR_0)
 
     callData = mockTarget.setX.encode_input(5)
     

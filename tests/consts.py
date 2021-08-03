@@ -6,7 +6,7 @@ ADDR_0 = "0x0000000000000000000000000000000000000000"
 NULL_BYTES = "0x"
 E_18 = int(1e18)
 INIT_ETH_BAL = 100 * E_18
-BIG_NUM = 2**255
+BIG_NUM = 2**256 - 1
 
 
 # Oracle
@@ -82,6 +82,7 @@ INIT_AUTO_REW_POOL = 10**25
 INIT_GAS_PRICE_FAST = 20*10**9
 CID_PREFIX_STR = '1220'
 CID_PREFIX_BYTES = bytes.fromhex(CID_PREFIX_STR)
+MIN_GAS = 21000
 
 REV_MSG_TARGET = "Reg: nice try ;)"
 REV_MSG_ALREADY_EXECUTED = "Reg: already executed"
@@ -91,10 +92,12 @@ REV_MSG_CANNOT_VERIFY = "Reg: cannot verify. Nice try ;)"
 REV_MSG_NOT_EXEC = "Reg: not executor or expired"
 REV_MSG_ETHFORCALL_NOT_MSGVALUE = "Reg: ethForCall not msg.value"
 REV_MSG_ETHFORCALL_HIGH = "Reg: ethForCall too high"
-REV_MSG_NOT_REQUESTER = "Reg: not the requester"
+REV_MSG_NOT_REQUESTER = "Reg: not the user"
 REV_MSG_CALLDATA_NOT_VER = "Reg: calldata not verified"
 REV_MSG_FISHY = "Reg: something fishy here"
 REV_MSG_REENTRANCY = "ReentrancyGuard: reentrant call"
+REV_MSG_EXPECTED_GAS = "Reg: expectedGas too high"
+REV_MSG_OVERFLOW = "Integer overflow"
 
 
 # AUTO

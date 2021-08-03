@@ -15,9 +15,9 @@ class _BaseStateMachine:
         cls.po = cleanAUTO.po
         cls.o = cleanAUTO.o
         cls.sm = cleanAUTO.sm
-        cls.vf = cleanAUTO.vf
+        cls.uf = cleanAUTO.uf
         cls.r = cleanAUTO.r
-        cls.vf.setCaller(cleanAUTO.r, True, cleanAUTO.FR_DEPLOYER)
+        cls.uf.setCaller(cleanAUTO.r, True, cleanAUTO.FR_DEPLOYER)
         cls.m = cleanAUTO.m
 
 

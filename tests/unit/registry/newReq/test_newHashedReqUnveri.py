@@ -50,7 +50,7 @@ def test_newHashedReqUnveri(auto, mockTarget, hashedIpfsReq, sender):
 
 def test_newHashedReqUnveri_real(auto, mockTarget):
     callData = mockTarget.setX.encode_input(5)
-    req = (auto.BOB.address, mockTarget, auto.DENICE, callData, 0, 0, False, True)
+    req = (auto.BOB.address, mockTarget, auto.DENICE, callData, 0, 0, False, False, True)
     reqBytes = auto.r.getReqBytes(req)
 
     with ipfshttpclient.connect() as client:

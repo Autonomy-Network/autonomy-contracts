@@ -7,16 +7,17 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 interface IRegistry {
     
     // The address vars are 20b, total 60, calldata is 4b + n*32b usually, which
-    // has a factor of 32. uint120 since the current ETH supply of ~115m can fit
-    // into that and it's the highest such that 2 * uint120 + 2 * bool is < 256b
+    // has a factor of 32. uint112 since the current ETH supply of ~115m can fit
+    // into that and it's the highest such that 2 * uint112 + 3 * bool is < 256b
     struct Request {
-        address payable requester;
+        address payable user;
         address target;
         address payable referer;
         bytes callData;
-        uint120 initEthSent;
-        uint120 ethForCall;
-        bool verifySender;
+        uint112 initEthSent;
+        uint112 ethForCall;
+        bool verifyUser;
+        bool insertFeeAmount;
         bool payWithAUTO;
     }
 
@@ -36,15 +37,17 @@ interface IRegistry {
      * @param callData  The calldata of the call that the request is to make, i.e.
      *                  the fcn identifier + inputs, encoded
      * @param ethForCall    The ETH to send with the call
-     * @param verifySender  Whether the 1st input of the calldata equals the sender.
+     * @param verifyUser  Whether the 1st input of the calldata equals the sender.
      *                      Needed for dapps to know who the sender is whilst
      *                      ensuring that the sender intended
      *                      that fcn and contract to be called - dapps will
      *                      require that msg.sender is the Verified Forwarder,
-     *                      and only requests that have `verifySender` = true will
+     *                      and only requests that have `verifyUser` = true will
      *                      be forwarded via the Verified Forwarder, so any calls
      *                      coming from it are guaranteed to have the 1st argument
      *                      be the sender
+     * @param insertFeeAmount     Whether the gas estimate of the executor should be inserted
+     *                      into the callData
      * @param payWithAUTO   Whether the sender wants to pay for the request in AUTO
      *                      or ETH. Paying in AUTO reduces the fee
      * @return id   The id of the request, equal to the index in `_hashedReqs`
@@ -53,8 +56,9 @@ interface IRegistry {
         address target,
         address payable referer,
         bytes calldata callData,
-        uint120 ethForCall,
-        bool verifySender,
+        uint112 ethForCall,
+        bool verifyUser,
+        bool insertFeeAmount,
         bool payWithAUTO
     ) external payable returns (uint id);
 
@@ -100,7 +104,7 @@ interface IRegistry {
      *          'unverified' because when executing it, it's impossible to tell whether any
      *          ETH was initially sent with the request etc, so executing this request requires
      *          that the request which hashes to `hashedIpfsReq` has `ethForCall` = 0,
-     *          `initEthSend` = 0, `verifySender` = false, and `payWithAUTO` = true
+     *          `initEthSend` = 0, `verifyUser` = false, and `payWithAUTO` = true
      * @param id    [bytes32] The hash to save. The hashing algo isn't keccak256 like with `newReq`,
      *          it instead uses sha256 so that it's compatible with ipfs - the hash stored on-chain
      *          should be able to be used in ipfs to point to the request which hashes to `hashedIpfsReq`.
@@ -197,7 +201,8 @@ interface IRegistry {
 
     function executeHashedReq(
         uint id,
-        Request calldata r
+        Request calldata r,
+        uint expectedGas
     ) external returns (uint gasUsed);
 
     /**
@@ -209,7 +214,8 @@ interface IRegistry {
         uint id,
         Request calldata r,
         bytes memory dataPrefix,
-        bytes memory dataSuffix
+        bytes memory dataSuffix,
+        uint expectedGas
     ) external returns (uint gasUsed);
 
 

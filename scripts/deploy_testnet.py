@@ -32,15 +32,15 @@ def main():
     auto.po = auto.DEPLOYER.deploy(PriceOracle, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
     auto.o = auto.DEPLOYER.deploy(Oracle, auto.po)
     auto.sm = auto.DEPLOYER.deploy(StakeManager, auto.o, auto.AUTO)
-    auto.vf = auto.DEPLOYER.deploy(Forwarder)
+    auto.uf = auto.DEPLOYER.deploy(Forwarder)
     auto.r = auto.DEPLOYER.deploy(
         Registry,
         auto.AUTO,
         auto.sm,
         auto.o,
-        auto.vf
+        auto.uf
     )
-    auto.vf.setCaller(auto.r, True, auto.FR_DEPLOYER)
+    auto.uf.setCaller(auto.r, True, auto.FR_DEPLOYER)
     auto.m = auto.DEPLOYER.deploy(
         Miner,
         auto.AUTO,

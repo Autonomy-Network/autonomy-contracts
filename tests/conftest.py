@@ -38,15 +38,21 @@ def deploy_initial_AUTO_contracts(AUTO, PriceOracle, Oracle, StakeManager, Regis
     auto.po = auto.DEPLOYER.deploy(PriceOracle, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
     auto.o = auto.DEPLOYER.deploy(Oracle, auto.po)
     auto.sm = auto.DEPLOYER.deploy(StakeManager, auto.o, auto.AUTO)
-    auto.vf = auto.DEPLOYER.deploy(Forwarder)
+    auto.uf = auto.DEPLOYER.deploy(Forwarder)
+    auto.gf = auto.DEPLOYER.deploy(Forwarder)
+    auto.ugf = auto.DEPLOYER.deploy(Forwarder)
     auto.r = auto.DEPLOYER.deploy(
         Registry,
         auto.AUTO,
         auto.sm,
         auto.o,
-        auto.vf
+        auto.uf,
+        auto.gf,
+        auto.ugf
     )
-    auto.vf.setCaller(auto.r, True, auto.FR_DEPLOYER)
+    auto.uf.setCaller(auto.r, True, auto.FR_DEPLOYER)
+    auto.gf.setCaller(auto.r, True, auto.FR_DEPLOYER)
+    auto.ugf.setCaller(auto.r, True, auto.FR_DEPLOYER)
     auto.m = auto.DEPLOYER.deploy(
         Miner,
         auto.AUTO,
@@ -189,7 +195,9 @@ def vulnerableRegistry(auto, VulnerableRegistry):
         auto.AUTO,
         auto.sm,
         auto.o,
-        auto.vf
+        auto.uf,
+        auto.gf,
+        auto.ugf
     )
 
 
@@ -197,7 +205,7 @@ def vulnerableRegistry(auto, VulnerableRegistry):
 # to use AUTO
 @pytest.fixture(scope="module")
 def mockTarget(auto, MockTarget, vulnerableRegistry):
-    return auto.DEPLOYER.deploy(MockTarget, auto.vf, vulnerableRegistry)
+    return auto.DEPLOYER.deploy(MockTarget, auto.uf, vulnerableRegistry)
 
 
 # Need to test nonReentrant modifier
@@ -220,30 +228,42 @@ def evmMaths(cleanAUTO, EVMMaths):
 def hashedReqs(auto, mockTarget):
     ethForCall = E_18
     msgValue = int(1.5 * ethForCall)
+    reqs = []
 
     callData = mockTarget.setX.encode_input(5)
-    reqNoEthForCall = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, msgValue, 0, False, False)
-    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, 0, False, False, {'from': auto.BOB, 'value': msgValue})
+    reqs.append((auto.BOB.address, mockTarget.address, auto.DENICE, callData, msgValue, 0, False, False, False))
+    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, 0, False, False, False, {'from': auto.BOB, 'value': msgValue})
 
     callData = mockTarget.setXPay.encode_input(5)
-    reqEthForCall = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, msgValue, ethForCall, False, False)
-    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, False, False, {'from': auto.BOB, 'value': msgValue})
+    reqs.append((auto.BOB.address, mockTarget.address, auto.DENICE, callData, msgValue, ethForCall, False, False, False))
+    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, False, False, False, {'from': auto.BOB, 'value': msgValue})
 
     auto.AUTO.approve(auto.r, MAX_TEST_STAKE, auto.FR_BOB)
     
     callData = mockTarget.setX.encode_input(5)
-    reqPayAUTONoEthForCall = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, True)
-    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, 0, False, True, {'from': auto.BOB, 'value': 0})
+    reqs.append((auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, False, True))
+    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, 0, False, False, True, {'from': auto.BOB, 'value': 0})
 
     callData = mockTarget.setXPay.encode_input(5)
-    reqPayAUTOEthForCall = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, ethForCall, ethForCall, False, True)
-    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, False, True, {'from': auto.BOB, 'value': ethForCall})
+    reqs.append((auto.BOB.address, mockTarget.address, auto.DENICE, callData, ethForCall, ethForCall, False, False, True))
+    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, False, False, True, {'from': auto.BOB, 'value': ethForCall})
 
     callData = mockTarget.setAddrPayVerified.encode_input(auto.BOB)
-    reqPayAUTOEthForCallVerifySender = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, ethForCall, ethForCall, True, True)
-    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, True, True, {'from': auto.BOB, 'value': ethForCall})
+    reqs.append((auto.BOB.address, mockTarget.address, auto.DENICE, callData, ethForCall, ethForCall, True, False, True))
+    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, True, False, True, {'from': auto.BOB, 'value': ethForCall})
 
-    reqs = [reqNoEthForCall, reqEthForCall, reqPayAUTONoEthForCall, reqPayAUTOEthForCall, reqPayAUTOEthForCallVerifySender]
+    callData = mockTarget.setAddrPayVerified.encode_input(auto.BOB)
+    reqs.append((auto.BOB.address, mockTarget.address, auto.DENICE, callData, ethForCall, ethForCall, False, True, True))
+    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, False, True, True, {'from': auto.BOB, 'value': ethForCall})
+
+    callData = mockTarget.setAddrPayVerified.encode_input(auto.BOB)
+    reqs.append((auto.BOB.address, mockTarget.address, auto.DENICE, callData, ethForCall, ethForCall, False, True, True))
+    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, False, True, True, {'from': auto.BOB, 'value': ethForCall})
+
+    callData = mockTarget.setAddrPayVerified.encode_input(auto.BOB)
+    reqs.append((auto.BOB.address, mockTarget.address, auto.DENICE, callData, ethForCall, ethForCall, True, True, True))
+    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, True, True, True, {'from': auto.BOB, 'value': ethForCall})
+
     reqHashes = [keccakReq(auto, r) for r in reqs]
 
     return reqs, reqHashes, msgValue, ethForCall
@@ -255,31 +275,12 @@ def hashedReqs(auto, mockTarget):
 def hashedReqUnveri(auto, mockTarget):
     auto.AUTO.approve(auto.r, MAX_TEST_STAKE, auto.FR_BOB)
     callData = mockTarget.setX.encode_input(5)
-    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, True)
+    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, False, True)
     reqHashBytes = addReqGetHashBytes(auto, req)
 
     tx = auto.r.newHashedReqUnveri(reqHashBytes, {'from': auto.BOB, 'value': 0})
 
     return req, reqHashBytes
-
-
-# # Need to have already staked and have new requests already made so that execute
-# # can be tested with and without payWithAUTO for each type
-# @pytest.fixture(scope="module")
-# def vulnerableReqsRaw(auto, mockTarget, vulnerableRegistry, stakedMin):
-#     ethForCall = E_18
-#     msgValue = int(1.5 * ethForCall)
-
-#     callData = mockTarget.callVulnerableTransfer.encode_input(auto.DENICE, 1)
-#     vulnerableRegistry.newReq(mockTarget, auto.DENICE, callData, ethForCall, False, False, {'from': auto.BOB, 'value': msgValue})
-#     reqEthForCall = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, msgValue, ethForCall, False, False)
-
-#     auto.AUTO.approve(vulnerableRegistry, MAX_TEST_STAKE, auto.FR_BOB)
-
-#     vulnerableRegistry.newReq(mockTarget, auto.DENICE, callData, ethForCall, False, True, {'from': auto.BOB, 'value': ethForCall})
-#     reqPayAUTOEthForCall = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, ethForCall, ethForCall, False, True)
-
-#     return reqEthForCall, reqPayAUTOEthForCall, msgValue, ethForCall
 
 
 # Need to have already staked and have new requests already made so that execute
@@ -290,13 +291,13 @@ def vulnerableHashedReqs(auto, mockTarget, vulnerableRegistry, stakedMin):
     msgValue = int(1.5 * ethForCall)
 
     callData = mockTarget.callVulnerableTransfer.encode_input(auto.DENICE, 1)
-    reqEthForCall = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, msgValue, ethForCall, False, False)
-    tx = vulnerableRegistry.newReq(mockTarget, auto.DENICE, callData, ethForCall, False, False, {'from': auto.BOB, 'value': msgValue})
+    reqEthForCall = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, msgValue, ethForCall, False, False, False)
+    tx = vulnerableRegistry.newReq(mockTarget, auto.DENICE, callData, ethForCall, False, False, False, {'from': auto.BOB, 'value': msgValue})
 
     auto.AUTO.approve(vulnerableRegistry, MAX_TEST_STAKE, auto.FR_BOB)
 
-    reqPayAUTOEthForCall = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, ethForCall, ethForCall, False, True)
-    tx = vulnerableRegistry.newReq(mockTarget, auto.DENICE, callData, ethForCall, False, True, {'from': auto.BOB, 'value': ethForCall})
+    reqPayAUTOEthForCall = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, ethForCall, ethForCall, False, False, True)
+    tx = vulnerableRegistry.newReq(mockTarget, auto.DENICE, callData, ethForCall, False, False, True, {'from': auto.BOB, 'value': ethForCall})
 
     reqs = [reqEthForCall, reqPayAUTOEthForCall]
     reqHashes = [bytesToHex(addReqGetHashBytes(auto, r)) for r in reqs]
@@ -312,7 +313,7 @@ def vulnerableHashedReqUnveri(auto, mockTarget, vulnerableRegistry, stakedMin):
     auto.DEPLOYER.transfer(vulnerableRegistry, 1)
     auto.AUTO.approve(vulnerableRegistry, MAX_TEST_STAKE, auto.FR_BOB)
     callData = mockTarget.callVulnerableTransfer.encode_input(auto.DENICE, 1)
-    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, True)
+    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, False, True)
     reqHashBytes = addReqGetHashBytes(auto, req)
 
     tx = vulnerableRegistry.newHashedReqUnveri(reqHashBytes, {'from': auto.BOB, 'value': 0})

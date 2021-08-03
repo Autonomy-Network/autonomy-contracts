@@ -12,20 +12,20 @@ from utils import *
 def test_cancelHashedReqUnveri_rev_nonReentrant(auto, mockTarget, mockReentrancyAttack):
     # Create request to call in reentrance
     callData = mockTarget.setX.encode_input(5)
-    req1 = (auto.BOB.address, mockTarget.address, auto.DENICE.address, callData, False, True, 0, 0)
+    req1 = (auto.BOB.address, mockTarget.address, auto.DENICE.address, callData, False, False, True, 0, 0)
     reqHashBytes1 = addReqGetHashBytes(auto, req1)
 
     auto.r.newHashedReqUnveri(reqHashBytes1, {'from': auto.BOB})
 
     # Create request to be executed directly
     callData = mockReentrancyAttack.callCancelHashedReqUnveri.encode_input(0, req1, *getIpfsMetaData(auto, req1))
-    req2 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE.address, callData, 0, 0, False, True)
+    req2 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE.address, callData, 0, 0, False, False, True)
     reqHashBytes2 = addReqGetHashBytes(auto, req2)
 
     auto.r.newHashedReqUnveri(reqHashBytes2, {'from': auto.BOB})
 
     with reverts(REV_MSG_REENTRANCY):
-        auto.r.executeHashedReqUnveri(1, req2, *getIpfsMetaData(auto, req2))
+        auto.r.executeHashedReqUnveri(1, req2, *getIpfsMetaData(auto, req2), MIN_GAS)
 
 
 def test_cancelHashedReqUnveri_no_ethForCall(auto, stakedMin, mockTarget, hashedReqUnveri):
@@ -80,7 +80,8 @@ def test_cancelHashedReqUnveri_rev_already_executed(auto, stakedMin, mockTarget,
     _, staker, __ = stakedMin
     req, reqHashBytes = hashedReqUnveri
     id = 0
-    auto.r.executeHashedReqUnveri(id, req, *getIpfsMetaData(auto, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    expectedGas = auto.r.executeHashedReqUnveri.call(id, req, *getIpfsMetaData(auto, req), 0, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    auto.r.executeHashedReqUnveri(id, req, *getIpfsMetaData(auto, req), expectedGas, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
     with reverts(REV_MSG_NOT_SAME_IPFS):
         auto.r.cancelHashedReqUnveri(id, req, *getIpfsMetaData(auto, req), auto.FR_BOB)

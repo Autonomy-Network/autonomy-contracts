@@ -18,7 +18,7 @@
 #         def __init__(cls, a, cleanAUTO):
 #             super().__init__(cls, a, cleanAUTO)
 
-#             cls.target = a[0].deploy(MockTarget, cls.vf, ADDR_0)
+#             cls.target = a[0].deploy(MockTarget, cls.uf, ADDR_0)
 #             cls.senders = a[:NUM_SENDERS]
 #             cls.allAddrs = cls.senders + [cls.r]
 
@@ -208,8 +208,8 @@
 #             assert self.r.getAUTO() == self.AUTO
 #             assert self.r.getStakeManager() == self.sm
 #             assert self.r.getOracle() == self.o
-#             assert self.r.getVerifiedForwarder() == self.vf
-#             assert self.target.veriForwarderAddr() == self.vf
+#             assert self.r.getVerifiedForwarder() == self.uf
+#             assert self.target.veriForwarderAddr() == self.uf
 
 
 #         # Check all the state variables that can be changed after every tx

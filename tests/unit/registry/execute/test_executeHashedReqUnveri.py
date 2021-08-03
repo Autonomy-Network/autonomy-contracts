@@ -18,20 +18,20 @@ from utils import *
 def test_executeHashedReqUnveri_rev_nonReentrant(auto, mockTarget, mockReentrancyAttack):
     # Create request to call in reentrance
     callData = mockTarget.setX.encode_input(5)
-    req1 = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, True)
+    req1 = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, False, True)
     reqHashBytes1 = addReqGetHashBytes(auto, req1)
 
     auto.r.newHashedReqUnveri(reqHashBytes1, {'from': auto.BOB})
 
     # Create request to be executed directly
-    callData = mockReentrancyAttack.callExecuteHashedReqUnveri.encode_input(0, req1, *getIpfsMetaData(auto, req1))
-    req2 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE, callData, 0, 0, False, True)
+    callData = mockReentrancyAttack.callExecuteHashedReqUnveri.encode_input(0, req1, *getIpfsMetaData(auto, req1), MIN_GAS)
+    req2 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE, callData, 0, 0, False, False, True)
     reqHashBytes2 = addReqGetHashBytes(auto, req2)
 
     auto.r.newHashedReqUnveri(reqHashBytes2, {'from': auto.BOB})
 
     with reverts(REV_MSG_REENTRANCY):
-        auto.r.executeHashedReqUnveri(1, req2, *getIpfsMetaData(auto, req2))
+        auto.r.executeHashedReqUnveri(1, req2, *getIpfsMetaData(auto, req2), MIN_GAS)
 
 
 def test_executeHashedReqUnveri_returns_revert_message(auto, stakedMin, mockTarget):
@@ -39,13 +39,13 @@ def test_executeHashedReqUnveri_returns_revert_message(auto, stakedMin, mockTarg
 
     auto.AUTO.approve(auto.r, MAX_TEST_STAKE, auto.FR_BOB)
     callData = mockTarget.revertWithMessage.encode_input()
-    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, True)
+    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, False, True)
     reqHashBytes = addReqGetHashBytes(auto, req)
 
     tx = auto.r.newHashedReqUnveri(reqHashBytes, {'from': auto.BOB, 'value': 0})
 
     with reverts(REV_MSG_GOOFED):
-        auto.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(auto, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+        auto.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(auto, req), MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReqUnveri_returns_no_revert_message(auto, stakedMin, mockTarget):
@@ -53,57 +53,57 @@ def test_executeHashedReqUnveri_returns_no_revert_message(auto, stakedMin, mockT
 
     auto.AUTO.approve(auto.r, MAX_TEST_STAKE, auto.FR_BOB)
     callData = mockTarget.revertWithoutMessage.encode_input()
-    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, True)
+    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, False, True)
     reqHashBytes = addReqGetHashBytes(auto, req)
 
     tx = auto.r.newHashedReqUnveri(reqHashBytes, {'from': auto.BOB, 'value': 0})
 
     with reverts(''):
-        auto.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(auto, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+        auto.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(auto, req), MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReqUnveri_rev_initEthSent(auto, mockTarget, stakedMin):
     _, staker, __ = stakedMin
     callData = mockTarget.setX.encode_input(5)
-    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 1, 0, False, True)
+    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 1, 0, False, False, True)
     reqHashBytes = addReqGetHashBytes(auto, req)
     auto.r.newHashedReqUnveri(reqHashBytes, {'from': auto.BOB, 'value': 0})
 
     with reverts(REV_MSG_CANNOT_VERIFY):
-        auto.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(auto, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+        auto.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(auto, req), MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReqUnveri_rev_ethForCall(auto, mockTarget, stakedMin):
     _, staker, __ = stakedMin
     callData = mockTarget.setX.encode_input(5)
-    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 1, False, True)
+    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 1, False, False, True)
     reqHashBytes = addReqGetHashBytes(auto, req)
     auto.r.newHashedReqUnveri(reqHashBytes, {'from': auto.BOB, 'value': 0})
 
     with reverts(REV_MSG_CANNOT_VERIFY):
-        auto.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(auto, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+        auto.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(auto, req), MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReqUnveri_rev_payWithAUTO(auto, mockTarget, stakedMin):
     _, staker, __ = stakedMin
     callData = mockTarget.setX.encode_input(5)
-    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, False)
+    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, False, False)
     reqHashBytes = addReqGetHashBytes(auto, req)
     auto.r.newHashedReqUnveri(reqHashBytes, {'from': auto.BOB, 'value': 0})
 
     with reverts(REV_MSG_CANNOT_VERIFY):
-        auto.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(auto, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+        auto.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(auto, req), MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReqUnveri_rev_verifySender(auto, mockTarget, stakedMin):
     _, staker, __ = stakedMin
     callData = mockTarget.setX.encode_input(5)
-    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, True, True)
+    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, True, False, True)
     reqHashBytes = addReqGetHashBytes(auto, req)
     auto.r.newHashedReqUnveri(reqHashBytes, {'from': auto.BOB, 'value': 0})
 
     with reverts(REV_MSG_CANNOT_VERIFY):
-        auto.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(auto, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+        auto.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(auto, req), MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReqUnveri_pay_AUTO(auto, evmMaths, stakedMin, mockTarget, hashedReqUnveri):
@@ -118,7 +118,8 @@ def test_executeHashedReqUnveri_pay_AUTO(auto, evmMaths, stakedMin, mockTarget, 
     assert auto.AUTO.balanceOf(auto.DENICE) == 0
     assert auto.AUTO.balanceOf(auto.r) == 0
 
-    tx = auto.r.executeHashedReqUnveri(id, req, *getIpfsMetaData(auto, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    expectedGas = auto.r.executeHashedReqUnveri.call(id, req, *getIpfsMetaData(auto, req), MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    tx = auto.r.executeHashedReqUnveri(id, req, *getIpfsMetaData(auto, req), expectedGas, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
@@ -156,25 +157,25 @@ def test_executeHashedReqUnveri_pay_AUTO(auto, evmMaths, stakedMin, mockTarget, 
 def test_executeHashedReqUnveri_rev_target_is_registry(auto, mockTarget, stakedMin, hashedReqUnveri):
     _, staker, __ = stakedMin
     callData = mockTarget.setX.encode_input(5)
-    req = (auto.BOB.address, auto.r.address, auto.DENICE, callData, 0, 0, False, True)
+    req = (auto.BOB.address, auto.r.address, auto.DENICE, callData, 0, 0, False, False, True)
 
     with reverts(REV_MSG_TARGET):
-        auto.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(auto, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+        auto.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(auto, req), MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReqUnveri_rev_target_is_AUTO(auto, mockTarget, stakedMin, hashedReqUnveri):
     _, staker, __ = stakedMin
     callData = mockTarget.setX.encode_input(5)
-    req = (auto.BOB.address, auto.AUTO.address, auto.DENICE, callData, 0, 0, False, True)
+    req = (auto.BOB.address, auto.AUTO.address, auto.DENICE, callData, 0, 0, False, False, True)
 
     with reverts(REV_MSG_TARGET):
-        auto.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(auto, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+        auto.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(auto, req), MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReqUnveri_rev_not_executor(auto, stakedMin, hashedReqUnveri):
     req, reqHashBytes = hashedReqUnveri
     with reverts(REV_MSG_NOT_EXEC):
-        auto.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(auto, req), {'from': auto.DENICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+        auto.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(auto, req), MIN_GAS, {'from': auto.DENICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReqUnveri_rev_req_not_the_same(auto, stakedMin, hashedReqUnveri):
@@ -183,23 +184,23 @@ def test_executeHashedReqUnveri_rev_req_not_the_same(auto, stakedMin, hashedReqU
     invalidReq = list(req)
     invalidReq[6] = 1
     with reverts(REV_MSG_NOT_SAME_IPFS):
-        auto.r.executeHashedReqUnveri(0, invalidReq, *getIpfsMetaData(auto, invalidReq), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+        auto.r.executeHashedReqUnveri(0, invalidReq, *getIpfsMetaData(auto, invalidReq), MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReqUnveri_rev_already_executed(auto, stakedMin, hashedReqUnveri):
     _, staker, __ = stakedMin
     req, reqHashBytes = hashedReqUnveri
 
-    auto.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(auto, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    auto.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(auto, req), MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
     with reverts(REV_MSG_NOT_SAME_IPFS):
-        auto.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(auto, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+        auto.r.executeHashedReqUnveri(0, req, *getIpfsMetaData(auto, req), MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
-def test_executeHashedReqUnveri_rev_noFish(auto, vulnerableRegistry, vulnerableHashedReqUnveri, stakedMin):
+def test_executeHashedReqUnveri_rev_hacked(auto, vulnerableRegistry, vulnerableHashedReqUnveri, stakedMin):
     _, staker, __ = stakedMin
     req, reqHashBytes = vulnerableHashedReqUnveri
     id = 0
 
-    with reverts(REV_MSG_FISHY):
-        vulnerableRegistry.executeHashedReqUnveri(id, req, *getIpfsMetaData(auto, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    with reverts(REV_MSG_OVERFLOW):
+        vulnerableRegistry.executeHashedReqUnveri(id, req, *getIpfsMetaData(auto, req), MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})

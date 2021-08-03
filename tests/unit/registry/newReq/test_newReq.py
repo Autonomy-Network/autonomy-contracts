@@ -14,10 +14,11 @@ import base58 as b58
     callData=strategy('bytes'),
     msgValue=strategy('uint256', max_value=E_18),
     ethForCall=strategy('uint256', max_value=E_18),
-    verifySender=strategy('bool'),
+    verifyUser=strategy('bool'),
+    insertFeeAmount=strategy('bool'),
     payWithAUTO=strategy('bool')
 )
-def test_newReq(auto, mockTarget, user, target, referer, callData, msgValue, ethForCall, verifySender, payWithAUTO):
+def test_newReq(auto, mockTarget, user, target, referer, callData, msgValue, ethForCall, verifyUser, insertFeeAmount, payWithAUTO):
     if user != target and user != referer:
         callData = bytesToHex(callData)
         # assert user.balance() == INIT_ETH_BAL
@@ -41,15 +42,14 @@ def test_newReq(auto, mockTarget, user, target, referer, callData, msgValue, eth
         else:
             msgValue = ethForCall if msgValue < ethForCall else msgValue
 
-        req = (user, target, referer, callData, msgValue, ethForCall, verifySender, payWithAUTO)
+        req = (user, target, referer, callData, msgValue, ethForCall, verifyUser, insertFeeAmount, payWithAUTO)
 
-        tx = auto.r.newReq(target, referer, callData, ethForCall, verifySender, payWithAUTO, {'from': user, 'value': msgValue})
+        tx = auto.r.newReq(target, referer, callData, ethForCall, verifyUser, insertFeeAmount, payWithAUTO, {'from': user, 'value': msgValue})
 
         assert tx.return_value == 0
         assert tx.events["HashedReqAdded"][0].values() == [0, *req]
 
         hashes = [keccakReq(auto, req)]
-        print(hashes[0])
         assert auto.r.getHashedReqs() == hashes
         # Should revert when using indexes above the length
         with reverts():
@@ -85,13 +85,13 @@ def test_newReq(auto, mockTarget, user, target, referer, callData, msgValue, eth
 def test_newReq_rev_target_is_registry(auto, mockTarget):
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_TARGET):
-        tx = auto.r.newReq(auto.r, auto.DENICE, callData, 0, False, True, auto.FR_BOB)
+        tx = auto.r.newReq(auto.r, auto.DENICE, callData, 0, False, False, True, auto.FR_BOB)
 
 
 def test_newReq_rev_target_is_AUTO(auto, mockTarget):
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_TARGET):
-        tx = auto.r.newReq(auto.AUTO, auto.DENICE, callData, 0, False, True, auto.FR_BOB)
+        tx = auto.r.newReq(auto.AUTO, auto.DENICE, callData, 0, False, False, True, auto.FR_BOB)
 
 
 @given(
@@ -102,7 +102,7 @@ def test_newReq_rev_validEth_payWithAUTO(auto, mockTarget, msgValue, ethForCall)
     if msgValue != ethForCall:
         callData = mockTarget.setX.encode_input(5)
         with reverts(REV_MSG_ETHFORCALL_NOT_MSGVALUE):
-            tx = auto.r.newReq(mockTarget, auto.DENICE, "", ethForCall, False, True, {'from': auto.BOB, 'value': msgValue})
+            tx = auto.r.newReq(mockTarget, auto.DENICE, "", ethForCall, False, False, True, {'from': auto.BOB, 'value': msgValue})
 
 
 @given(
@@ -113,4 +113,4 @@ def test_newReq_rev_validEth_not_payWithAUTO(auto, mockTarget, msgValue, ethForC
     ethForCall = msgValue + 1 if ethForCall <= msgValue else ethForCall
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_ETHFORCALL_HIGH):
-        tx = auto.r.newReq(mockTarget, auto.DENICE, "", ethForCall, False, False, {'from': auto.BOB, 'value': msgValue})
+        tx = auto.r.newReq(mockTarget, auto.DENICE, "", ethForCall, False, False, False, {'from': auto.BOB, 'value': msgValue})

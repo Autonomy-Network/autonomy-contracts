@@ -11,8 +11,10 @@ contract VulnerableRegistry is Registry {
         IERC20 AUTO,
         IStakeManager staker,
         IOracle oracle,
-        IForwarder veriForwarder
-    ) Registry(AUTO, staker, oracle, veriForwarder) {}
+        IForwarder userForwarder,
+        IForwarder gasForwarder,
+        IForwarder userGasForwarder
+    ) Registry(AUTO, staker, oracle, userForwarder, gasForwarder, userGasForwarder) {}
 
     function vulnerableTransfer(address payable receiver, uint amount) external {
         receiver.transfer(amount);

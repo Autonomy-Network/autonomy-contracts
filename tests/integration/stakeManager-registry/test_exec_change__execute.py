@@ -16,10 +16,10 @@ def test_executeHashedReq_wait_executeHashedReq(a, auto, evmMaths, stakedMultiSm
     for addr in a:
         if addr != newExec:
             with reverts(REV_MSG_NOT_EXEC):
-                auto.r.executeHashedReq(id, reqs[id], {'from': addr, 'gasPrice': INIT_GAS_PRICE_FAST})
+                auto.r.executeHashedReq(id, reqs[id], MIN_GAS, {'from': addr, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Execution should succeed with the actual executor
-    auto.r.executeHashedReq(id, reqs[id], {'from': newExec, 'gasPrice': INIT_GAS_PRICE_FAST})
+    auto.r.executeHashedReq(id, reqs[id], MIN_GAS, {'from': newExec, 'gasPrice': INIT_GAS_PRICE_FAST})
 
     chain.mine(BLOCKS_IN_EPOCH - (bn() % BLOCKS_IN_EPOCH) - 1)
 
@@ -29,10 +29,10 @@ def test_executeHashedReq_wait_executeHashedReq(a, auto, evmMaths, stakedMultiSm
     for addr in a:
         if addr != newExec:
             with reverts(REV_MSG_NOT_EXEC):
-                auto.r.executeHashedReq(id, reqs[id], {'from': addr, 'gasPrice': INIT_GAS_PRICE_FAST})
+                auto.r.executeHashedReq(id, reqs[id], MIN_GAS, {'from': addr, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Execution should succeed with the actual executor
-    auto.r.executeHashedReq(id, reqs[id], {'from': newExec, 'gasPrice': INIT_GAS_PRICE_FAST})
+    auto.r.executeHashedReq(id, reqs[id], MIN_GAS, {'from': newExec, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReq_wait_executeHashedReqUnveri(a, auto, mockTarget, evmMaths, stakedMultiSmall):
@@ -41,7 +41,7 @@ def test_executeHashedReq_wait_executeHashedReqUnveri(a, auto, mockTarget, evmMa
     # Add 2 hashedReqUnveris
     auto.AUTO.approve(auto.r, MAX_TEST_STAKE, auto.FR_BOB)
     callData = mockTarget.setX.encode_input(5)
-    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, True)
+    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, False, True)
     reqHashBytes = addReqGetHashBytes(auto, req)
     auto.r.newHashedReqUnveri(reqHashBytes, {'from': auto.BOB, 'value': 0})
     auto.r.newHashedReqUnveri(reqHashBytes, {'from': auto.BOB, 'value': 0})
@@ -55,10 +55,11 @@ def test_executeHashedReq_wait_executeHashedReqUnveri(a, auto, mockTarget, evmMa
     for addr in a:
         if addr != newExec:
             with reverts(REV_MSG_NOT_EXEC):
-                auto.r.executeHashedReqUnveri(id, req, *getIpfsMetaData(auto, req), {'from': addr, 'gasPrice': INIT_GAS_PRICE_FAST})
+                auto.r.executeHashedReqUnveri(id, req, *getIpfsMetaData(auto, req), MIN_GAS, {'from': addr, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Execution should succeed with the actual executor
-    auto.r.executeHashedReqUnveri(id, req, *getIpfsMetaData(auto, req), {'from': newExec, 'gasPrice': INIT_GAS_PRICE_FAST})
+    expectedGas = auto.r.executeHashedReqUnveri.call(id, req, *getIpfsMetaData(auto, req), MIN_GAS, {'from': newExec, 'gasPrice': INIT_GAS_PRICE_FAST})
+    auto.r.executeHashedReqUnveri(id, req, *getIpfsMetaData(auto, req), expectedGas, {'from': newExec, 'gasPrice': INIT_GAS_PRICE_FAST})
 
     chain.mine(BLOCKS_IN_EPOCH - (bn() % BLOCKS_IN_EPOCH) - 1)
 
@@ -68,7 +69,8 @@ def test_executeHashedReq_wait_executeHashedReqUnveri(a, auto, mockTarget, evmMa
     for addr in a:
         if addr != newExec:
             with reverts(REV_MSG_NOT_EXEC):
-                auto.r.executeHashedReqUnveri(id, req, *getIpfsMetaData(auto, req), {'from': addr, 'gasPrice': INIT_GAS_PRICE_FAST})
+                auto.r.executeHashedReqUnveri(id, req, *getIpfsMetaData(auto, req), MIN_GAS, {'from': addr, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Execution should succeed with the actual executor
-    auto.r.executeHashedReqUnveri(id, req, *getIpfsMetaData(auto, req), {'from': newExec, 'gasPrice': INIT_GAS_PRICE_FAST})
+    expectedGas = auto.r.executeHashedReqUnveri.call(id, req, *getIpfsMetaData(auto, req), MIN_GAS, {'from': newExec, 'gasPrice': INIT_GAS_PRICE_FAST})
+    auto.r.executeHashedReqUnveri(id, req, *getIpfsMetaData(auto, req), expectedGas, {'from': newExec, 'gasPrice': INIT_GAS_PRICE_FAST})

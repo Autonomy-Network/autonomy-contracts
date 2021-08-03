@@ -11,7 +11,7 @@ def test_updateGasPriceFast_lower_executeHashedReq_with_ethForCall(auto, evmMath
     id = 1
     assert mockTarget.x() == 0
     assert auto.ALICE.balance() == INIT_ETH_BAL
-    assert auto.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (2 * ethForCall)
+    assert auto.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (5 * ethForCall)
     assert auto.AUTO.balanceOf(auto.ALICE) == MAX_TEST_STAKE - STAN_STAKE
     assert auto.AUTO.balanceOf(auto.BOB) == MAX_TEST_STAKE
     assert auto.AUTO.balanceOf(auto.DENICE) == 0
@@ -24,14 +24,15 @@ def test_updateGasPriceFast_lower_executeHashedReq_with_ethForCall(auto, evmMath
     
     assert auto.po.getGasPriceFast() == newGasPriceFast
 
-    tx = auto.r.executeHashedReq(id, reqs[id], {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    expectedGas = auto.r.executeHashedReq.call(id, reqs[id], MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    tx = auto.r.executeHashedReq(id, reqs[id], expectedGas, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
     ethForExec = getEthForExec(evmMaths, tx, newGasPriceFast)
     assert auto.ALICE.balance() == INIT_ETH_BAL + ethForExec - (tx.gas_used * tx.gas_price)
-    assert auto.BOB.balance() == int(INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall)) + msgValue - ethForCall - ethForExec)
-    assert auto.r.balance() == msgValue + (2 * ethForCall)
+    assert auto.BOB.balance() == int(INIT_ETH_BAL - ((2 * msgValue) + (5 * ethForCall)) + msgValue - ethForCall - ethForExec)
+    assert auto.r.balance() == msgValue + (5 * ethForCall)
     assert mockTarget.balance() == ethForCall
     # AUTO bals
     assert auto.AUTO.balanceOf(auto.ALICE) == MAX_TEST_STAKE - STAN_STAKE
@@ -52,7 +53,7 @@ def test_updateGasPriceFast_lower_executeHashedReq_with_ethForCall(auto, evmMath
     with reverts():
         auto.r.getHashedReqsSlice(0, len(reqHashes) + 1)
     assert auto.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
-    assert auto.r.getHashedReqsLen() == 5
+    assert auto.r.getHashedReqsLen() == 8
     assert auto.r.getHashedReq(id) == NULL_HASH
     assert tx.events["HashedReqRemoved"][0].values() == [id, True]
     assert auto.r.getReqCountOf(auto.BOB) == 1
@@ -60,6 +61,7 @@ def test_updateGasPriceFast_lower_executeHashedReq_with_ethForCall(auto, evmMath
     assert auto.r.getReferalCountOf(auto.DENICE) == 1
 
     # Shouldn't've changed
+    assert expectedGas == tx.return_value
     assert mockTarget.userAddr() == ADDR_0
 
 
@@ -71,7 +73,7 @@ def test_updateGasPriceFast_higher_executeHashedReq_payAUTO(auto, evmMaths, stak
     id = 3
     assert mockTarget.x() == 0
     assert auto.ALICE.balance() == INIT_ETH_BAL
-    assert auto.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (2 * ethForCall)
+    assert auto.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (5 * ethForCall)
     assert auto.AUTO.balanceOf(auto.ALICE) == MAX_TEST_STAKE - STAN_STAKE
     assert auto.AUTO.balanceOf(auto.BOB) == MAX_TEST_STAKE
     assert auto.AUTO.balanceOf(auto.DENICE) == 0
@@ -84,13 +86,14 @@ def test_updateGasPriceFast_higher_executeHashedReq_payAUTO(auto, evmMaths, stak
     
     assert auto.po.getGasPriceFast() == newGasPriceFast
 
-    tx = auto.r.executeHashedReq(id, reqs[id], {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    expectedGas = auto.r.executeHashedReq.call(id, reqs[id], MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    tx = auto.r.executeHashedReq(id, reqs[id], expectedGas, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
     assert auto.ALICE.balance() == INIT_ETH_BAL - (tx.gas_used * tx.gas_price)
-    assert auto.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall))
-    assert auto.r.balance() == 2 * msgValue + ethForCall
+    assert auto.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (5 * ethForCall))
+    assert auto.r.balance() == (2 * msgValue) + (4 * ethForCall)
     assert mockTarget.balance() == ethForCall
     # AUTO bals
     AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH, newGasPriceFast)
@@ -108,7 +111,7 @@ def test_updateGasPriceFast_higher_executeHashedReq_payAUTO(auto, evmMaths, stak
     with reverts():
         auto.r.getHashedReqsSlice(0, len(reqHashes) + 1)
     assert auto.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
-    assert auto.r.getHashedReqsLen() == 5
+    assert auto.r.getHashedReqsLen() == 8
     assert auto.r.getHashedReq(id) == NULL_HASH
     assert tx.events["HashedReqRemoved"][0].values() == [id, True]
     assert auto.r.getReqCountOf(auto.BOB) == 1
@@ -116,6 +119,7 @@ def test_updateGasPriceFast_higher_executeHashedReq_payAUTO(auto, evmMaths, stak
     assert auto.r.getReferalCountOf(auto.DENICE) == 1
 
     # Shouldn't've changed
+    assert expectedGas == tx.return_value
     assert mockTarget.userAddr() == ADDR_0
 
 
@@ -127,7 +131,7 @@ def test_updateAUTOPerETH_higher_executeHashedReq_payAUTO(auto, evmMaths, staked
     id = 3
     assert mockTarget.x() == 0
     assert auto.ALICE.balance() == INIT_ETH_BAL
-    assert auto.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (2 * ethForCall)
+    assert auto.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (5 * ethForCall)
     assert auto.AUTO.balanceOf(auto.ALICE) == MAX_TEST_STAKE - STAN_STAKE
     assert auto.AUTO.balanceOf(auto.BOB) == MAX_TEST_STAKE
     assert auto.AUTO.balanceOf(auto.DENICE) == 0
@@ -140,13 +144,14 @@ def test_updateAUTOPerETH_higher_executeHashedReq_payAUTO(auto, evmMaths, staked
     
     assert auto.po.getAUTOPerETH() == newAUTOPerETH
 
-    tx = auto.r.executeHashedReq(id, reqs[id], {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    expectedGas = auto.r.executeHashedReq.call(id, reqs[id], MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    tx = auto.r.executeHashedReq(id, reqs[id], expectedGas, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
     assert auto.ALICE.balance() == INIT_ETH_BAL - (tx.gas_used * tx.gas_price)
-    assert auto.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (2 * ethForCall))
-    assert auto.r.balance() == 2 * msgValue + ethForCall
+    assert auto.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (5 * ethForCall))
+    assert auto.r.balance() == (2 * msgValue) + (4 * ethForCall)
     assert mockTarget.balance() == ethForCall
     # AUTO bals
     AUTOForExec = getAUTOForExec(evmMaths, tx, newAUTOPerETH, INIT_GAS_PRICE_FAST)
@@ -164,7 +169,7 @@ def test_updateAUTOPerETH_higher_executeHashedReq_payAUTO(auto, evmMaths, staked
     with reverts():
         auto.r.getHashedReqsSlice(0, len(reqHashes) + 1)
     assert auto.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
-    assert auto.r.getHashedReqsLen() == 5
+    assert auto.r.getHashedReqsLen() == 8
     assert auto.r.getHashedReq(id) == NULL_HASH
     assert tx.events["HashedReqRemoved"][0].values() == [id, True]
     assert auto.r.getReqCountOf(auto.BOB) == 1
@@ -172,4 +177,5 @@ def test_updateAUTOPerETH_higher_executeHashedReq_payAUTO(auto, evmMaths, staked
     assert auto.r.getReferalCountOf(auto.DENICE) == 1
 
     # Shouldn't've changed
+    assert expectedGas == tx.return_value
     assert mockTarget.userAddr() == ADDR_0

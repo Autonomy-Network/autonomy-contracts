@@ -22,7 +22,8 @@ def test_updateGasPriceFast_lower_executeHashedReqUnveri_with_ethForCall(auto, e
     
     assert auto.po.getGasPriceFast() == newGasPriceFast
 
-    tx = auto.r.executeHashedReqUnveri(id, req, *getIpfsMetaData(auto, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    expectedGas = auto.r.executeHashedReqUnveri.call(id, req, *getIpfsMetaData(auto, req), MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    tx = auto.r.executeHashedReqUnveri(id, req, *getIpfsMetaData(auto, req), expectedGas, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
@@ -76,7 +77,8 @@ def test_updateGasPriceFast_higher_executeHashedReqUnveri_payAUTO(auto, evmMaths
     
     assert auto.po.getGasPriceFast() == newGasPriceFast
 
-    tx = auto.r.executeHashedReqUnveri(id, req, *getIpfsMetaData(auto, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    expectedGas = auto.r.executeHashedReqUnveri.call(id, req, *getIpfsMetaData(auto, req), MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    tx = auto.r.executeHashedReqUnveri(id, req, *getIpfsMetaData(auto, req), expectedGas, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
@@ -130,7 +132,8 @@ def test_updateAUTOPerETH_higher_executeHashedReqUnveri_payAUTO(auto, evmMaths, 
     
     assert auto.po.getAUTOPerETH() == newAUTOPerETH
 
-    tx = auto.r.executeHashedReqUnveri(id, req, *getIpfsMetaData(auto, req), {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    expectedGas = auto.r.executeHashedReqUnveri.call(id, req, *getIpfsMetaData(auto, req), MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    tx = auto.r.executeHashedReqUnveri(id, req, *getIpfsMetaData(auto, req), expectedGas, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals

@@ -18,9 +18,9 @@ def test_claimReferalMiningReward(auto, mockTarget, ethForCall, requester):
         
         callData = mockTarget.setAddrPayVerified.encode_input(requester)
         msgValue = ethForCall + int(0.5 * E_18)
-        auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, True, False, {'from': requester, 'value': msgValue})
-        req = (requester, mockTarget, auto.DENICE, callData, msgValue, ethForCall, True, False)
-        auto.r.executeHashedReq(0, req, auto.FR_ALICE)
+        auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, True, False, False, {'from': requester, 'value': msgValue})
+        req = (requester, mockTarget, auto.DENICE, callData, msgValue, ethForCall, True, False, False)
+        auto.r.executeHashedReq(0, req, MIN_GAS, auto.FR_ALICE)
 
         startBals = {addr: auto.AUTO.balanceOf(addr) for addr in addrs}
         # Should've changed
@@ -66,9 +66,9 @@ def test_claimReferalMiningReward_all_parties_random(auto, mockTarget, referer, 
     
     callData = mockTarget.setAddrPayVerified.encode_input(requester)
     msgValue = ethForCall + int(0.5 * E_18)
-    auto.r.newReq(mockTarget, referer, callData, ethForCall, True, False, {'from': requester, 'value': msgValue})
-    req = (requester, mockTarget, referer, callData, msgValue, ethForCall, True, False)
-    auto.r.executeHashedReq(0, req, {'from': executor})
+    auto.r.newReq(mockTarget, referer, callData, ethForCall, True, False, False, {'from': requester, 'value': msgValue})
+    req = (requester, mockTarget, referer, callData, msgValue, ethForCall, True, False, False)
+    auto.r.executeHashedReq(0, req, MIN_GAS, {'from': executor})
 
     startBals = {addr: auto.AUTO.balanceOf(addr) for addr in addrs}
     # Should've changed

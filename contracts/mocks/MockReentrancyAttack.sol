@@ -15,18 +15,20 @@ contract MockReentrancyAttack {
 
     function callExecuteHashedReq(
         uint id,
-        IRegistry.Request calldata r
+        IRegistry.Request calldata r,
+        uint expectedGas
     ) public {
-        reg.executeHashedReq(id, r);
+        reg.executeHashedReq(id, r, expectedGas);
     }
 
     function callExecuteHashedReqUnveri(
         uint id,
         IRegistry.Request calldata r,
         bytes memory dataPrefix,
-        bytes memory dataSuffix
+        bytes memory dataSuffix,
+        uint expectedGas
     ) public {
-        reg.executeHashedReqUnveri(id, r, dataPrefix, dataSuffix);
+        reg.executeHashedReqUnveri(id, r, dataPrefix, dataSuffix, expectedGas);
     }
 
     function callCancelHashedReq(
