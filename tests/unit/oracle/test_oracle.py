@@ -6,7 +6,7 @@ from utils import *
 
 def test_constructor(auto):
     assert auto.o.getPriceOracle() == auto.po
-    assert auto.o.getAUTOPerETH() == INIT_AUTO_PER_ETH
+    assert auto.o.getAUTOPerETH() == INIT_AUTO_PER_ETH_WEI
     assert auto.o.getGasPriceFast() == INIT_GAS_PRICE_FAST
     assert auto.o.owner() == auto.DEPLOYER
 

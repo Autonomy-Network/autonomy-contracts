@@ -5,7 +5,7 @@ from utils import *
 
 
 def test_constructor(auto):
-    assert auto.po.getAUTOPerETH() == INIT_AUTO_PER_ETH
+    assert auto.po.getAUTOPerETH() == INIT_AUTO_PER_ETH_WEI
     assert auto.po.getGasPriceFast() == INIT_GAS_PRICE_FAST
     assert auto.po.owner() == auto.DEPLOYER
 
@@ -35,10 +35,10 @@ def test_updateAUTOPerETH_rev_owner(auto, newRate, sender):
 def test_updateGasPriceFast(auto, newRate):
     auto.po.updateGasPriceFast(newRate, auto.FR_DEPLOYER)
     
-    assert auto.po.getAUTOPerETH() == INIT_AUTO_PER_ETH
+    assert auto.po.getAUTOPerETH() == INIT_AUTO_PER_ETH_WEI
     assert auto.po.getGasPriceFast() == newRate
     assert auto.po.owner() == auto.DEPLOYER
-    assert auto.o.getAUTOPerETH() == INIT_AUTO_PER_ETH
+    assert auto.o.getAUTOPerETH() == INIT_AUTO_PER_ETH_WEI
     assert auto.o.getGasPriceFast() == newRate
 
 

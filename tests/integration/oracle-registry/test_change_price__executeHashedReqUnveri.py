@@ -32,7 +32,7 @@ def test_updateGasPriceFast_lower_executeHashedReqUnveri_with_ethForCall(auto, e
     assert auto.r.balance() == 0
     assert mockTarget.balance() == 0
     # AUTO bals
-    AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH, newGasPriceFast)
+    AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH_WEI, newGasPriceFast)
     assert auto.AUTO.balanceOf(auto.ALICE) == MAX_TEST_STAKE - STAN_STAKE + AUTOForExec
     assert auto.AUTO.balanceOf(auto.BOB) == MAX_TEST_STAKE - AUTOForExec
     assert auto.AUTO.balanceOf(auto.DENICE) == 0
@@ -87,7 +87,7 @@ def test_updateGasPriceFast_higher_executeHashedReqUnveri_payAUTO(auto, evmMaths
     assert auto.r.balance() == 0
     assert mockTarget.balance() == 0
     # AUTO bals
-    AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH, newGasPriceFast)
+    AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH_WEI, newGasPriceFast)
     assert auto.AUTO.balanceOf(auto.ALICE) == MAX_TEST_STAKE - STAN_STAKE + AUTOForExec
     assert auto.AUTO.balanceOf(auto.BOB) == MAX_TEST_STAKE - AUTOForExec
     assert auto.AUTO.balanceOf(auto.DENICE) == 0
@@ -125,9 +125,9 @@ def test_updateAUTOPerETH_higher_executeHashedReqUnveri_payAUTO(auto, evmMaths, 
     assert auto.AUTO.balanceOf(auto.DENICE) == 0
     assert auto.AUTO.balanceOf(auto.r) == 0
 
-    assert auto.po.getAUTOPerETH() == INIT_AUTO_PER_ETH
+    assert auto.po.getAUTOPerETH() == INIT_AUTO_PER_ETH_WEI
 
-    newAUTOPerETH = int(INIT_AUTO_PER_ETH * 1.3)
+    newAUTOPerETH = int(INIT_AUTO_PER_ETH_WEI * 1.3)
     auto.po.updateAUTOPerETH(newAUTOPerETH)
     
     assert auto.po.getAUTOPerETH() == newAUTOPerETH

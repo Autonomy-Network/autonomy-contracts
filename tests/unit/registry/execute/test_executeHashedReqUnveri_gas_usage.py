@@ -44,7 +44,7 @@ from utils import *
 
 #         tx = auto.r.executeHashedReqUnveri(i+1, req, *getIpfsMetaData(auto, req), {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
+#         AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH_WEI, INIT_GAS_PRICE_FAST)
 #         assert auto.AUTO.balanceOf(auto.BOB) - bobStartBal == -AUTOForExec
 #         assert auto.AUTO.balanceOf(auto.ALICE) - execStartBal == AUTOForExec
 
@@ -94,7 +94,7 @@ from utils import *
 
 #         tx = auto.r.executeHashedReqUnveri(i+1, req, *getIpfsMetaData(auto, req), {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
+#         AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH_WEI, INIT_GAS_PRICE_FAST)
 #         assert auto.AUTO.balanceOf(auto.BOB) - bobStartBal == -AUTOForExec
 #         assert auto.AUTO.balanceOf(auto.ALICE) - execStartBal == AUTOForExec
 
@@ -141,7 +141,7 @@ from utils import *
 
 #         tx = auto.r.executeHashedReqUnveri(i+1, req, *getIpfsMetaData(auto, req), {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
+#         AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH_WEI, INIT_GAS_PRICE_FAST)
 #         assert auto.AUTO.balanceOf(auto.BOB) - bobStartBal == -AUTOForExec
 #         assert auto.AUTO.balanceOf(auto.ALICE) - execStartBal == AUTOForExec
 
@@ -190,7 +190,7 @@ from utils import *
 
 #         tx = auto.r.executeHashedReqUnveri(i+1, req, *getIpfsMetaData(auto, req), {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
+#         AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH_WEI, INIT_GAS_PRICE_FAST)
 #         assert auto.AUTO.balanceOf(auto.BOB) - bobStartBal == -AUTOForExec
 #         assert auto.AUTO.balanceOf(auto.ALICE) - execStartBal == AUTOForExec
 
@@ -242,7 +242,7 @@ from utils import *
 
 #         tx = auto.r.executeHashedReqUnveri(i+1, req, *getIpfsMetaData(auto, req), {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
+#         AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH_WEI, INIT_GAS_PRICE_FAST)
 #         assert auto.AUTO.balanceOf(auto.BOB) - bobStartBal == -AUTOForExec
 #         assert auto.AUTO.balanceOf(auto.ALICE) - execStartBal == AUTOForExec
 
@@ -292,7 +292,7 @@ from utils import *
 
 #         tx = auto.r.executeHashedReqUnveri(i+1, req, *getIpfsMetaData(auto, req), {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
-#         AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
+#         AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH_WEI, INIT_GAS_PRICE_FAST)
 #         assert auto.AUTO.balanceOf(auto.BOB) - bobStartBal == -AUTOForExec
 #         assert auto.AUTO.balanceOf(auto.ALICE) - execStartBal == AUTOForExec
 

@@ -1,6 +1,7 @@
 pragma solidity ^0.8;
 
 
+import "../../interfaces/IRegistry.sol";
 import "./VulnerableRegistry.sol";
 
 
@@ -12,6 +13,7 @@ contract MockTarget {
     uint public x;
     address public userAddr;
     address public msgSender;
+    IRegistry public reg;
     VulnerableRegistry public vulnReg;
     uint[] public gasWaster;
     address[] public gasWasterAddr;
@@ -21,16 +23,22 @@ contract MockTarget {
         address userForwarderAddr_,
         address gasForwarderAddr_,
         address userGasForwarderAddr_,
+        IRegistry reg_,
         VulnerableRegistry vulnReg_
     ) {
         userForwarderAddr = userForwarderAddr_;
         gasForwarderAddr = gasForwarderAddr_;
         userGasForwarderAddr = userGasForwarderAddr_;
+        reg = reg_;
         vulnReg = vulnReg_;
     }
 
-
     function setX(uint newX) public updateMsgSender {
+        x = newX;
+    }
+
+    function setXAddr(address newUserAddr, uint newX) public updateMsgSender {
+        userAddr = newUserAddr;
         x = newX;
     }
 
@@ -42,13 +50,19 @@ contract MockTarget {
         userAddr = newUserAddr;
     }
 
-    function setXPayFeeVerified(uint x_) public payable updateMsgSender feeVeri {
-        x = x_;
+    function setXPayFeeVerified(uint newX) public payable updateMsgSender feeVeri {
+        x = newX;
     }
 
-    function setAddrXPayUserFeeVerified(address newUserAddr, uint x_) public payable updateMsgSender userFeeVeri {
+    function setAddrXPayUserFeeVerified(address newUserAddr, uint newX) public payable updateMsgSender userFeeVeri {
         userAddr = newUserAddr;
-        x = x_;
+        x = newX;
+    }
+
+    function setAddrXPayUserFeeVerifiedSendEth(address newUserAddr, uint newX) public payable updateMsgSender userFeeVeri {
+        userAddr = newUserAddr;
+        x = newX;
+        payable(address(reg)).transfer(newX);
     }
 
     function callVulnerableTransfer(address payable receiver, uint amount) external payable {
@@ -162,17 +176,19 @@ contract MockTarget {
     }
 
     modifier userVeri() {
-        require(msg.sender == userForwarderAddr, "Not sent from veriForwarder");
+        require(msg.sender == userForwarderAddr, "Not sent from userForwarder");
         _;
     }
 
     modifier feeVeri() {
-        require(msg.sender == userForwarderAddr, "Not sent from veriForwarder");
+        require(msg.sender == gasForwarderAddr, "Not sent from gasForwarder");
         _;
     }
 
     modifier userFeeVeri() {
-        require(msg.sender == userForwarderAddr, "Not sent from veriForwarder");
+        require(msg.sender == userGasForwarderAddr, "Not sent from userGasForwarder");
         _;
     }
+
+    receive() external payable {}
 }

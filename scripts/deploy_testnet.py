@@ -29,7 +29,7 @@ def main():
     auto.FR_DEPLOYER = {"from": auto.DEPLOYER}
 
     auto.AUTO = auto.DEPLOYER.deploy(AUTO, "Autonomy Network", "AUTO")
-    auto.po = auto.DEPLOYER.deploy(PriceOracle, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
+    auto.po = auto.DEPLOYER.deploy(PriceOracle, INIT_AUTO_PER_ETH_WEI, INIT_GAS_PRICE_FAST)
     auto.o = auto.DEPLOYER.deploy(Oracle, auto.po)
     auto.sm = auto.DEPLOYER.deploy(StakeManager, auto.o, auto.AUTO)
     auto.uf = auto.DEPLOYER.deploy(Forwarder)

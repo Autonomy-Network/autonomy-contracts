@@ -169,3 +169,9 @@ def getAUTOForExec(evmMaths, tx, AUTOPerETH, gasPriceFast):
 def checkAreCallers(auto, addrs, callers):
     for addr in addrs:
         assert auto.uf.canCall(addr) == (addr in callers)
+
+
+def hexStrPad(num):
+    numStr = hex(num)
+    numStr = numStr[2:] if numStr[:2] == "0x" else numStr
+    return ("0" * (64 - len(numStr))) + numStr

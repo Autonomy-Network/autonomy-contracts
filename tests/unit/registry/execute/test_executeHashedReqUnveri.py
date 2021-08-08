@@ -128,7 +128,7 @@ def test_executeHashedReqUnveri_pay_AUTO(auto, evmMaths, stakedMin, mockTarget, 
     assert auto.r.balance() == 0
     assert mockTarget.balance() == 0
     # AUTO bals
-    AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH, INIT_GAS_PRICE_FAST)
+    AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH_WEI, INIT_GAS_PRICE_FAST)
     assert auto.AUTO.balanceOf(auto.ALICE) == MAX_TEST_STAKE - STAN_STAKE + AUTOForExec
     assert auto.AUTO.balanceOf(auto.BOB) == MAX_TEST_STAKE - AUTOForExec
     assert auto.AUTO.balanceOf(auto.DENICE) == 0
