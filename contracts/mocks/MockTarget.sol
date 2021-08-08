@@ -6,18 +6,27 @@ import "./VulnerableRegistry.sol";
 
 contract MockTarget {
 
-    address public veriForwarderAddr;
+    address public userForwarderAddr;
+    address public gasForwarderAddr;
+    address public userGasForwarderAddr;
     uint public x;
     address public userAddr;
     address public msgSender;
-    VulnerableRegistry public _vulnReg;
+    VulnerableRegistry public vulnReg;
     uint[] public gasWaster;
     address[] public gasWasterAddr;
 
 
-    constructor(address newVeriForwarderAddr, VulnerableRegistry vulnReg) {
-        veriForwarderAddr = newVeriForwarderAddr;
-        _vulnReg = vulnReg;
+    constructor(
+        address userForwarderAddr_,
+        address gasForwarderAddr_,
+        address userGasForwarderAddr_,
+        VulnerableRegistry vulnReg_
+    ) {
+        userForwarderAddr = userForwarderAddr_;
+        gasForwarderAddr = gasForwarderAddr_;
+        userGasForwarderAddr = userGasForwarderAddr_;
+        vulnReg = vulnReg_;
     }
 
 
@@ -29,12 +38,21 @@ contract MockTarget {
         x = newX;
     }
 
-    function setAddrPayVerified(address newUserAddr) public payable updateMsgSender veri {
+    function setAddrPayUserVerified(address newUserAddr) public payable updateMsgSender userVeri {
         userAddr = newUserAddr;
     }
 
+    function setXPayFeeVerified(uint x_) public payable updateMsgSender feeVeri {
+        x = x_;
+    }
+
+    function setAddrXPayUserFeeVerified(address newUserAddr, uint x_) public payable updateMsgSender userFeeVeri {
+        userAddr = newUserAddr;
+        x = x_;
+    }
+
     function callVulnerableTransfer(address payable receiver, uint amount) external payable {
-        _vulnReg.vulnerableTransfer(receiver, amount);
+        vulnReg.vulnerableTransfer(receiver, amount);
     }
 
     /// @dev    See how gas measurement accuracy changes as calldata size doesn't change and the
@@ -85,7 +103,7 @@ contract MockTarget {
 
     /// @dev    See how gas measurement accuracy changes as calldata size doesn't change and the
     ///         gas of the actual call increases
-    function useGasWithArrayVeri(address user, uint num) external veri {
+    function useGasWithArrayVeri(address user, uint num) external userVeri {
         for (uint i; i < num; i++) {
             gasWaster.push(i);
         }
@@ -93,11 +111,11 @@ contract MockTarget {
 
     /// @dev    See how gas measurement accuracy changes as both calldata size increases and the
     ///         gas of the actual call increase at a consistent rate
-    function useGasWithCallDataVeri(address user, uint[] calldata arr) external veri {}
+    function useGasWithCallDataVeri(address user, uint[] calldata arr) external userVeri {}
 
     /// @dev    See how gas measurement accuracy changes as calldata size increases and the
     ///         gas of the actual call doesn't change
-    function useGasCallDataAndArrayVeri(address user, uint[] calldata arr) external veri {
+    function useGasCallDataAndArrayVeri(address user, uint[] calldata arr) external userVeri {
         for (uint i; i < arr.length; i++) {
             gasWaster.push(arr[i]);
         }
@@ -105,7 +123,7 @@ contract MockTarget {
 
     /// @dev    See how gas measurement accuracy changes as both calldata size increases and the
     ///         gas of the actual call increase at a consistent rate, using addresses instead
-    function useGasCallDataAndAddrArrayVeri(address user, address[] calldata arr) external veri {
+    function useGasCallDataAndAddrArrayVeri(address user, address[] calldata arr) external userVeri {
         for (uint i; i < arr.length; i++) {
             gasWasterAddr.push(arr[i]);
         }
@@ -113,7 +131,7 @@ contract MockTarget {
 
     /// @dev    See how gas measurement accuracy changes as the calldata is large and the gas of the
     ///         actual call increases, but the overall gas of the former is greater than the latter
-    function useGasCallDataAndSpecificAddrArrayVeri(address user, address[] calldata arr, uint numToPush) external veri {
+    function useGasCallDataAndSpecificAddrArrayVeri(address user, address[] calldata arr, uint numToPush) external userVeri {
         for (uint i; i < numToPush; i++) {
             gasWasterAddr.push(arr[i]);
         }
@@ -121,7 +139,7 @@ contract MockTarget {
 
     /// @dev    See how gas measurement accuracy changes as the calldata is large and the gas of the
     ///         actual call increases, but the overall gas of the former is lesser than the latter
-    function useGasCallDataAndAddrArrayMultipleVeri(address user, address[] calldata arr, uint numCycles) external veri {
+    function useGasCallDataAndAddrArrayMultipleVeri(address user, address[] calldata arr, uint numCycles) external userVeri {
         for (uint j; j < numCycles; j++) {
             for (uint i; i < arr.length; i++) {
                 gasWasterAddr.push(arr[i]);
@@ -143,8 +161,18 @@ contract MockTarget {
         msgSender = msg.sender;
     }
 
-    modifier veri() {
-        require(msg.sender == veriForwarderAddr, "Not sent from veriForwarder");
+    modifier userVeri() {
+        require(msg.sender == userForwarderAddr, "Not sent from veriForwarder");
+        _;
+    }
+
+    modifier feeVeri() {
+        require(msg.sender == userForwarderAddr, "Not sent from veriForwarder");
+        _;
+    }
+
+    modifier userFeeVeri() {
+        require(msg.sender == userForwarderAddr, "Not sent from veriForwarder");
         _;
     }
 }

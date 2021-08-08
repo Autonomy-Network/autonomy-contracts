@@ -17,7 +17,7 @@ def test_claimReqMiningReward(auto, mockTarget, ethForCall, requester):
             assert auto.m.getMinedReferalCountOf(addr) == 0
             assert auto.m.getAvailableMiningRewards(addr) == (0, 0, 0, 0)
         
-        callData = mockTarget.setAddrPayVerified.encode_input(requester)
+        callData = mockTarget.setAddrPayUserVerified.encode_input(requester)
         msgValue = ethForCall + int(0.5 * E_18)
         auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, True, False, False, {'from': requester, 'value': msgValue})
         req = (requester, mockTarget, auto.DENICE, callData, msgValue, ethForCall, True, False, False)
@@ -65,7 +65,7 @@ def test_claimReqMiningReward_all_parties_random(auto, mockTarget, referer, ethF
     execCount = {addr: 1 if addr == executor else 0 for addr in addrs}
     referalCount = {addr: 1 if addr == referer else 0 for addr in addrs}
     
-    callData = mockTarget.setAddrPayVerified.encode_input(requester)
+    callData = mockTarget.setAddrPayUserVerified.encode_input(requester)
     msgValue = ethForCall + int(0.5 * E_18)
     auto.r.newReq(mockTarget, referer, callData, ethForCall, True, False, False, {'from': requester, 'value': msgValue})
     req = (requester, mockTarget, referer, callData, msgValue, ethForCall, True, False, False)

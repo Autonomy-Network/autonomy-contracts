@@ -16,7 +16,7 @@ def test_getAvailableMiningRewards(auto, mockTarget, ethForCall, requester):
             assert auto.m.getAvailableMiningRewards(addr) == (0, 0, 0, 0)
             startBals[addr] = auto.AUTO.balanceOf(addr)
         
-        callData = mockTarget.setAddrPayVerified.encode_input(requester)
+        callData = mockTarget.setAddrPayUserVerified.encode_input(requester)
         msgValue = ethForCall + int(0.5 * E_18)
         auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, True, False, False, {'from': requester, 'value': msgValue})
         req = (requester, mockTarget, auto.DENICE, callData, msgValue, ethForCall, True, False, False)
@@ -60,7 +60,7 @@ def test_getAvailableMiningRewards_all_parties_random(auto, mockTarget, referer,
         assert auto.m.getMinedReferalCountOf(addr) == 0
         assert auto.m.getAvailableMiningRewards(addr) == (0, 0, 0, 0)
     
-    callData = mockTarget.setAddrPayVerified.encode_input(requester)
+    callData = mockTarget.setAddrPayUserVerified.encode_input(requester)
     msgValue = ethForCall + int(0.5 * E_18)
     auto.r.newReq(mockTarget, referer, callData, ethForCall, True, False, False, {'from': requester, 'value': msgValue})
     req = (requester, mockTarget, referer, callData, msgValue, ethForCall, True, False, False)
@@ -95,7 +95,7 @@ def test_getAvailableMiningRewards_requester_executor_referer_same(auto, mockTar
     assert auto.m.getAvailableMiningRewards(auto.ALICE) == (0, 0, 0, 0)
     startBal = auto.AUTO.balanceOf(auto.ALICE)
     
-    callData = mockTarget.setAddrPayVerified.encode_input(auto.ALICE)
+    callData = mockTarget.setAddrPayUserVerified.encode_input(auto.ALICE)
     ethForCall = 0
     msgValue = E_18
     auto.AUTO.approve(auto.r, MAX_TEST_STAKE, {'from': auto.ALICE})

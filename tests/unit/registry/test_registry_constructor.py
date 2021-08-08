@@ -3,7 +3,6 @@ from brownie import reverts
 
 
 def test_constructor(auto):
-    assert auto.r.getAUTO() == auto.AUTO
     assert auto.r.GAS_OVERHEAD_AUTO() == GAS_OVERHEAD_AUTO
     assert auto.r.GAS_OVERHEAD_ETH() == GAS_OVERHEAD_ETH
     assert auto.r.BASE_BPS() == BASE_BPS
@@ -11,6 +10,10 @@ def test_constructor(auto):
     assert auto.r.PAY_ETH_BPS() == PAY_ETH_BPS
     assert auto.r.getAUTO() == auto.AUTO
     assert auto.r.getStakeManager() == auto.sm
+    assert auto.r.getOracle() == auto.o
+    assert auto.r.getUserForwarder() == auto.uf
+    assert auto.r.getGasForwarder() == auto.gf
+    assert auto.r.getUserGasForwarder() == auto.ugf
 
     assert auto.r.getHashedReqs() == []
     # Should revert when using indexes above the length

@@ -205,7 +205,7 @@ def vulnerableRegistry(auto, VulnerableRegistry):
 # to use AUTO
 @pytest.fixture(scope="module")
 def mockTarget(auto, MockTarget, vulnerableRegistry):
-    return auto.DEPLOYER.deploy(MockTarget, auto.uf, vulnerableRegistry)
+    return auto.DEPLOYER.deploy(MockTarget, auto.uf, auto.gf, auto.ugf, vulnerableRegistry)
 
 
 # Need to test nonReentrant modifier
@@ -230,37 +230,45 @@ def hashedReqs(auto, mockTarget):
     msgValue = int(1.5 * ethForCall)
     reqs = []
 
+    # Set a var on a target without sending ETH with the call, pay upfront
     callData = mockTarget.setX.encode_input(5)
     reqs.append((auto.BOB.address, mockTarget.address, auto.DENICE, callData, msgValue, 0, False, False, False))
     tx = auto.r.newReq(mockTarget, auto.DENICE, callData, 0, False, False, False, {'from': auto.BOB, 'value': msgValue})
 
+    # Set a var on a target, sending ETH with the call, pay upfront
     callData = mockTarget.setXPay.encode_input(5)
     reqs.append((auto.BOB.address, mockTarget.address, auto.DENICE, callData, msgValue, ethForCall, False, False, False))
     tx = auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, False, False, False, {'from': auto.BOB, 'value': msgValue})
 
     auto.AUTO.approve(auto.r, MAX_TEST_STAKE, auto.FR_BOB)
     
+    # Set a var on a target, paying with AUTO after execution
     callData = mockTarget.setX.encode_input(5)
     reqs.append((auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, False, True))
     tx = auto.r.newReq(mockTarget, auto.DENICE, callData, 0, False, False, True, {'from': auto.BOB, 'value': 0})
 
+    # Set a var on a target, sending ETH witht the call, paying with AUTO after execution
     callData = mockTarget.setXPay.encode_input(5)
     reqs.append((auto.BOB.address, mockTarget.address, auto.DENICE, callData, ethForCall, ethForCall, False, False, True))
     tx = auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, False, False, True, {'from': auto.BOB, 'value': ethForCall})
 
-    callData = mockTarget.setAddrPayVerified.encode_input(auto.BOB)
+    # Set an address that is the original users' address on a target, pay with AUTO after execution
+    callData = mockTarget.setAddrPayUserVerified.encode_input(auto.BOB)
     reqs.append((auto.BOB.address, mockTarget.address, auto.DENICE, callData, ethForCall, ethForCall, True, False, True))
     tx = auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, True, False, True, {'from': auto.BOB, 'value': ethForCall})
 
-    callData = mockTarget.setAddrPayVerified.encode_input(auto.BOB)
+    # Set a var that is the gas the execution charges for, sending ETH with the call, pay with AUTO after execution
+    callData = mockTarget.setAddrPayUserVerified.encode_input(auto.BOB)
     reqs.append((auto.BOB.address, mockTarget.address, auto.DENICE, callData, ethForCall, ethForCall, False, True, True))
     tx = auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, False, True, True, {'from': auto.BOB, 'value': ethForCall})
 
-    callData = mockTarget.setAddrPayVerified.encode_input(auto.BOB)
-    reqs.append((auto.BOB.address, mockTarget.address, auto.DENICE, callData, ethForCall, ethForCall, False, True, True))
-    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, False, True, True, {'from': auto.BOB, 'value': ethForCall})
+    # Set a var that is the user's address and the gas the execution charges for, pay for execution with ETH sent from the target
+    callData = mockTarget.setAddrPayUserVerified.encode_input(auto.BOB)
+    reqs.append((auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, True, True, False))
+    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, 0, True, True, False, {'from': auto.BOB, 'value': 0})
 
-    callData = mockTarget.setAddrPayVerified.encode_input(auto.BOB)
+    # Set a var that is the user's address and the gas the execution charges for, send ETH with call, with with AUTO 
+    callData = mockTarget.setAddrPayUserVerified.encode_input(auto.BOB)
     reqs.append((auto.BOB.address, mockTarget.address, auto.DENICE, callData, ethForCall, ethForCall, True, True, True))
     tx = auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, True, True, True, {'from': auto.BOB, 'value': ethForCall})
 

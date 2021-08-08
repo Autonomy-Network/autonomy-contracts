@@ -150,7 +150,7 @@
 
 #         def rule_newReq_setAddrPayVerified(self, st_newUserAddr, st_referer, st_msgValue, st_ethForCall, st_verifySender, st_payWithAUTO, st_sender):
 #             inputs = st_newUserAddr, self.target, st_referer, st_msgValue, st_ethForCall, st_verifySender, st_payWithAUTO, st_sender
-#             callData = self.target.setAddrPayVerified.encode_input(st_newUserAddr)
+#             callData = self.target.setAddrPayUserVerified.encode_input(st_newUserAddr)
 
 #             if st_payWithAUTO and st_ethForCall != st_msgValue:
 #                 print('        REV_MSG_ETHFORCALL_NOT_MSGVALUE rule_newReq_setAddrPayVerified', inputs)
@@ -208,7 +208,7 @@
 #             assert self.r.getAUTO() == self.AUTO
 #             assert self.r.getStakeManager() == self.sm
 #             assert self.r.getOracle() == self.o
-#             assert self.r.getVerifiedForwarder() == self.uf
+#             assert self.r.getUserForwarder() == self.uf
 #             assert self.target.veriForwarderAddr() == self.uf
 
 

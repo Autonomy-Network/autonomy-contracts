@@ -15,7 +15,7 @@ def test_claimMiningRewards_requester(auto, mockTarget, referer, ethForCall, req
     execCount = {addr: 1 if addr == executor else 0 for addr in addrs}
     referalCount = {addr: 1 if addr == referer else 0 for addr in addrs}
     
-    callData = mockTarget.setAddrPayVerified.encode_input(requester)
+    callData = mockTarget.setAddrPayUserVerified.encode_input(requester)
     msgValue = ethForCall + int(0.5 * E_18)
     auto.r.newReq(mockTarget, referer, callData, ethForCall, True, False, False, {'from': requester, 'value': msgValue})
     req = (requester, mockTarget, referer, callData, msgValue, ethForCall, True, False, False)
@@ -79,7 +79,7 @@ def test_claimMiningRewards_executor(auto, mockTarget, referer, ethForCall, requ
     execCount = {addr: 1 if addr == executor else 0 for addr in addrs}
     referalCount = {addr: 1 if addr == referer else 0 for addr in addrs}
     
-    callData = mockTarget.setAddrPayVerified.encode_input(requester)
+    callData = mockTarget.setAddrPayUserVerified.encode_input(requester)
     msgValue = ethForCall + int(0.5 * E_18)
     auto.r.newReq(mockTarget, referer, callData, ethForCall, True, False, False, {'from': requester, 'value': msgValue})
     req = (requester, mockTarget, referer, callData, msgValue, ethForCall, True, False, False)
@@ -143,7 +143,7 @@ def test_claimMiningRewards_referer(auto, mockTarget, referer, ethForCall, reque
     execCount = {addr: 1 if addr == executor else 0 for addr in addrs}
     referalCount = {addr: 1 if addr == referer else 0 for addr in addrs}
     
-    callData = mockTarget.setAddrPayVerified.encode_input(requester)
+    callData = mockTarget.setAddrPayUserVerified.encode_input(requester)
     msgValue = ethForCall + int(0.5 * E_18)
     auto.r.newReq(mockTarget, referer, callData, ethForCall, True, False, False, {'from': requester, 'value': msgValue})
     req = (requester, mockTarget, referer, callData, msgValue, ethForCall, True, False, False)

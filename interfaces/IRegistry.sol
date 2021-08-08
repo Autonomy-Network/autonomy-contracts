@@ -250,7 +250,11 @@ interface IRegistry {
 
     function getOracle() external view returns (address);
     
-    function getVerifiedForwarder() external view returns (address);
+    function getUserForwarder() external view returns (address);
+    
+    function getGasForwarder() external view returns (address);
+    
+    function getUserGasForwarder() external view returns (address);
     
     function getReqCountOf(address addr) external view returns (uint);
     

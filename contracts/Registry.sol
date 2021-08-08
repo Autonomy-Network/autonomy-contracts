@@ -461,8 +461,16 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         return address(_oracle);
     }
     
-    function getVerifiedForwarder() external view override returns (address) {
+    function getUserForwarder() external view override returns (address) {
         return address(_userForwarder);
+    }
+    
+    function getGasForwarder() external view override returns (address) {
+        return address(_gasForwarder);
+    }
+    
+    function getUserGasForwarder() external view override returns (address) {
+        return address(_userGasForwarder);
     }
 
     function getReqCountOf(address addr) external view override returns (uint) {

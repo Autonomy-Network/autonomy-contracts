@@ -46,7 +46,7 @@ def test_cancelHashedReq_no_ethForCall(auto, stakedMin, mockTarget, hashedReqs):
     for i, reqHash in enumerate(reqHashes):
         assert auto.r.getHashedReq(i) == reqHash
     assert tx.events["HashedReqRemoved"][0].values() == [id, False]
-    assert auto.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (5 * ethForCall) + msgValue
+    assert auto.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (4 * ethForCall) + msgValue
 
     # Shouldn't've changed
     assert mockTarget.x() == 0
@@ -87,7 +87,7 @@ def test_cancelHashedReq_with_ethForCall(auto, stakedMin, mockTarget, hashedReqs
     for i, reqHash in enumerate(reqHashes):
         assert auto.r.getHashedReq(i) == reqHash
     assert tx.events["HashedReqRemoved"][0].values() == [id, False]
-    assert auto.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (5 * ethForCall) + msgValue
+    assert auto.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (4 * ethForCall) + msgValue
 
     # Shouldn't've changed
     assert mockTarget.x() == 0
@@ -135,7 +135,7 @@ def test_cancelHashedReq_payAUTO(auto, stakedMin, mockTarget, hashedReqs):
     assert mockTarget.msgSender() == ADDR_0
 
     assert auto.ALICE.balance() == INIT_ETH_BAL
-    assert auto.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (5 * ethForCall)
+    assert auto.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (4 * ethForCall)
     assert auto.DENICE.balance() == INIT_ETH_BAL
 
     assert auto.AUTO.balanceOf(auto.ALICE) == MAX_TEST_STAKE - STAN_STAKE
@@ -169,7 +169,7 @@ def test_cancelHashedReq_pay_AUTO_with_ethForCall(auto, stakedMin, mockTarget, h
     for i, reqHash in enumerate(reqHashes):
         assert auto.r.getHashedReq(i) == reqHash
     assert tx.events["HashedReqRemoved"][0].values() == [id, False]
-    assert auto.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (5 * ethForCall) + ethForCall
+    assert auto.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (4 * ethForCall) + ethForCall
 
     # Shouldn't've changed
     assert mockTarget.x() == 0
@@ -210,7 +210,7 @@ def test_cancelHashedReq_pay_AUTO_with_ethForCall_and_verifySender(auto, stakedM
     for i, reqHash in enumerate(reqHashes):
         assert auto.r.getHashedReq(i) == reqHash
     assert tx.events["HashedReqRemoved"][0].values() == [id, False]
-    assert auto.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (5 * ethForCall) + ethForCall
+    assert auto.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (4 * ethForCall) + ethForCall
 
     # Shouldn't've changed
     assert mockTarget.x() == 0
