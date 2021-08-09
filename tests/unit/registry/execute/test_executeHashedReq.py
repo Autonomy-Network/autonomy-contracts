@@ -423,7 +423,7 @@ def test_executeHashedReq_pay_AUTO_with_ethForCall_and_verifyFee(auto, evmMaths,
     print(mockTarget.x())
     print(expectedGas * INIT_GAS_PRICE_FAST * PAY_AUTO_FACTOR * INIT_AUTO_PER_ETH)
     assert mockTarget.x() == evmMaths.mul5div1(expectedGas, INIT_GAS_PRICE_FAST, PAY_AUTO_BPS, INIT_AUTO_PER_ETH, BASE_BPS)
-    assert mockTarget.msgSender() == auto.gf.address
+    assert mockTarget.msgSender() == auto.ff.address
     # Registry state
     reqHashes[id] = NULL_HASH
     assert auto.r.getHashedReqs() == reqHashes
@@ -481,7 +481,7 @@ def test_executeHashedReq_pay_AUTO_with_ethForCall_and_verifyFee(auto, evmMaths,
     # Target state
     assert mockTarget.x() == fee_amount
     assert mockTarget.userAddr() == auto.BOB.address
-    assert mockTarget.msgSender() == auto.ugf.address
+    assert mockTarget.msgSender() == auto.uff.address
     # Registry state
     reqHashes[id] = NULL_HASH
     assert auto.r.getHashedReqs() == reqHashes
@@ -532,7 +532,7 @@ def test_executeHashedReq_pay_AUTO_with_ethForCall_and_verifyFee(auto, evmMaths,
     # Target state
     assert mockTarget.x() == evmMaths.mul5div1(expectedGas, INIT_GAS_PRICE_FAST, PAY_AUTO_BPS, INIT_AUTO_PER_ETH, BASE_BPS)
     assert mockTarget.userAddr() == auto.BOB.address
-    assert mockTarget.msgSender() == auto.ugf.address
+    assert mockTarget.msgSender() == auto.uff.address
     # Registry state
     reqHashes[id] = NULL_HASH
     assert auto.r.getHashedReqs() == reqHashes
@@ -592,3 +592,14 @@ def test_executeHashedReq_rev_hacked_payWithAUTO(auto, vulnerableRegistry, vulne
 
     with reverts(REV_MSG_OVERFLOW):
         vulnerableRegistry.executeHashedReq(id, reqs[id], MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+
+
+# def test_executeHashedReq_rev_userVeri_called_to_feeVeri(auto, stakedMin):
+#     _, staker, __ = stakedMin
+
+#     # Set a var that is the gas the execution charges for, sending ETH with the call, pay with AUTO after execution
+#     # Mark it as verifying the user addr
+#     callData = mockTarget.setXAddrFeeVeri.encode_input(auto.BOB, 5)
+#     reqs.append((auto.BOB.address, mockTarget.address, auto.DENICE, callData, ethForCall, ethForCall, True, False, True))
+#     tx = auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, True, False, True, {'from': auto.BOB, 'value': ethForCall})
+

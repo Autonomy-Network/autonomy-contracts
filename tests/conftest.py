@@ -39,20 +39,20 @@ def deploy_initial_AUTO_contracts(AUTO, PriceOracle, Oracle, StakeManager, Regis
     auto.o = auto.DEPLOYER.deploy(Oracle, auto.po)
     auto.sm = auto.DEPLOYER.deploy(StakeManager, auto.o, auto.AUTO)
     auto.uf = auto.DEPLOYER.deploy(Forwarder)
-    auto.gf = auto.DEPLOYER.deploy(Forwarder)
-    auto.ugf = auto.DEPLOYER.deploy(Forwarder)
+    auto.ff = auto.DEPLOYER.deploy(Forwarder)
+    auto.uff = auto.DEPLOYER.deploy(Forwarder)
     auto.r = auto.DEPLOYER.deploy(
         Registry,
         auto.AUTO,
         auto.sm,
         auto.o,
         auto.uf,
-        auto.gf,
-        auto.ugf
+        auto.ff,
+        auto.uff
     )
     auto.uf.setCaller(auto.r, True, auto.FR_DEPLOYER)
-    auto.gf.setCaller(auto.r, True, auto.FR_DEPLOYER)
-    auto.ugf.setCaller(auto.r, True, auto.FR_DEPLOYER)
+    auto.ff.setCaller(auto.r, True, auto.FR_DEPLOYER)
+    auto.uff.setCaller(auto.r, True, auto.FR_DEPLOYER)
     auto.m = auto.DEPLOYER.deploy(
         Miner,
         auto.AUTO,
@@ -196,8 +196,8 @@ def vulnerableRegistry(auto, VulnerableRegistry):
         auto.sm,
         auto.o,
         auto.uf,
-        auto.gf,
-        auto.ugf
+        auto.ff,
+        auto.uff
     )
 
 
@@ -205,7 +205,7 @@ def vulnerableRegistry(auto, VulnerableRegistry):
 # to use AUTO
 @pytest.fixture(scope="module")
 def mockTarget(auto, MockTarget, vulnerableRegistry):
-    return auto.DEPLOYER.deploy(MockTarget, auto.uf, auto.gf, auto.ugf, auto.r, vulnerableRegistry)
+    return auto.DEPLOYER.deploy(MockTarget, auto.uf, auto.ff, auto.uff, auto.r, vulnerableRegistry)
 
 
 # Need to test nonReentrant modifier

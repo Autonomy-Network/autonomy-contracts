@@ -42,6 +42,16 @@ contract MockTarget {
         x = newX;
     }
 
+    function setXAddrFeeVeri(address newUserAddr, uint newX) public updateMsgSender feeVeri {
+        userAddr = newUserAddr;
+        x = newX;
+    }
+
+    function setXAddrWithArr(address newUserAddr, uint newX, uint[] memory arr) public updateMsgSender {
+        userAddr = newUserAddr;
+        x = newX;
+    }
+
     function setXPay(uint newX) public payable updateMsgSender {
         x = newX;
     }

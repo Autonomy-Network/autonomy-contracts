@@ -12,8 +12,8 @@ def test_constructor(auto):
     assert auto.r.getStakeManager() == auto.sm
     assert auto.r.getOracle() == auto.o
     assert auto.r.getUserForwarder() == auto.uf
-    assert auto.r.getGasForwarder() == auto.gf
-    assert auto.r.getUserGasForwarder() == auto.ugf
+    assert auto.r.getGasForwarder() == auto.ff
+    assert auto.r.getUserGasForwarder() == auto.uff
 
     assert auto.r.getHashedReqs() == []
     # Should revert when using indexes above the length

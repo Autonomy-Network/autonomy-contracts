@@ -166,9 +166,9 @@ def getAUTOForExec(evmMaths, tx, AUTOPerETH, gasPriceFast):
     return evmMaths.mul4Div2(tx.return_value, gasPriceFast, AUTOPerETH, PAY_AUTO_BPS, BASE_BPS, E_18)
 
 
-def checkAreCallers(auto, addrs, callers):
+def checkAreCallers(forwarder, addrs, callers):
     for addr in addrs:
-        assert auto.uf.canCall(addr) == (addr in callers)
+        assert forwarder.canCall(addr) == (addr in callers)
 
 
 def hexStrPad(num):

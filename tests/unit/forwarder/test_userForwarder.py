@@ -5,7 +5,7 @@ from brownie.test import given, strategy
 
 
 def test_initial_state(auto):
-    checkAreCallers(auto, a[:] + [auto.AUTO, auto.po, auto.o, auto.sm, auto.uf, auto.r, auto.m], [auto.r])
+    checkAreCallers(auto.uf, a[:] + [auto.AUTO, auto.po, auto.o, auto.sm, auto.uf, auto.ff, auto.uff, auto.r, auto.m], [auto.r])
     assert auto.uf.owner() == auto.DEPLOYER
 
 
@@ -14,7 +14,7 @@ def test_setCaller(a, auto, newCaller, b):
     auto.uf.setCaller(newCaller, b, auto.FR_DEPLOYER)
     callers = [auto.r, newCaller] if b else [auto.r]
 
-    checkAreCallers(auto, a[:] + [auto.AUTO, auto.po, auto.o, auto.sm, auto.uf, auto.r, auto.m], callers)
+    checkAreCallers(auto.uf, a[:] + [auto.AUTO, auto.po, auto.o, auto.sm, auto.uf, auto.ff, auto.uff, auto.r, auto.m], callers)
 
 
 @given(
