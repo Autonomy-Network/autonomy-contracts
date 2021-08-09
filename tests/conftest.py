@@ -257,7 +257,7 @@ def hashedReqs(auto, mockTarget):
     reqs.append((auto.BOB.address, mockTarget.address, auto.DENICE, callData, ethForCall, ethForCall, True, False, True))
     tx = auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, True, False, True, {'from': auto.BOB, 'value': ethForCall})
 
-    # Set a var that is the gas the execution charges for, sending ETH with the call, pay with AUTO after execution
+    # Set a var that is what the gas the execution charges for, sending ETH with the call, pay with AUTO after execution
     callData = mockTarget.setXPayFeeVerified.encode_input(5)
     reqs.append((auto.BOB.address, mockTarget.address, auto.DENICE, callData, ethForCall, ethForCall, False, True, True))
     tx = auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, False, True, True, {'from': auto.BOB, 'value': ethForCall})

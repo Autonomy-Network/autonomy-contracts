@@ -42,7 +42,7 @@ contract MockTarget {
         x = newX;
     }
 
-    function setXAddrFeeVeri(address newUserAddr, uint newX) public updateMsgSender feeVeri {
+    function setXAddrUserFeeVeri(address newUserAddr, uint newX) public updateMsgSender userFeeVeri {
         userAddr = newUserAddr;
         x = newX;
     }
@@ -57,6 +57,10 @@ contract MockTarget {
     }
 
     function setAddrPayUserVerified(address newUserAddr) public payable updateMsgSender userVeri {
+        userAddr = newUserAddr;
+    }
+
+    function setAddrPayFeeVerified(address newUserAddr) public payable updateMsgSender feeVeri {
         userAddr = newUserAddr;
     }
 
@@ -191,12 +195,12 @@ contract MockTarget {
     }
 
     modifier feeVeri() {
-        require(msg.sender == gasForwarderAddr, "Not sent from gasForwarder");
+        require(msg.sender == gasForwarderAddr, "Not sent from feeForwarder");
         _;
     }
 
     modifier userFeeVeri() {
-        require(msg.sender == userGasForwarderAddr, "Not sent from userGasForwarder");
+        require(msg.sender == userGasForwarderAddr, "Not sent from userFeeForwarder");
         _;
     }
 

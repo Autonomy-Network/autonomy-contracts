@@ -110,3 +110,6 @@ REV_MSG_EXCEED_ALLOWANCE = "ERC20: transfer amount exceeds allowance"
 
 # MockTarget
 REV_MSG_GOOFED = "You dun goofed boy"
+REV_MSG_USER_FORW = "Not sent from userForwarder"
+REV_MSG_FEE_FORW = "Not sent from feeForwarder"
+REV_MSG_USER_FEE_FORW = "Not sent from userFeeForwarder"

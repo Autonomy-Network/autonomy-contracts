@@ -594,12 +594,28 @@ def test_executeHashedReq_rev_hacked_payWithAUTO(auto, vulnerableRegistry, vulne
         vulnerableRegistry.executeHashedReq(id, reqs[id], MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
-# def test_executeHashedReq_rev_userVeri_called_to_feeVeri(auto, stakedMin):
-#     _, staker, __ = stakedMin
+def test_executeHashedReq_rev_userVeri_called_to_feeVeri(auto, mockTarget, stakedMin, hashedReqs):
+    _, staker, __ = stakedMin
 
-#     # Set a var that is the gas the execution charges for, sending ETH with the call, pay with AUTO after execution
-#     # Mark it as verifying the user addr
-#     callData = mockTarget.setXAddrFeeVeri.encode_input(auto.BOB, 5)
-#     reqs.append((auto.BOB.address, mockTarget.address, auto.DENICE, callData, ethForCall, ethForCall, True, False, True))
-#     tx = auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, True, False, True, {'from': auto.BOB, 'value': ethForCall})
+    # Set a var that is what the gas the execution charges for, pay with AUTO after execution
+    callData = mockTarget.setAddrPayFeeVerified.encode_input(auto.BOB)
+    # Mark it as verifying the user addr
+    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, True, False, True)
+    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, 0, True, False, True, {'from': auto.BOB, 'value': 0})
 
+    with reverts(REV_MSG_FEE_FORW):
+        auto.r.executeHashedReq(8, req, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+
+
+
+def test_executeHashedReq_rev_userFeeVeri_set_to_feeVeri(auto, mockTarget, stakedMin, hashedReqs):
+    _, staker, __ = stakedMin
+
+    # Set a var that is what the gas the execution charges for and user address, pay with AUTO after execution
+    callData = mockTarget.setXAddrUserFeeVeri.encode_input(auto.BOB, 5)
+    # Mark it as only verifying the fee so that it changes the 1st input (user address) to an int
+    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, True, True)
+    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, 0, False, True, True, {'from': auto.BOB, 'value': 0})
+
+    with reverts(REV_MSG_USER_FEE_FORW):
+        auto.r.executeHashedReq(8, req, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
