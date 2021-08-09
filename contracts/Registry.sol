@@ -13,8 +13,8 @@ import "./abstract/Shared.sol";
 contract Registry is IRegistry, Shared, ReentrancyGuard {
     
     // Constant public
-    uint public constant GAS_OVERHEAD_AUTO = 70500;
-    uint public constant GAS_OVERHEAD_ETH = 47000;
+    uint public constant GAS_OVERHEAD_AUTO = 31000;
+    uint public constant GAS_OVERHEAD_ETH = 21000;
     uint public constant BASE_BPS = 10000;
     uint public constant PAY_AUTO_BPS = 11000;
     uint public constant PAY_ETH_BPS = 13000;
@@ -201,7 +201,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
 
     //////////////////////////////////////////////////////////////
     //                                                          //
-    //                        Hash Helpers                      //
+    //                        Bytes Helpers                     //
     //                                                          //
     //////////////////////////////////////////////////////////////
 
@@ -231,6 +231,16 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
 
     function getReqFromBytes(bytes memory rBytes) public pure override returns (Request memory r) {
         (r) = abi.decode(rBytes, (Request));
+    }
+
+    function insertToCallData(bytes calldata callData, uint expectedGas, uint startIdx) public pure override returns (bytes memory) {
+        bytes memory cd = callData;
+        bytes memory expectedGasBytes = abi.encode(expectedGas);
+        for (uint i = 0; i < 32; i++) {
+            cd[startIdx+i] = expectedGasBytes[i];
+        }
+
+        return cd;
     }
     
 
@@ -269,6 +279,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         emit HashedReqRemoved(id, true);
 
         gasUsed = startGas - gasleft();
+        gasUsed += r.payWithAUTO == true ? GAS_OVERHEAD_AUTO : GAS_OVERHEAD_ETH;
         // Make sure that the expected gas used is within 10% of the actual gas used
         require(expectedGas * 10 <= gasUsed * 11, "Reg: expectedGas too high");
     }
@@ -307,23 +318,12 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         emit HashedReqUnveriRemoved(id, true);
 
         gasUsed = startGas - gasleft();
+        gasUsed += r.payWithAUTO == true ? GAS_OVERHEAD_AUTO : GAS_OVERHEAD_ETH;
         // Make sure that the expected gas used is within 10% of the actual gas used
         require(expectedGas * 10 <= gasUsed * 11, "Reg: expectedGas too high");
     }
 
-    function insertToCallData(bytes calldata callData, uint expectedGas, uint startIdx) public pure returns (bytes memory) {
-        bytes memory cd = callData;
-        bytes memory expectedGasBytes = abi.encode(expectedGas);
-        for (uint i = 0; i < 32; i++) {
-            cd[startIdx+i] = expectedGasBytes[i];
-        }
-
-        return cd;
-    }
-
     function _execute(Request calldata r, uint expectedGas) private {
-        uint startGas = gasleft();
-
         IOracle orac = _oracle;
         uint ethStartBal = address(this).balance;
         uint feeTotal;

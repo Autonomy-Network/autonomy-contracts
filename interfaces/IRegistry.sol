@@ -147,7 +147,7 @@ interface IRegistry {
 
     //////////////////////////////////////////////////////////////
     //                                                          //
-    //                        Hash Helpers                      //
+    //                        Bytes Helpers                     //
     //                                                          //
     //////////////////////////////////////////////////////////////
 
@@ -191,6 +191,8 @@ interface IRegistry {
      * @return r    [Request] The request as a struct
      */
     function getReqFromBytes(bytes memory rBytes) external pure returns (Request memory r);
+
+    function insertToCallData(bytes calldata callData, uint expectedGas, uint startIdx) external pure returns (bytes memory);
     
 
     //////////////////////////////////////////////////////////////
