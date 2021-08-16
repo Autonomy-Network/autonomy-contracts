@@ -218,8 +218,7 @@ def mockReentrancyAttack(auto, MockReentrancyAttack):
 # uses vs Python
 @pytest.fixture(scope="module")
 def evmMaths(cleanAUTO, EVMMaths):
-    x = cleanAUTO.DEPLOYER.deploy(EVMMaths)
-    return x
+    return cleanAUTO.DEPLOYER.deploy(EVMMaths)
 
 
 # Need to have some requests to test executeHashedReq. Need a request that has ethForCall

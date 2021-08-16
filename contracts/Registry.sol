@@ -13,8 +13,8 @@ import "./abstract/Shared.sol";
 contract Registry is IRegistry, Shared, ReentrancyGuard {
     
     // Constant public
-    uint public constant GAS_OVERHEAD_AUTO = 31000;
-    uint public constant GAS_OVERHEAD_ETH = 21000;
+    uint public constant GAS_OVERHEAD_AUTO = 16000;
+    uint public constant GAS_OVERHEAD_ETH = 6000;
     uint public constant BASE_BPS = 10000;
     uint public constant PAY_AUTO_BPS = 11000;
     uint public constant PAY_ETH_BPS = 13000;
@@ -22,12 +22,12 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     // Constant private
     bytes private constant _EMPTY_BYTES = "";
     
-    IERC20 private _AUTO;
-    IStakeManager private _stakeMan;
-    IOracle private _oracle;
-    IForwarder private _userForwarder;
-    IForwarder private _gasForwarder;
-    IForwarder private _userGasForwarder;
+    IERC20 private immutable _AUTO;
+    IStakeManager private immutable _stakeMan;
+    IOracle private immutable _oracle;
+    IForwarder private immutable _userForwarder;
+    IForwarder private immutable _gasForwarder;
+    IForwarder private immutable _userGasForwarder;
     // We need to have 2 separete arrays for adding requests with and without
     // eth because, when comparing the hash of a request to be executed to the
     // stored hash, we have no idea what the request had for the eth values

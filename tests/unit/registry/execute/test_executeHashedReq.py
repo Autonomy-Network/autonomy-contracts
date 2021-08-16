@@ -420,8 +420,6 @@ def test_executeHashedReq_pay_AUTO_with_ethForCall_and_verifyFee(auto, evmMaths,
     assert auto.AUTO.balanceOf(auto.DENICE) == 0
     assert auto.AUTO.balanceOf(auto.r) == 0
     # Target state
-    print(mockTarget.x())
-    print(expectedGas * INIT_GAS_PRICE_FAST * PAY_AUTO_FACTOR * INIT_AUTO_PER_ETH)
     assert mockTarget.x() == evmMaths.mul5div1(expectedGas, INIT_GAS_PRICE_FAST, PAY_AUTO_BPS, INIT_AUTO_PER_ETH, BASE_BPS)
     assert mockTarget.msgSender() == auto.ff.address
     # Registry state
