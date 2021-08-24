@@ -28,6 +28,15 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     IForwarder private immutable _userForwarder;
     IForwarder private immutable _gasForwarder;
     IForwarder private immutable _userGasForwarder;
+
+    mapping(address => bool) private _invalidTargets;
+    // This counts the number of times each user has had a request executed
+    mapping(address => uint) private _reqCounts;
+    // This counts the number of times each staker has executed a request
+    mapping(address => uint) private _execCounts;
+    // This counts the number of times each referer has been identified in an
+    // executed tx
+    mapping(address => uint) private _referalCounts;
     // We need to have 2 separete arrays for adding requests with and without
     // eth because, when comparing the hash of a request to be executed to the
     // stored hash, we have no idea what the request had for the eth values
@@ -36,13 +45,6 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     // that can be known implicitly by having 2 separate arrays.
     bytes32[] private _hashedReqs;
     bytes32[] private _hashedReqsUnveri;
-    // This counts the number of times each user has had a request executed
-    mapping(address => uint) private _reqCounts;
-    // This counts the number of times each staker has executed a request
-    mapping(address => uint) private _execCounts;
-    // This counts the number of times each referer has been identified in an
-    // executed tx
-    mapping(address => uint) private _referalCounts;
     
     
     // This is defined in IRegistry. Here for convenience
@@ -64,7 +66,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     // Easier to parse when using native types rather than structs
     event HashedReqAdded(
         uint indexed id,
-        address payable user,
+        address indexed payable user,
         address target,
         address payable referer,
         bytes callData,
@@ -93,6 +95,12 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         _userForwarder = userForwarder;
         _gasForwarder = gasForwarder;
         _userGasForwarder = userGasForwarder;
+        _invalidTargets[address(this)] = true;
+        _invalidTargets[address(userForwarder)] = true;
+        _invalidTargets[address(gasForwarder)] = true;
+        _invalidTargets[address(userGasForwarder)] = true;
+        _invalidTargets[address(AUTO)] = true;
+        _invalidTargets[0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24] = true;
     }
 
 
@@ -284,11 +292,6 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         require(expectedGas * 10 <= gasUsed * 11, "Reg: expectedGas too high");
     }
 
-    /**
-     * @dev validCalldata needs to be before anything that would convert it to memory
-     *      since that is persistent and would prevent validCalldata, that requries
-     *      calldata, from working. Can't do the check in _execute for the same reason
-     */
     function executeHashedReqUnveri(
         uint id,
         Request calldata r,
@@ -504,7 +507,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     //////////////////////////////////////////////////////////////
 
     modifier targetNotThis(address target) {
-        require(target != address(this) && target != address(_AUTO), "Reg: nice try ;)");
+        require(!_invalidTargets[target], "Reg: nice try ;)");
         _;
     }
 
