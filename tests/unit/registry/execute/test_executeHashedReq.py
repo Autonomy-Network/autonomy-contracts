@@ -15,14 +15,14 @@ def test_executeHashedReq_rev_nonReentrant(auto, mockTarget, mockReentrancyAttac
     req1 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE, callData, 0, 0, False, False, True)
     addToIpfs(auto, req1)
 
-    auto.r.newReq(mockTarget, auto.DENICE, callData, 0, False, False, True, {'from': auto.BOB})
+    auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, False, True, {'from': auto.BOB})
 
     # Create request to be executed directly
     callData = mockReentrancyAttack.callExecuteHashedReq.encode_input(0, req1, MIN_GAS)
     req2 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE, callData, 0, 0, False, False, True)
     addToIpfs(auto, req2)
 
-    auto.r.newReq(mockReentrancyAttack, auto.DENICE, callData, 0, False, False, True, {'from': auto.BOB})
+    auto.r.newReqPaySpecific(mockReentrancyAttack, auto.DENICE, callData, 0, False, False, True, {'from': auto.BOB})
 
     with reverts(REV_MSG_REENTRANCY):
         auto.r.executeHashedReq(1, req2, MIN_GAS)
@@ -34,7 +34,7 @@ def test_executeHashedReq_returns_revert_message(auto, stakedMin, mockTarget):
     
     callData = mockTarget.revertWithMessage.encode_input()
     req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, E_18, 0, False, False, False)
-    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, 0, False, False, False, {'from': auto.BOB, 'value': E_18})
+    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, False, False, {'from': auto.BOB, 'value': E_18})
 
     with reverts(REV_MSG_GOOFED):
         auto.r.executeHashedReq(0, req, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -46,7 +46,7 @@ def test_executeHashedReq_returns_no_revert_message(auto, stakedMin, mockTarget)
     
     callData = mockTarget.revertWithoutMessage.encode_input()
     req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, E_18, 0, False, False, False)
-    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, 0, False, False, False, {'from': auto.BOB, 'value': E_18})
+    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, False, False, {'from': auto.BOB, 'value': E_18})
 
     with reverts(''):
         auto.r.executeHashedReq(0, req, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -77,7 +77,7 @@ def test_executeHashedReq_validCalldata(auto, evmMaths, stakedMin, mockTarget, e
         auto.AUTO.approve(auto.r, MAX_TEST_STAKE, {'from': sender})
         auto.AUTO.transfer(sender, MAX_TEST_STAKE, auto.FR_DEPLOYER)
         senderAUTOStartBal = auto.AUTO.balanceOf(sender)
-        auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, True, False, payWithAUTO, {'from': sender, 'value': msgValue})
+        auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, ethForCall, True, False, payWithAUTO, {'from': sender, 'value': msgValue})
 
         if userAddr != sender:
             with reverts(REV_MSG_CALLDATA_NOT_VER):
@@ -599,7 +599,7 @@ def test_executeHashedReq_rev_userVeri_called_to_feeVeri(auto, mockTarget, stake
     callData = mockTarget.setAddrPayFeeVerified.encode_input(auto.BOB)
     # Mark it as verifying the user addr
     req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, True, False, True)
-    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, 0, True, False, True, {'from': auto.BOB, 'value': 0})
+    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, True, False, True, {'from': auto.BOB, 'value': 0})
 
     with reverts(REV_MSG_FEE_FORW):
         auto.r.executeHashedReq(8, req, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -613,7 +613,7 @@ def test_executeHashedReq_rev_userFeeVeri_set_to_feeVeri(auto, mockTarget, stake
     callData = mockTarget.setXAddrUserFeeVeri.encode_input(auto.BOB, 5)
     # Mark it as only verifying the fee so that it changes the 1st input (user address) to an int
     req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, True, True)
-    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, 0, False, True, True, {'from': auto.BOB, 'value': 0})
+    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, True, True, {'from': auto.BOB, 'value': 0})
 
     with reverts(REV_MSG_USER_FEE_FORW):
         auto.r.executeHashedReq(8, req, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})

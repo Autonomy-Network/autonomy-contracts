@@ -66,7 +66,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     // Easier to parse when using native types rather than structs
     event HashedReqAdded(
         uint indexed id,
-        address indexed payable user,
+        address indexed user,
         address target,
         address payable referer,
         bytes callData,
@@ -116,12 +116,49 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         bytes calldata callData,
         uint112 ethForCall,
         bool verifyUser,
+        bool insertFeeAmount
+    ) external payable override returns (uint id) {
+        return _newReq(
+            target,
+            referer,
+            callData,
+            ethForCall,
+            verifyUser,
+            insertFeeAmount,
+            _oracle.defaultPayIsAUTO()
+        );
+    }
+
+    function newReqPaySpecific(
+        address target,
+        address payable referer,
+        bytes calldata callData,
+        uint112 ethForCall,
+        bool verifyUser,
+        bool insertFeeAmount,
+        bool payWithAUTO
+    ) external payable override returns (uint id) {
+        return _newReq(
+            target,
+            referer,
+            callData,
+            ethForCall,
+            verifyUser,
+            insertFeeAmount,
+            payWithAUTO
+        );
+    }
+
+    function _newReq(
+        address target,
+        address payable referer,
+        bytes calldata callData,
+        uint112 ethForCall,
+        bool verifyUser,
         bool insertFeeAmount,
         bool payWithAUTO
     )
-        external
-        payable
-        override
+        private
         nzAddr(target)
         targetNotThis(target)
         validEth(payWithAUTO, ethForCall)

@@ -17,7 +17,7 @@ def test_claimMiningRewards_requester(auto, mockTarget, referer, ethForCall, req
     
     callData = mockTarget.setAddrPayUserVerified.encode_input(requester)
     msgValue = ethForCall + int(0.5 * E_18)
-    auto.r.newReq(mockTarget, referer, callData, ethForCall, True, False, False, {'from': requester, 'value': msgValue})
+    auto.r.newReqPaySpecific(mockTarget, referer, callData, ethForCall, True, False, False, {'from': requester, 'value': msgValue})
     req = (requester, mockTarget, referer, callData, msgValue, ethForCall, True, False, False)
     auto.r.executeHashedReq(0, req, MIN_GAS, {'from': executor})
 
@@ -81,7 +81,7 @@ def test_claimMiningRewards_executor(auto, mockTarget, referer, ethForCall, requ
     
     callData = mockTarget.setAddrPayUserVerified.encode_input(requester)
     msgValue = ethForCall + int(0.5 * E_18)
-    auto.r.newReq(mockTarget, referer, callData, ethForCall, True, False, False, {'from': requester, 'value': msgValue})
+    auto.r.newReqPaySpecific(mockTarget, referer, callData, ethForCall, True, False, False, {'from': requester, 'value': msgValue})
     req = (requester, mockTarget, referer, callData, msgValue, ethForCall, True, False, False)
     auto.r.executeHashedReq(0, req, MIN_GAS, {'from': executor})
 
@@ -145,7 +145,7 @@ def test_claimMiningRewards_referer(auto, mockTarget, referer, ethForCall, reque
     
     callData = mockTarget.setAddrPayUserVerified.encode_input(requester)
     msgValue = ethForCall + int(0.5 * E_18)
-    auto.r.newReq(mockTarget, referer, callData, ethForCall, True, False, False, {'from': requester, 'value': msgValue})
+    auto.r.newReqPaySpecific(mockTarget, referer, callData, ethForCall, True, False, False, {'from': requester, 'value': msgValue})
     req = (requester, mockTarget, referer, callData, msgValue, ethForCall, True, False, False)
     auto.r.executeHashedReq(0, req, MIN_GAS, {'from': executor})
 

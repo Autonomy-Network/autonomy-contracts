@@ -18,7 +18,7 @@ def test_claimReferalMiningReward(auto, mockTarget, ethForCall, requester):
         
         callData = mockTarget.setAddrPayUserVerified.encode_input(requester)
         msgValue = ethForCall + int(0.5 * E_18)
-        auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, True, False, False, {'from': requester, 'value': msgValue})
+        auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, ethForCall, True, False, False, {'from': requester, 'value': msgValue})
         req = (requester, mockTarget, auto.DENICE, callData, msgValue, ethForCall, True, False, False)
         auto.r.executeHashedReq(0, req, MIN_GAS, auto.FR_ALICE)
 
@@ -66,7 +66,7 @@ def test_claimReferalMiningReward_all_parties_random(auto, mockTarget, referer, 
     
     callData = mockTarget.setAddrPayUserVerified.encode_input(requester)
     msgValue = ethForCall + int(0.5 * E_18)
-    auto.r.newReq(mockTarget, referer, callData, ethForCall, True, False, False, {'from': requester, 'value': msgValue})
+    auto.r.newReqPaySpecific(mockTarget, referer, callData, ethForCall, True, False, False, {'from': requester, 'value': msgValue})
     req = (requester, mockTarget, referer, callData, msgValue, ethForCall, True, False, False)
     auto.r.executeHashedReq(0, req, MIN_GAS, {'from': executor})
 

@@ -11,10 +11,10 @@ def test_constructor(auto):
     assert auto.o.owner() == auto.DEPLOYER
 
 
-def test_getRandNum(auto):
-    for i in range(1000):
-        chain.mine(1)
-        assert getRandNum(i) == auto.o.getRandNum(i)
+# def test_getRandNum(auto):
+#     for i in range(1000):
+#         chain.mine(1)
+#         assert getRandNum(i) == auto.o.getRandNum(i)
 
 
 # Test with a new price oracle so we can test that getAUTOPerETH
@@ -39,11 +39,24 @@ def test_setPriceOracle_rand(auto, newPriceOracle):
     assert auto.o.owner() == auto.DEPLOYER
 
 
-@given(
-    newPriceOracle=strategy('address'),
-    sender=strategy('address')
-)
-def test_setPriceOracle_rev_owner(auto, newPriceOracle, sender):
-    if sender != auto.DEPLOYER:
-        with reverts(REV_MSG_OWNER):
-            auto.o.setPriceOracle(newPriceOracle, {'from': sender})
+def test_setPriceOracle_rev_owner(a, auto):
+    for sender in list(a) + auto.all:
+        if sender != auto.DEPLOYER:
+            with reverts(REV_MSG_OWNER):
+                auto.o.setPriceOracle(ADDR_0, {'from': sender})
+
+
+@given(newDefaultPayIsAUTO=strategy('bool'))
+def test_setDefaultPayIsAUTO_rand(auto, newDefaultPayIsAUTO):
+    auto.o.setDefaultPayIsAUTO(newDefaultPayIsAUTO, auto.FR_DEPLOYER)
+    
+    assert auto.o.getPriceOracle() == auto.po
+    assert auto.o.defaultPayIsAUTO() == newDefaultPayIsAUTO
+    assert auto.o.owner() == auto.DEPLOYER
+
+
+def test_setDefaultPayIsAUTO_rev_owner(a, auto):
+    for sender in list(a) + auto.all:
+        if sender != auto.DEPLOYER:
+            with reverts(REV_MSG_OWNER):
+                auto.o.setDefaultPayIsAUTO(True, {'from': sender})

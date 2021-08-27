@@ -21,14 +21,11 @@ def test_updateAUTOPerETH(auto, newRate):
     assert auto.o.getGasPriceFast() == INIT_GAS_PRICE_FAST
 
 
-@given(
-    newRate=strategy('uint'),
-    sender=strategy('address')
-)
-def test_updateAUTOPerETH_rev_owner(auto, newRate, sender):
-    if sender != auto.DEPLOYER:
-        with reverts(REV_MSG_OWNER):
-            auto.po.updateAUTOPerETH(newRate, {'from': sender})
+def test_updateAUTOPerETH_rev_owner(a, auto):
+    for sender in list(a) + auto.all:
+        if sender != auto.DEPLOYER:
+            with reverts(REV_MSG_OWNER):
+                auto.po.updateAUTOPerETH(3, {'from': sender})
 
 
 @given(newRate=strategy('uint'))
@@ -42,11 +39,8 @@ def test_updateGasPriceFast(auto, newRate):
     assert auto.o.getGasPriceFast() == newRate
 
 
-@given(
-    newRate=strategy('uint'),
-    sender=strategy('address')
-)
-def test_updateGasPriceFast_rev_owner(auto, newRate, sender):
-    if sender != auto.DEPLOYER:
-        with reverts(REV_MSG_OWNER):
-            auto.po.updateGasPriceFast(newRate, {'from': sender})
+def test_updateGasPriceFast_rev_owner(a, auto):
+    for sender in list(a) + auto.all:
+        if sender != auto.DEPLOYER:
+            with reverts(REV_MSG_OWNER):
+                auto.po.updateGasPriceFast(3, {'from': sender})

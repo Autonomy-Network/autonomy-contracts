@@ -13,4 +13,10 @@ interface IOracle {
     function getAUTOPerETH() external view returns (uint);
 
     function getGasPriceFast() external view returns (uint);
+
+    function setPriceOracle(IPriceOracle newPriceOracle) external;
+
+    function defaultPayIsAUTO() external view returns (bool);
+
+    function setDefaultPayIsAUTO(bool newDefaultPayIsAUTO) external;
 }

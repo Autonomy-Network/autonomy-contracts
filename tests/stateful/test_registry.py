@@ -68,21 +68,21 @@
 #             if st_payWithAUTO and st_ethForCall != st_msgValue:
 #                 print('        REV_MSG_ETHFORCALL_NOT_MSGVALUE rule_newReq_setX', inputs)
 #                 with reverts(REV_MSG_ETHFORCALL_NOT_MSGVALUE):
-#                     self.r.newReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
+#                     self.r.newReqPaySpecific(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
 
 #             elif (not st_payWithAUTO) and st_ethForCall > st_msgValue:
 #                 print('        REV_MSG_ETHFORCALL_HIGH rule_newReq_setX', inputs)
 #                 with reverts(REV_MSG_ETHFORCALL_HIGH):
-#                     self.r.newReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
+#                     self.r.newReqPaySpecific(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
             
 #             elif st_verifySender:
 #                 print('        CANNOT_DECODE_TO_ADDRESS rule_newReq_setX', inputs)
 #                 with reverts(''):
-#                     self.r.newReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
+#                     self.r.newReqPaySpecific(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
 
 #             else:
 #                 print('                    rule_newReq_setX', inputs)
-#                 self.r.newReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
+#                 self.r.newReqPaySpecific(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
 
 #                 req = (st_sender, self.target, st_referer, callData, st_msgValue, st_ethForCall, st_verifySender, st_payWithAUTO)
 #                 self.rawReqs.append(req)
@@ -97,7 +97,7 @@
 #             callData = self.target.setX.encode_input(st_x)
             
 #             print('                    rule_newReq_setX_working', inputs)
-#             self.r.newReq(self.target, st_referer, callData, 0, False, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
+#             self.r.newReqPaySpecific(self.target, st_referer, callData, 0, False, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
 
 #             req = (st_sender, self.target, st_referer, callData, st_msgValue, 0, False, st_payWithAUTO)
 #             self.rawReqs.append(req)
@@ -112,21 +112,21 @@
 #             if st_payWithAUTO and st_ethForCall != st_msgValue:
 #                 print('        REV_MSG_ETHFORCALL_NOT_MSGVALUE rule_newReq_setXPay', inputs)
 #                 with reverts(REV_MSG_ETHFORCALL_NOT_MSGVALUE):
-#                     self.r.newReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
+#                     self.r.newReqPaySpecific(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
 
 #             elif (not st_payWithAUTO) and st_ethForCall > st_msgValue:
 #                 print('        REV_MSG_ETHFORCALL_HIGH rule_newReq_setXPay', inputs)
 #                 with reverts(REV_MSG_ETHFORCALL_HIGH):
-#                     self.r.newReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
+#                     self.r.newReqPaySpecific(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
             
 #             elif st_verifySender:
 #                 print('        CANNOT_DECODE_TO_ADDRESS rule_newReq_setXPay', inputs)
 #                 with reverts(''):
-#                     self.r.newReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
+#                     self.r.newReqPaySpecific(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
 
 #             else:
 #                 print('                    rule_newReq_setXPay', inputs)
-#                 self.r.newReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
+#                 self.r.newReqPaySpecific(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
 
 #                 req = (st_sender, self.target, st_referer, callData, st_msgValue, st_ethForCall, st_verifySender, st_payWithAUTO)
 #                 self.rawReqs.append(req)
@@ -140,7 +140,7 @@
 #             callData = self.target.setXPay.encode_input(st_x)
             
 #             print('                    rule_newReq_setXPay_working', inputs)
-#             self.r.newReq(self.target, st_referer, callData, 0, False, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
+#             self.r.newReqPaySpecific(self.target, st_referer, callData, 0, False, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
 
 #             req = (st_sender, self.target, st_referer, callData, st_msgValue, 0, False, st_payWithAUTO)
 #             self.rawReqs.append(req)
@@ -155,21 +155,21 @@
 #             if st_payWithAUTO and st_ethForCall != st_msgValue:
 #                 print('        REV_MSG_ETHFORCALL_NOT_MSGVALUE rule_newReq_setAddrPayVerified', inputs)
 #                 with reverts(REV_MSG_ETHFORCALL_NOT_MSGVALUE):
-#                     self.r.newReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
+#                     self.r.newReqPaySpecific(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
 
 #             elif (not st_payWithAUTO) and st_ethForCall > st_msgValue:
 #                 print('        REV_MSG_ETHFORCALL_HIGH rule_newReq_setAddrPayVerified', inputs)
 #                 with reverts(REV_MSG_ETHFORCALL_HIGH):
-#                     self.r.newReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
+#                     self.r.newReqPaySpecific(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
             
 #             elif st_verifySender and st_newUserAddr != st_sender:
 #                 print('        REV_MSG_CALLDATA_NOT_VER rule_newReq_setAddrPayVerified', inputs)
 #                 with reverts(REV_MSG_CALLDATA_NOT_VER):
-#                     self.r.newReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
+#                     self.r.newReqPaySpecific(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
 
 #             else:
 #                 print('                    rule_newReq_setAddrPayVerified', inputs)
-#                 self.r.newReq(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
+#                 self.r.newReqPaySpecific(self.target, st_referer, callData, st_ethForCall, st_verifySender, st_payWithAUTO, {'value': st_msgValue, 'from': st_sender})
 
 #                 req = (st_sender, self.target, st_referer, callData, st_msgValue, st_ethForCall, st_verifySender, st_payWithAUTO)
 #                 self.rawReqs.append(req)

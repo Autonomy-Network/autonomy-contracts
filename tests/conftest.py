@@ -36,7 +36,7 @@ def deploy_initial_AUTO_contracts(AUTO, PriceOracle, Oracle, StakeManager, Regis
 
     auto.AUTO = auto.DEPLOYER.deploy(AUTO, "Autonomy Network", "AUTO")
     auto.po = auto.DEPLOYER.deploy(PriceOracle, INIT_AUTO_PER_ETH_WEI, INIT_GAS_PRICE_FAST)
-    auto.o = auto.DEPLOYER.deploy(Oracle, auto.po)
+    auto.o = auto.DEPLOYER.deploy(Oracle, auto.po, False)
     auto.sm = auto.DEPLOYER.deploy(StakeManager, auto.o, auto.AUTO)
     auto.uf = auto.DEPLOYER.deploy(Forwarder)
     auto.ff = auto.DEPLOYER.deploy(Forwarder)
@@ -61,6 +61,7 @@ def deploy_initial_AUTO_contracts(AUTO, PriceOracle, Oracle, StakeManager, Regis
         INIT_EXECUTOR_REWARD,
         INIT_REFERAL_REWARD
     )
+    auto.all = [auto.AUTO, auto.po, auto.o, auto.sm, auto.uf, auto.ff, auto.uff, auto.r, auto.m]
 
     return auto
 
@@ -232,44 +233,44 @@ def hashedReqs(auto, mockTarget):
     # Set a var on a target without sending ETH with the call, pay upfront
     callData = mockTarget.setX.encode_input(5)
     reqs.append((auto.BOB.address, mockTarget.address, auto.DENICE, callData, msgValue, 0, False, False, False))
-    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, 0, False, False, False, {'from': auto.BOB, 'value': msgValue})
+    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, False, False, {'from': auto.BOB, 'value': msgValue})
 
     # Set a var on a target, sending ETH with the call, pay upfront
     callData = mockTarget.setXPay.encode_input(5)
     reqs.append((auto.BOB.address, mockTarget.address, auto.DENICE, callData, msgValue, ethForCall, False, False, False))
-    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, False, False, False, {'from': auto.BOB, 'value': msgValue})
+    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, ethForCall, False, False, False, {'from': auto.BOB, 'value': msgValue})
 
     auto.AUTO.approve(auto.r, MAX_TEST_STAKE, auto.FR_BOB)
     
     # Set a var on a target, paying with AUTO after execution
     callData = mockTarget.setX.encode_input(5)
     reqs.append((auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, False, True))
-    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, 0, False, False, True, {'from': auto.BOB, 'value': 0})
+    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, False, True, {'from': auto.BOB, 'value': 0})
 
     # Set a var on a target, sending ETH witht the call, paying with AUTO after execution
     callData = mockTarget.setXPay.encode_input(5)
     reqs.append((auto.BOB.address, mockTarget.address, auto.DENICE, callData, ethForCall, ethForCall, False, False, True))
-    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, False, False, True, {'from': auto.BOB, 'value': ethForCall})
+    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, ethForCall, False, False, True, {'from': auto.BOB, 'value': ethForCall})
 
     # Set an address that is the original users' address on a target, pay with AUTO after execution
     callData = mockTarget.setAddrPayUserVerified.encode_input(auto.BOB)
     reqs.append((auto.BOB.address, mockTarget.address, auto.DENICE, callData, ethForCall, ethForCall, True, False, True))
-    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, True, False, True, {'from': auto.BOB, 'value': ethForCall})
+    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, ethForCall, True, False, True, {'from': auto.BOB, 'value': ethForCall})
 
     # Set a var that is what the gas the execution charges for, sending ETH with the call, pay with AUTO after execution
     callData = mockTarget.setXPayFeeVerified.encode_input(5)
     reqs.append((auto.BOB.address, mockTarget.address, auto.DENICE, callData, ethForCall, ethForCall, False, True, True))
-    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, False, True, True, {'from': auto.BOB, 'value': ethForCall})
+    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, ethForCall, False, True, True, {'from': auto.BOB, 'value': ethForCall})
 
     # Set a var that is the user's address and the gas the execution charges for, pay for execution with ETH sent from the target
     callData = mockTarget.setAddrXPayUserFeeVerifiedSendEth.encode_input(auto.BOB, 5)
     reqs.append((auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, True, True, False))
-    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, 0, True, True, False, {'from': auto.BOB, 'value': 0})
+    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, True, True, False, {'from': auto.BOB, 'value': 0})
 
     # Set a var that is the user's address and the gas the execution charges for, send ETH with call, pay with AUTO 
     callData = mockTarget.setAddrXPayUserFeeVerified.encode_input(auto.BOB, 5)
     reqs.append((auto.BOB.address, mockTarget.address, auto.DENICE, callData, ethForCall, ethForCall, True, True, True))
-    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, True, True, True, {'from': auto.BOB, 'value': ethForCall})
+    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, ethForCall, True, True, True, {'from': auto.BOB, 'value': ethForCall})
 
     reqHashes = [keccakReq(auto, r) for r in reqs]
 
@@ -299,12 +300,12 @@ def vulnerableHashedReqs(auto, mockTarget, vulnerableRegistry, stakedMin):
 
     callData = mockTarget.callVulnerableTransfer.encode_input(auto.DENICE, 1)
     reqEthForCall = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, msgValue, ethForCall, False, False, False)
-    tx = vulnerableRegistry.newReq(mockTarget, auto.DENICE, callData, ethForCall, False, False, False, {'from': auto.BOB, 'value': msgValue})
+    tx = vulnerableRegistry.newReqPaySpecific(mockTarget, auto.DENICE, callData, ethForCall, False, False, False, {'from': auto.BOB, 'value': msgValue})
 
     auto.AUTO.approve(vulnerableRegistry, MAX_TEST_STAKE, auto.FR_BOB)
 
     reqPayAUTOEthForCall = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, ethForCall, ethForCall, False, False, True)
-    tx = vulnerableRegistry.newReq(mockTarget, auto.DENICE, callData, ethForCall, False, False, True, {'from': auto.BOB, 'value': ethForCall})
+    tx = vulnerableRegistry.newReqPaySpecific(mockTarget, auto.DENICE, callData, ethForCall, False, False, True, {'from': auto.BOB, 'value': ethForCall})
 
     reqs = [reqEthForCall, reqPayAUTOEthForCall]
     reqHashes = [bytesToHex(addReqGetHashBytes(auto, r)) for r in reqs]

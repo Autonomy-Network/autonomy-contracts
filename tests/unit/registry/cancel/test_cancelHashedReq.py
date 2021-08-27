@@ -15,14 +15,14 @@ def test_cancelHashedReq_rev_nonReentrant(auto, mockTarget, mockReentrancyAttack
     req1 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE, callData, False, False, True, 0, 0)
     addToIpfs(auto, req1)
 
-    auto.r.newReq(mockTarget, auto.DENICE, callData, 0, False, False, True, {'from': auto.BOB})
+    auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, False, True, {'from': auto.BOB})
 
     # Create request to be executed directly
     callData = mockReentrancyAttack.callCancelHashedReq.encode_input(0, req1)
     req2 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE, callData, 0, 0, False, False, True)
     addToIpfs(auto, req2)
 
-    auto.r.newReq(mockReentrancyAttack, auto.DENICE, callData, 0, False, False, True, {'from': auto.BOB})
+    auto.r.newReqPaySpecific(mockReentrancyAttack, auto.DENICE, callData, 0, False, False, True, {'from': auto.BOB})
 
     with reverts(REV_MSG_REENTRANCY):
         auto.r.executeHashedReq(1, req2, MIN_GAS)

@@ -9,10 +9,12 @@ import "../interfaces/IPriceOracle.sol";
 contract Oracle is IOracle, Ownable {
 
     IPriceOracle private _priceOracle;
+    bool private _defaultPayIsAUTO;
 
 
-    constructor(IPriceOracle priceOracle) Ownable() {
+    constructor(IPriceOracle priceOracle, bool defaultPayIsAUTO) Ownable() {
         _priceOracle = priceOracle;
+        _defaultPayIsAUTO = defaultPayIsAUTO;
     }
 
 
@@ -32,7 +34,15 @@ contract Oracle is IOracle, Ownable {
         return _priceOracle.getGasPriceFast();
     }
 
-    function setPriceOracle(IPriceOracle newPriceOracle) external onlyOwner {
+    function setPriceOracle(IPriceOracle newPriceOracle) external override onlyOwner {
         _priceOracle = newPriceOracle;
+    }
+
+    function defaultPayIsAUTO() external override view returns (bool) {
+        return _defaultPayIsAUTO;
+    }
+
+    function setDefaultPayIsAUTO(bool newDefaultPayIsAUTO) external override onlyOwner {
+        _defaultPayIsAUTO = newDefaultPayIsAUTO;
     }
 }

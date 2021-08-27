@@ -28,5 +28,4 @@ contract Forwarder is IForwarder, Ownable {
     function setCaller(address caller, bool b) external onlyOwner {
         _canCall[caller] = b;
     }
-
 }

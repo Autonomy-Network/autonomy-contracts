@@ -17,22 +17,15 @@ def test_setCaller(a, auto, newCaller, b):
     checkAreCallers(auto.uff, a[:] + [auto.AUTO, auto.po, auto.o, auto.sm, auto.uf, auto.ff, auto.uff, auto.r, auto.m], callers)
 
 
-@given(
-    addr=strategy('address'),
-    b=strategy('bool'),
-    sender=strategy('address')
-)
-def test_setReg_rev_owner(auto, addr, b, sender):
-    if sender != auto.DEPLOYER:
-        with reverts(REV_MSG_OWNER):
-            auto.uff.setCaller(addr, b, {'from': sender})
+def test_setReg_rev_owner(a, auto):
+    for sender in list(a) + auto.all:
+        if sender != auto.DEPLOYER:
+            with reverts(REV_MSG_OWNER):
+                auto.uff.setCaller(ADDR_0, True, {'from': sender})
 
 
-@given(
-    target=strategy('address'),
-    callData=strategy('bytes'),
-    sender=strategy('address')
-)
-def test_forward_rev_not_reg(auto, target, callData, sender):
-    with reverts(REV_MSG_NOT_REG):
-        auto.uff.forward(target, callData, {'from': sender})
+def test_forward_rev_not_reg(a, auto):
+    for sender in list(a) + auto.all:
+        if sender.address != auto.r.address:
+            with reverts(REV_MSG_NOT_REG):
+                auto.uff.forward(ADDR_0, '', {'from': sender})
