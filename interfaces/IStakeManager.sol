@@ -8,7 +8,7 @@ interface IStakeManager {
 
     struct Executor{
         address addr;
-        uint forEpoch;
+        uint96 forEpoch;
     }
 
 
@@ -32,13 +32,13 @@ interface IStakeManager {
 
     function getStakesSlice(uint startIdx, uint endIdx) external view returns (address[] memory);
 
-    function getCurEpoch() external view returns (uint);
+    function getCurEpoch() external view returns (uint96);
 
     function getExecutor() external view returns (Executor memory);
 
     function isCurExec(address addr) external view returns (bool);
 
-    function getUpdatedExecRes() external view returns (uint epoch, uint randNum, uint idxOfExecutor, address exec);
+    function getUpdatedExecRes() external view returns (uint96 epoch, uint randNum, uint idxOfExecutor, address exec);
 
     //////////////////////////////////////////////////////////////
     //                                                          //

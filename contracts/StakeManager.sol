@@ -23,7 +23,7 @@ contract StakeManager is IStakeManager, Shared {
     // Pasted for convenience here, defined in IStakeManager
     // struct Executor{
     //     address addr;
-    //     uint forEpoch;
+    //     uint96 forEpoch;
     // }
 
 
@@ -78,8 +78,8 @@ contract StakeManager is IStakeManager, Shared {
         return slice;
     }
 
-    function getCurEpoch() public view override returns (uint) {
-        return (block.number / BLOCKS_IN_EPOCH) * BLOCKS_IN_EPOCH;
+    function getCurEpoch() public view override returns (uint96) {
+        return uint96((block.number / BLOCKS_IN_EPOCH) * BLOCKS_IN_EPOCH);
     }
 
     function getExecutor() external view override returns (Executor memory) {
@@ -103,7 +103,7 @@ contract StakeManager is IStakeManager, Shared {
         return false;
     }
 
-    function getUpdatedExecRes() public view override returns (uint epoch, uint randNum, uint idxOfExecutor, address exec) {
+    function getUpdatedExecRes() public view override returns (uint96 epoch, uint randNum, uint idxOfExecutor, address exec) {
         epoch = getCurEpoch();
         // So that the storage is only loaded once
         address[] memory stakes = _stakes;
@@ -189,7 +189,7 @@ contract StakeManager is IStakeManager, Shared {
         emit Unstaked(msg.sender, amount);
     }
 
-    function _updateExecutor() private returns (uint epoch, uint randNum, uint idxOfExecutor, address exec) {
+    function _updateExecutor() private returns (uint96 epoch, uint randNum, uint idxOfExecutor, address exec) {
         (epoch, randNum, idxOfExecutor, exec) = getUpdatedExecRes();
         if (exec != _ADDR_0) {
             _executor = Executor(exec, epoch);
