@@ -2,12 +2,13 @@ pragma solidity ^0.8;
 
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "../interfaces/IStakeManager.sol";
 import "../interfaces/IOracle.sol";
 import "./abstract/Shared.sol";
 
 
-contract StakeManager is IStakeManager, Shared {
+contract StakeManager is IStakeManager, Shared, ReentrancyGuard {
 
     uint public constant STAN_STAKE = 10000 * _E_18;
     uint public constant BLOCKS_IN_EPOCH = 100;
@@ -126,11 +127,11 @@ contract StakeManager is IStakeManager, Shared {
     //                                                          //
     //////////////////////////////////////////////////////////////
 
-    function updateExecutor() external override noFish returns (uint, uint, uint, address) {
+    function updateExecutor() external override nonReentrant noFish returns (uint, uint, uint, address) {
         return _updateExecutor();
     }
 
-    function isUpdatedExec(address addr) external override noFish returns (bool) {
+    function isUpdatedExec(address addr) external override nonReentrant noFish returns (bool) {
         // So that the storage is only loaded once
         Executor memory ex = _executor;
         if (ex.forEpoch == getCurEpoch()) {
@@ -151,10 +152,12 @@ contract StakeManager is IStakeManager, Shared {
     // The 1st stake/unstake of an epoch shouldn't change the executor, otherwise
     // a staker could precalculate the effect of how much they stake in order to
     // game the staker selection algo
-    function stake(uint numStakes) external nzUint(numStakes) updateExec noFish override {
+    function stake(uint numStakes) external nzUint(numStakes) nonReentrant updateExec noFish override {
         uint amount = numStakes * STAN_STAKE;
+        _stakerToStakedAmount[msg.sender] += amount;
         // So that the storage is only loaded once
         IERC20 AUTO = _AUTO;
+
         // Deposit the coins
         uint balBefore = AUTO.balanceOf(address(this));
         require(AUTO.transferFrom(msg.sender, address(this), amount), "SM: transfer failed");
@@ -165,12 +168,11 @@ contract StakeManager is IStakeManager, Shared {
             _stakes.push(msg.sender);
         }
 
-        _stakerToStakedAmount[msg.sender] += amount;
         _totalStaked += amount;
         emit Staked(msg.sender, amount);
     }
 
-    function unstake(uint[] calldata idxs) external nzUintArr(idxs) updateExec noFish override {
+    function unstake(uint[] calldata idxs) external nzUintArr(idxs) nonReentrant updateExec noFish override {
         uint amount = idxs.length * STAN_STAKE;
         require(amount <= _stakerToStakedAmount[msg.sender], "SM: not enough stake, peasant");
 
@@ -184,8 +186,8 @@ contract StakeManager is IStakeManager, Shared {
         }
         
         _stakerToStakedAmount[msg.sender] -= amount;
-        _totalStaked -= amount;
         require(_AUTO.transfer(msg.sender, amount));
+        _totalStaked -= amount;
         emit Unstaked(msg.sender, amount);
     }
 
@@ -198,7 +200,7 @@ contract StakeManager is IStakeManager, Shared {
 
     modifier updateExec() {
         // Need to update executor at the start of stake/unstake as opposed to the
-        // end of the fcns because otherwise, for the 1st stake/unstake tx in an 
+        // end of the fcns because otherwise, for the 1st stake/unstake tx in an
         // epoch, someone could influence the outcome of the executor by precalculating
         // the outcome based on how much they stake and unfairly making themselves the executor
         _updateExecutor();

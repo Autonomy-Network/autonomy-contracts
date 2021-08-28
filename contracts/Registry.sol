@@ -83,14 +83,14 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
 
     constructor(
         IERC20 AUTO,
-        IStakeManager staker,
+        IStakeManager stakeMan,
         IOracle oracle,
         IForwarder userForwarder,
         IForwarder gasForwarder,
         IForwarder userGasForwarder
     ) ReentrancyGuard() {
         _AUTO = AUTO;
-        _stakeMan = staker;
+        _stakeMan = stakeMan;
         _oracle = oracle;
         _userForwarder = userForwarder;
         _gasForwarder = gasForwarder;
