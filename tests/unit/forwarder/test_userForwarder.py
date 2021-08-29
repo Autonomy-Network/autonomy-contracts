@@ -12,7 +12,10 @@ def test_initial_state(auto):
 @given(newCaller=strategy('address'), b=strategy('bool'))
 def test_setCaller(a, auto, newCaller, b):
     auto.uf.setCaller(newCaller, b, auto.FR_DEPLOYER)
-    callers = [auto.r, newCaller] if b else [auto.r]
+    if str(newCaller) == str(auto.r):
+        callers = [auto.r] if b else []
+    else:
+        callers = [auto.r, newCaller] if b else [auto.r]
 
     checkAreCallers(auto.uf, a[:] + [auto.AUTO, auto.po, auto.o, auto.sm, auto.uf, auto.ff, auto.uff, auto.r, auto.m], callers)
 
@@ -26,7 +29,6 @@ def test_setReg_rev_owner(a, auto):
 
 def test_forward_rev_not_reg(a, auto):
     for sender in list(a) + auto.all:
-        print(sender, auto.r)
         if sender.address != auto.r.address:
             with reverts(REV_MSG_NOT_REG):
                 auto.uf.forward(ADDR_0, '', {'from': sender})

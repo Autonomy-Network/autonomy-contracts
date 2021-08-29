@@ -29,7 +29,8 @@ def deploy_initial_AUTO_contracts(AUTO, PriceOracle, Oracle, StakeManager, Regis
     auto.FR_CHARLIE = {"from": auto.CHARLIE}
     auto.DENICE = a[4]
     auto.FR_DENICE = {"from": auto.DENICE}
-
+    auto.EOAs = list(a)[:10]
+    auto.EOAsStr = [str(acc) for acc in auto.EOAs]
 
     # Calling `updateExecutor` requires the epoch to be > 0
     chain.mine(BLOCKS_IN_EPOCH)
@@ -62,6 +63,7 @@ def deploy_initial_AUTO_contracts(AUTO, PriceOracle, Oracle, StakeManager, Regis
         INIT_REFERAL_REWARD
     )
     auto.all = [auto.AUTO, auto.po, auto.o, auto.sm, auto.uf, auto.ff, auto.uff, auto.r, auto.m]
+    auto.allStr = [str(x) for x in auto.all]
 
     return auto
 

@@ -13,8 +13,8 @@ contract StakeManager is IStakeManager, Shared, ReentrancyGuard {
     uint public constant STAN_STAKE = 10000 * _E_18;
     uint public constant BLOCKS_IN_EPOCH = 100;
 
-    IOracle private _oracle;
-    IERC20 private _AUTO;
+    IOracle private immutable _oracle;
+    IERC20 private immutable _AUTO;
     uint private _totalStaked = 0;
     mapping(address => uint) private _stakerToStakedAmount;
     address[] private _stakes;

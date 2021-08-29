@@ -12,7 +12,10 @@ def test_initial_state(auto):
 @given(newCaller=strategy('address'), b=strategy('bool'))
 def test_setCaller(a, auto, newCaller, b):
     auto.uff.setCaller(newCaller, b, auto.FR_DEPLOYER)
-    callers = [auto.r, newCaller] if b else [auto.r]
+    if str(newCaller) == str(auto.r):
+        callers = [auto.r] if b else []
+    else:
+        callers = [auto.r, newCaller] if b else [auto.r]
 
     checkAreCallers(auto.uff, a[:] + [auto.AUTO, auto.po, auto.o, auto.sm, auto.uf, auto.ff, auto.uff, auto.r, auto.m], callers)
 

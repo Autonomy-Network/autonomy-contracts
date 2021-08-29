@@ -167,6 +167,8 @@ def getAUTOForExec(evmMaths, tx, AUTOPerETH, gasPriceFast):
 
 
 def checkAreCallers(forwarder, addrs, callers):
+    addrs = [str(ad) for ad in addrs]
+    callers = [str(c) for c in callers]
     for addr in addrs:
         assert forwarder.canCall(addr) == (addr in callers)
 
