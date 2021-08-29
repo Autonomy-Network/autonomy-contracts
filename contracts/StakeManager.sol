@@ -1,24 +1,33 @@
 pragma solidity ^0.8;
 
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC777/IERC777.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/token/ERC777/IERC777Recipient.sol";
+import "@openzeppelin/contracts/utils/introspection/IERC1820Registry.sol";
 import "../interfaces/IStakeManager.sol";
 import "../interfaces/IOracle.sol";
 import "./abstract/Shared.sol";
 
 
-contract StakeManager is IStakeManager, Shared, ReentrancyGuard {
+contract StakeManager is IStakeManager, Shared, ReentrancyGuard, IERC777Recipient {
 
     uint public constant STAN_STAKE = 10000 * _E_18;
     uint public constant BLOCKS_IN_EPOCH = 100;
+    bytes private constant _stakingIndicator = "staking";
 
     IOracle private immutable _oracle;
-    IERC20 private immutable _AUTO;
+    // AUTO ERC777
+    IERC777 private _AUTO;
+    bool private _AUTOSet = false;
+    IERC1820Registry constant private _ERC1820_REGISTRY = IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
+    bytes32 constant private TOKENS_RECIPIENT_INTERFACE_HASH = keccak256('ERC777TokensRecipient');
     uint private _totalStaked = 0;
+    // Needed so that receiving AUTO is rejected unless it's indicated
+    // that's it's used for staking and therefore not an accident (protect users)
+    Executor private _executor;
     mapping(address => uint) private _stakerToStakedAmount;
     address[] private _stakes;
-    Executor private _executor;
 
 
     // Pasted for convenience here, defined in IStakeManager
@@ -32,8 +41,15 @@ contract StakeManager is IStakeManager, Shared, ReentrancyGuard {
     event Unstaked(address staker, uint amount);
 
 
-    constructor(IOracle oracle, IERC20 AUTO) {
+    constructor(IOracle oracle) {
         _oracle = oracle;
+        _ERC1820_REGISTRY.setInterfaceImplementer(address(this), TOKENS_RECIPIENT_INTERFACE_HASH, address(this));
+    }
+
+
+    function setAUTO(IERC777 AUTO) external {
+        require(!_AUTOSet, "SM: AUTO already set");
+        _AUTOSet = true;
         _AUTO = AUTO;
     }
 
@@ -48,7 +64,7 @@ contract StakeManager is IStakeManager, Shared, ReentrancyGuard {
         return _oracle;
     }
 
-    function getAUTO() external view override returns (address) {
+    function getAUTOAddr() external view override returns (address) {
         return address(_AUTO);
     }
 
@@ -156,11 +172,11 @@ contract StakeManager is IStakeManager, Shared, ReentrancyGuard {
         uint amount = numStakes * STAN_STAKE;
         _stakerToStakedAmount[msg.sender] += amount;
         // So that the storage is only loaded once
-        IERC20 AUTO = _AUTO;
+        IERC777 AUTO = _AUTO;
 
         // Deposit the coins
         uint balBefore = AUTO.balanceOf(address(this));
-        require(AUTO.transferFrom(msg.sender, address(this), amount), "SM: transfer failed");
+        AUTO.operatorSend(msg.sender, address(this), amount, "", _stakingIndicator);
         // This check is a bit unnecessary, but better to be paranoid than r3kt
         require(AUTO.balanceOf(address(this)) - balBefore == amount, "SM: transfer bal check failed");
 
@@ -186,7 +202,7 @@ contract StakeManager is IStakeManager, Shared, ReentrancyGuard {
         }
         
         _stakerToStakedAmount[msg.sender] -= amount;
-        require(_AUTO.transfer(msg.sender, amount));
+        _AUTO.send(msg.sender, amount, _stakingIndicator);
         _totalStaked -= amount;
         emit Unstaked(msg.sender, amount);
     }
@@ -213,4 +229,17 @@ contract StakeManager is IStakeManager, Shared, ReentrancyGuard {
         // >= because someone could send some tokens to this contract and disable it if it was ==
         require(_AUTO.balanceOf(address(this)) >= _totalStaked, "SM: something fishy here");
     }
+
+    function tokensReceived(
+        address _operator,
+        address _from,
+        address _to,
+        uint256 _amount,
+        bytes calldata _data,
+        bytes calldata _operatorData
+    ) external override {
+        require(msg.sender == address(_AUTO), "SM: non-AUTO token");
+        require(keccak256(_operatorData) == keccak256(_stakingIndicator), "SM: sending by mistake");
+    }
+
 }

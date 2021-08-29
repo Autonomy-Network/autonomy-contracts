@@ -1,13 +1,13 @@
 pragma solidity ^0.8;
 
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "../interfaces/IRegistry.sol";
 import "../interfaces/IStakeManager.sol";
 import "../interfaces/IOracle.sol";
 import "../interfaces/IForwarder.sol";
 import "./abstract/Shared.sol";
+import "./AUTO.sol";
 
 
 contract Registry is IRegistry, Shared, ReentrancyGuard {
@@ -22,7 +22,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     // Constant private
     bytes private constant _EMPTY_BYTES = "";
     
-    IERC20 private immutable _AUTO;
+    AUTO private immutable _AUTO;
     IStakeManager private immutable _stakeMan;
     IOracle private immutable _oracle;
     IForwarder private immutable _userForwarder;
@@ -82,14 +82,22 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
 
 
     constructor(
-        IERC20 AUTO,
         IStakeManager stakeMan,
         IOracle oracle,
         IForwarder userForwarder,
         IForwarder gasForwarder,
-        IForwarder userGasForwarder
+        IForwarder userGasForwarder,
+        string memory tokenName,
+        string memory tokenSymbol,
+        uint totalAUTOSupply
     ) ReentrancyGuard() {
-        _AUTO = AUTO;
+        // ERC777 token
+        address[] memory defaultOperators = new address[](2);
+        defaultOperators[0] = address(this);
+        defaultOperators[1] = address(stakeMan);
+        AUTO aut = new AUTO(tokenName, tokenSymbol, defaultOperators, msg.sender, totalAUTOSupply);
+
+        _AUTO = aut;
         _stakeMan = stakeMan;
         _oracle = oracle;
         _userForwarder = userForwarder;
@@ -99,7 +107,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         _invalidTargets[address(userForwarder)] = true;
         _invalidTargets[address(gasForwarder)] = true;
         _invalidTargets[address(userGasForwarder)] = true;
-        _invalidTargets[address(AUTO)] = true;
+        _invalidTargets[address(aut)] = true;
         _invalidTargets[0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24] = true;
     }
 
@@ -421,7 +429,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         uint ethReceivedDuringRequest = address(this).balance + r.ethForCall - ethStartBal;
         if (r.payWithAUTO) {
             // Send the executor their bounty
-            require(_AUTO.transferFrom(r.user, msg.sender, feeTotal));
+            _AUTO.operatorSend(r.user, msg.sender, feeTotal, "", "");
         } else {
             uint ethReceived = r.initEthSent - r.ethForCall + ethReceivedDuringRequest;
             // Send the executor their bounty
@@ -489,8 +497,8 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     //                                                          //
     //////////////////////////////////////////////////////////////
     
-    function getAUTO() external view override returns (IERC20) {
-        return _AUTO;
+    function getAUTOAddr() external view override returns (address) {
+        return address(_AUTO);
     }
     
     function getStakeManager() external view override returns (address) {

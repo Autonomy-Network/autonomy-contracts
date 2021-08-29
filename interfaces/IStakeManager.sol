@@ -20,7 +20,7 @@ interface IStakeManager {
     
     function getOracle() external view returns (IOracle);
 
-    function getAUTO() external view returns (address);
+    function getAUTOAddr() external view returns (address);
 
     function getTotalStaked() external view returns (uint);
 

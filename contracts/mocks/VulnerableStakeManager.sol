@@ -9,7 +9,7 @@ contract VulnerableStaker is StakeManager {
 
     IERC20 private _AUTO;
 
-    constructor(IOracle oracle, IERC20 AUTO) StakeManager(oracle, AUTO) {
+    constructor(IOracle oracle, IERC20 AUTO) StakeManager(oracle) {
         _AUTO = AUTO;
     }
 

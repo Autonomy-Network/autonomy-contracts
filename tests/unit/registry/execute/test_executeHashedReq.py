@@ -64,6 +64,7 @@ def test_executeHashedReq_validCalldata(auto, evmMaths, stakedMin, mockTarget, e
     # It's gonna be a pain in the ass to do the accounting if they're equal
     if sender != auto.ALICE and sender != auto.DENICE:
         _, staker, __ = stakedMin
+        senderStartBal = sender.balance()
 
         msgValue = ethForCall + E_18
         if payWithAUTO:
@@ -74,7 +75,6 @@ def test_executeHashedReq_validCalldata(auto, evmMaths, stakedMin, mockTarget, e
         req = (sender.address, mockTarget.address, auto.DENICE, callData, msgValue, ethForCall, True, False, payWithAUTO)
         addToIpfs(auto, req)
 
-        auto.AUTO.approve(auto.r, MAX_TEST_STAKE, {'from': sender})
         auto.AUTO.transfer(sender, MAX_TEST_STAKE, auto.FR_DEPLOYER)
         senderAUTOStartBal = auto.AUTO.balanceOf(sender)
         auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, ethForCall, True, False, payWithAUTO, {'from': sender, 'value': msgValue})
@@ -90,7 +90,7 @@ def test_executeHashedReq_validCalldata(auto, evmMaths, stakedMin, mockTarget, e
             if payWithAUTO:
                 # Eth bals
                 assert auto.ALICE.balance() == INIT_ETH_BAL - (tx.gas_used * tx.gas_price)
-                assert sender.balance() == INIT_ETH_BAL - ethForCall
+                assert sender.balance() == senderStartBal - ethForCall
                 # AUTO bals
                 AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH_WEI, INIT_GAS_PRICE_FAST)
                 assert auto.AUTO.balanceOf(auto.ALICE) == MAX_TEST_STAKE - STAN_STAKE + AUTOForExec
@@ -101,7 +101,7 @@ def test_executeHashedReq_validCalldata(auto, evmMaths, stakedMin, mockTarget, e
                 # Eth bals
                 ethForExec = getEthForExec(evmMaths, tx, INIT_GAS_PRICE_FAST)
                 assert auto.ALICE.balance() == INIT_ETH_BAL + ethForExec - (tx.gas_used * tx.gas_price)
-                assert sender.balance() == INIT_ETH_BAL - ethForCall - ethForExec
+                assert sender.balance() == senderStartBal - ethForCall - ethForExec
                 # AUTO bals
                 assert auto.AUTO.balanceOf(auto.ALICE) == MAX_TEST_STAKE - STAN_STAKE
                 assert auto.AUTO.balanceOf(sender) - senderAUTOStartBal == 0

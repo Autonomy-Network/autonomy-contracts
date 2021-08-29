@@ -37,7 +37,6 @@ def test_executeHashedReqUnveri_rev_nonReentrant(auto, mockTarget, mockReentranc
 def test_executeHashedReqUnveri_returns_revert_message(auto, stakedMin, mockTarget):
     _, staker, __ = stakedMin
 
-    auto.AUTO.approve(auto.r, MAX_TEST_STAKE, auto.FR_BOB)
     callData = mockTarget.revertWithMessage.encode_input()
     req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, False, True)
     reqHashBytes = addReqGetHashBytes(auto, req)
@@ -51,7 +50,6 @@ def test_executeHashedReqUnveri_returns_revert_message(auto, stakedMin, mockTarg
 def test_executeHashedReqUnveri_returns_no_revert_message(auto, stakedMin, mockTarget):
     _, staker, __ = stakedMin
 
-    auto.AUTO.approve(auto.r, MAX_TEST_STAKE, auto.FR_BOB)
     callData = mockTarget.revertWithoutMessage.encode_input()
     req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, False, True)
     reqHashBytes = addReqGetHashBytes(auto, req)

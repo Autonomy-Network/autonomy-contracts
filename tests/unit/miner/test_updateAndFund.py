@@ -28,7 +28,6 @@ def test_udateAndFund(a, auto, freshMiner, minerInitBal, newAUTOPerReq, newAUTOP
     
     else:
         auto.AUTO.transfer(sender, amountToFund, auto.FR_DEPLOYER)
-        auto.AUTO.approve(freshMiner, amountToFund, {'from': sender})
         startBal = auto.AUTO.balanceOf(sender)
 
         tx = freshMiner.updateAndFund(newAUTOPerReq, newAUTOPerExec, newAUTOPerReferal, amountToFund, {'from': sender})

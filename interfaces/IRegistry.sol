@@ -277,7 +277,7 @@ interface IRegistry {
     //                                                          //
     //////////////////////////////////////////////////////////////
     
-    function getAUTO() external view returns (IERC20);
+    function getAUTOAddr() external view returns (address);
     
     function getStakeManager() external view returns (address);
 

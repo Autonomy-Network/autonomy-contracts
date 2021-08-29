@@ -63,6 +63,9 @@ REV_MSG_NOT_ENOUGH_STAKE = "SM: not enough stake, peasant"
 REV_MSG_NOFISH = "SM: something fishy here"
 REV_MSG_NOT_STAKER = "SM: idx is not you"
 REV_MSG_OUT_OF_RANGE = "Index out of range"
+REV_MSG_AUTO_SET = "SM: AUTO already set"
+REV_MSG_NON_AUTO_TOKEN = "SM: non-AUTO token"
+REV_MSG_MISTAKE = "SM: sending by mistake"
 
 
 # Registry
@@ -102,10 +105,10 @@ REV_MSG_OVERFLOW = "Integer overflow"
 
 
 # AUTO
-AUTO_ADDR = "0x31E31e3703D367014BA5802B7C5E41d96E331723"
+INIT_AUTO_SUPPLY = (10**27) + 42069
 
-REV_MSG_EXCEED_BAL = "ERC20: transfer amount exceeds balance"
-REV_MSG_EXCEED_ALLOWANCE = "ERC20: transfer amount exceeds allowance"
+REV_MSG_EXCEED_BAL = "ERC777: transfer amount exceeds balance"
+REV_MSG_EXCEED_ALLOWANCE = "ERC777: transfer amount exceeds allowance"
 
 
 # MockTarget

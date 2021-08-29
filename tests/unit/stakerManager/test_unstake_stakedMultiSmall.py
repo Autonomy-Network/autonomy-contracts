@@ -142,6 +142,7 @@ def test_unstake_rev_wrong_idxs_from_shift(auto, stakedMultiSmall):
 @given(amount=strategy('uint256', max_value=STAN_STAKE-1, exclude=0))
 def test_unstake_rev_noFish(auto, vulnerableStaked, amount):
     vStaker, staker = vulnerableStaked
+    auto.AUTO.authorizeOperator(vStaker, {'from': staker})
     vStaker.vulnerableTransfer(auto.DENICE, amount)
 
     with reverts(REV_MSG_NOFISH):

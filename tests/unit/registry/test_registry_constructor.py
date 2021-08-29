@@ -8,7 +8,7 @@ def test_constructor(auto):
     assert auto.r.BASE_BPS() == BASE_BPS
     assert auto.r.PAY_AUTO_BPS() == PAY_AUTO_BPS
     assert auto.r.PAY_ETH_BPS() == PAY_ETH_BPS
-    assert auto.r.getAUTO() == auto.AUTO
+    assert auto.r.getAUTOAddr() == auto.AUTO
     assert auto.r.getStakeManager() == auto.sm
     assert auto.r.getOracle() == auto.o
     assert auto.r.getUserForwarder() == auto.uf

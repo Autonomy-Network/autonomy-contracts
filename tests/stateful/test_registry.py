@@ -205,7 +205,7 @@
 #             assert self.r.BASE_BPS() == BASE_BPS
 #             assert self.r.PAY_AUTO_BPS() == PAY_AUTO_BPS
 #             assert self.r.PAY_ETH_BPS() == PAY_ETH_BPS
-#             assert self.r.getAUTO() == self.AUTO
+#             assert self.r.getAUTOAddr() == self.AUTO
 #             assert self.r.getStakeManager() == self.sm
 #             assert self.r.getOracle() == self.o
 #             assert self.r.getUserForwarder() == self.uf

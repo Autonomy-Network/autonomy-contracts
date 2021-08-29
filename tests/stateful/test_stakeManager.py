@@ -230,7 +230,7 @@ def test_stakeManager(BaseStateMachine, state_machine, a, cleanAUTO, evmMaths):
         # no intentional way to
         def invariant_nonchangeable(self):
             assert self.sm.getOracle() == self.o
-            assert self.sm.getAUTO() == self.AUTO
+            assert self.sm.getAUTOAddr() == self.AUTO
             assert self.sm.STAN_STAKE() == STAN_STAKE
             assert self.sm.BLOCKS_IN_EPOCH() == BLOCKS_IN_EPOCH
         

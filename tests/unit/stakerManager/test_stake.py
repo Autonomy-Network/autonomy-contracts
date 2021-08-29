@@ -88,6 +88,7 @@ def test_stake_rev_numStanStakes(auto):
 @given(amount=strategy('uint256', max_value=STAN_STAKE-1, exclude=0))
 def test_stake_rev_noFish(auto, vulnerableStaked, amount):
     vStaker, staker = vulnerableStaked
+    auto.AUTO.authorizeOperator(vStaker, {'from': staker})
     vStaker.vulnerableTransfer(auto.DENICE, amount)
 
     with reverts(REV_MSG_NOFISH):

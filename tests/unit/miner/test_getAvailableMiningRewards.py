@@ -99,7 +99,6 @@ def test_getAvailableMiningRewards_requester_executor_referer_same(auto, mockTar
     callData = mockTarget.setAddrPayUserVerified.encode_input(auto.ALICE)
     ethForCall = 0
     msgValue = E_18
-    auto.AUTO.approve(auto.r, MAX_TEST_STAKE, {'from': auto.ALICE})
     auto.r.newReqPaySpecific(mockTarget, auto.ALICE, callData, ethForCall, True, False, False, {'from': auto.ALICE, 'value': msgValue})
     req = (auto.ALICE, mockTarget, auto.ALICE, callData, msgValue, ethForCall, True, False, False)
     auto.r.executeHashedReq(0, req, MIN_GAS, auto.FR_ALICE)

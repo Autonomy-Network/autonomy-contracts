@@ -39,7 +39,6 @@ def test_executeHashedReq_wait_executeHashedReqUnveri(a, auto, mockTarget, evmMa
     nums, stakers, startStakes, _ = stakedMultiSmall
 
     # Add 2 hashedReqUnveris
-    auto.AUTO.approve(auto.r, MAX_TEST_STAKE, auto.FR_BOB)
     callData = mockTarget.setX.encode_input(5)
     req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, False, True)
     reqHashBytes = addReqGetHashBytes(auto, req)
