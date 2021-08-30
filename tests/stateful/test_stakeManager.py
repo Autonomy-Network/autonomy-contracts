@@ -4,7 +4,7 @@ from brownie import reverts, chain, web3
 from brownie.test import strategy
 
 
-settings = {"stateful_step_count": 50, "max_examples": 200}
+settings = {"stateful_step_count": 250, "max_examples": 300}
 
 def test_stakeManager(BaseStateMachine, state_machine, a, cleanAUTO, evmMaths):
 
@@ -30,7 +30,7 @@ def test_stakeManager(BaseStateMachine, state_machine, a, cleanAUTO, evmMaths):
             
             deployerBal = cls.AUTO.balanceOf(a[0])
             if deployerBal > INIT_TOKEN_AMNT:
-                cls.AUTO.transfer('0x0000000000000000000000000000000000000001', deployerBal - INIT_TOKEN_AMNT)
+                cls.AUTO.transfer('0x0000000000000000000000000000000000000001', deployerBal - INIT_TOKEN_AMNT, {'from': a[0]})
             
             # chain.sleep(BLOCKS_IN_EPOCH)
 
@@ -38,6 +38,7 @@ def test_stakeManager(BaseStateMachine, state_machine, a, cleanAUTO, evmMaths):
         # Reset the local versions of state to compare the contract to after every run
         def setup(self):
             self.ethBals = {addr: INIT_ETH_BAL if addr in a else 0 for addr in self.allAddrs}
+            self.ethBals[a[0]] -= ERC1820_ETH_AMOUNT
             self.autoBals = {addr: INIT_TOKEN_AMNT if addr in a else 0 for addr in self.allAddrs}
             self.totalStaked = 0
             self.stakerToStakedAmount = {addr: 0 for addr in self.allAddrs}

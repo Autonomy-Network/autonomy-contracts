@@ -106,6 +106,7 @@ REV_MSG_OVERFLOW = "Integer overflow"
 
 # AUTO
 INIT_AUTO_SUPPLY = (10**27) + 42069
+ERC1820_ETH_AMOUNT = 0.08*E_18
 
 REV_MSG_EXCEED_BAL = "ERC777: transfer amount exceeds balance"
 REV_MSG_EXCEED_ALLOWANCE = "ERC777: transfer amount exceeds allowance"
