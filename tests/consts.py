@@ -102,11 +102,13 @@ REV_MSG_FISHY = "Reg: something fishy here"
 REV_MSG_REENTRANCY = "ReentrancyGuard: reentrant call"
 REV_MSG_EXPECTED_GAS = "Reg: expectedGas too high"
 REV_MSG_OVERFLOW = "Integer overflow"
+REV_MSG_NO_ETH_ALIVE = "Reg: no ETH while alive"
 
 
 # AUTO
 INIT_AUTO_SUPPLY = (10**27) + 42069
 ERC1820_ETH_AMOUNT = 0.08*E_18
+ERC1820_REGISTRY_ADDR = "0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24"
 
 REV_MSG_EXCEED_BAL = "ERC777: transfer amount exceeds balance"
 REV_MSG_EXCEED_ALLOWANCE = "ERC777: transfer amount exceeds allowance"

@@ -25,4 +25,4 @@ REGISTRY_ADDR = '0xB82Ae7779aB1742734fCE32A4b7fDBCf020F2667'
 def main():
     r = Registry.at(REGISTRY_ADDR)
     ethForCall = 5 * 10**16
-    r.newReqPaySpecific(DEPLOYER, ADDR_0, '', ethForCall, False, False, False, {'value': ethForCall + 10**16, 'from': DEPLOYER})
+    r.newReqPaySpecific(DEPLOYER, ADDR_0, '', ethForCall, False, False, False, False, {'value': ethForCall + 10**16, 'from': DEPLOYER})

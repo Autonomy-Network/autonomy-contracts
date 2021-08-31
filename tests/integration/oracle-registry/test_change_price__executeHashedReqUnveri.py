@@ -49,7 +49,7 @@ def test_updateGasPriceFast_lower_executeHashedReqUnveri_with_ethForCall(auto, e
     assert auto.r.getHashedReqsUnveriSlice(0, len(reqHashesUnveri)) == reqHashesUnveri
     assert auto.r.getHashedReqsUnveriLen() == 1
     assert auto.r.getHashedReqUnveri(id) == NULL_HASH
-    assert tx.events["HashedReqUnveriRemoved"][0].values() == [id, True]
+    assert tx.events["HashedReqUnveriExecuted"][0].values() == [id, True]
     assert auto.r.getReqCountOf(auto.BOB) == 1
     assert auto.r.getExecCountOf(auto.ALICE) == 1
     assert auto.r.getReferalCountOf(auto.DENICE) == 1
@@ -104,7 +104,7 @@ def test_updateGasPriceFast_higher_executeHashedReqUnveri_payAUTO(auto, evmMaths
     assert auto.r.getHashedReqsUnveriSlice(0, len(reqHashesUnveri)) == reqHashesUnveri
     assert auto.r.getHashedReqsUnveriLen() == 1
     assert auto.r.getHashedReqUnveri(id) == NULL_HASH
-    assert tx.events["HashedReqUnveriRemoved"][0].values() == [id, True]
+    assert tx.events["HashedReqUnveriExecuted"][0].values() == [id, True]
     assert auto.r.getReqCountOf(auto.BOB) == 1
     assert auto.r.getExecCountOf(auto.ALICE) == 1
     assert auto.r.getReferalCountOf(auto.DENICE) == 1
@@ -159,7 +159,7 @@ def test_updateAUTOPerETH_higher_executeHashedReqUnveri_payAUTO(auto, evmMaths, 
     assert auto.r.getHashedReqsUnveriSlice(0, len(reqHashesUnveri)) == reqHashesUnveri
     assert auto.r.getHashedReqsUnveriLen() == 1
     assert auto.r.getHashedReqUnveri(id) == NULL_HASH
-    assert tx.events["HashedReqUnveriRemoved"][0].values() == [id, True]
+    assert tx.events["HashedReqUnveriExecuted"][0].values() == [id, True]
     assert auto.r.getReqCountOf(auto.BOB) == 1
     assert auto.r.getExecCountOf(auto.ALICE) == 1
     assert auto.r.getReferalCountOf(auto.DENICE) == 1

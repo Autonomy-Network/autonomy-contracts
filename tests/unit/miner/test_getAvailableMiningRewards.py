@@ -18,8 +18,8 @@ def test_getAvailableMiningRewards(auto, mockTarget, ethForCall, requester):
         
         callData = mockTarget.setAddrPayUserVerified.encode_input(requester)
         msgValue = ethForCall + int(0.5 * E_18)
-        auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, ethForCall, True, False, False, {'from': requester, 'value': msgValue})
-        req = (requester, mockTarget, auto.DENICE, callData, msgValue, ethForCall, True, False, False)
+        auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, ethForCall, True, False, False, False, {'from': requester, 'value': msgValue})
+        req = (requester, mockTarget, auto.DENICE, callData, msgValue, ethForCall, True, False, False, False)
         auto.r.executeHashedReq(0, req, MIN_GAS, auto.FR_ALICE)
 
         # Should've changed
@@ -63,8 +63,8 @@ def test_getAvailableMiningRewards_all_parties_random(auto, mockTarget, referer,
         
         callData = mockTarget.setAddrPayUserVerified.encode_input(requester)
         msgValue = ethForCall + int(0.5 * E_18)
-        auto.r.newReqPaySpecific(mockTarget, referer, callData, ethForCall, True, False, False, {'from': requester, 'value': msgValue})
-        req = (requester, mockTarget, referer, callData, msgValue, ethForCall, True, False, False)
+        auto.r.newReqPaySpecific(mockTarget, referer, callData, ethForCall, True, False, False, False, {'from': requester, 'value': msgValue})
+        req = (requester, mockTarget, referer, callData, msgValue, ethForCall, True, False, False, False)
         auto.r.executeHashedReq(0, req, MIN_GAS, {'from': executor})
 
         # Should've changed
@@ -99,8 +99,8 @@ def test_getAvailableMiningRewards_requester_executor_referer_same(auto, mockTar
     callData = mockTarget.setAddrPayUserVerified.encode_input(auto.ALICE)
     ethForCall = 0
     msgValue = E_18
-    auto.r.newReqPaySpecific(mockTarget, auto.ALICE, callData, ethForCall, True, False, False, {'from': auto.ALICE, 'value': msgValue})
-    req = (auto.ALICE, mockTarget, auto.ALICE, callData, msgValue, ethForCall, True, False, False)
+    auto.r.newReqPaySpecific(mockTarget, auto.ALICE, callData, ethForCall, True, False, False, False, {'from': auto.ALICE, 'value': msgValue})
+    req = (auto.ALICE, mockTarget, auto.ALICE, callData, msgValue, ethForCall, True, False, False, False)
     auto.r.executeHashedReq(0, req, MIN_GAS, auto.FR_ALICE)
 
     # Should've changed

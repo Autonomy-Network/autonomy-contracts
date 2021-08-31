@@ -12,14 +12,14 @@ from utils import *
 def test_cancelHashedReqUnveri_rev_nonReentrant(auto, mockTarget, mockReentrancyAttack):
     # Create request to call in reentrance
     callData = mockTarget.setX.encode_input(5)
-    req1 = (auto.BOB.address, mockTarget.address, auto.DENICE.address, callData, False, False, True, 0, 0)
+    req1 = (auto.BOB.address, mockTarget.address, auto.DENICE.address, callData, False, False, True, False, 0, 0)
     reqHashBytes1 = addReqGetHashBytes(auto, req1)
 
     auto.r.newHashedReqUnveri(reqHashBytes1, {'from': auto.BOB})
 
     # Create request to be executed directly
     callData = mockReentrancyAttack.callCancelHashedReqUnveri.encode_input(0, req1, *getIpfsMetaData(auto, req1))
-    req2 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE.address, callData, 0, 0, False, False, True)
+    req2 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE.address, callData, 0, 0, False, False, True, False)
     reqHashBytes2 = addReqGetHashBytes(auto, req2)
 
     auto.r.newHashedReqUnveri(reqHashBytes2, {'from': auto.BOB})
@@ -42,7 +42,7 @@ def test_cancelHashedReqUnveri_no_ethForCall(auto, stakedMin, mockTarget, hashed
     assert auto.r.getHashedReqsUnveriSlice(0, len(reqHashesUnveri)) == reqHashesUnveri
     assert auto.r.getHashedReqsUnveriLen() == 1
     assert auto.r.getHashedReqUnveri(0) == NULL_HASH
-    assert tx.events["HashedReqUnveriRemoved"][0].values() == [id, False]
+    assert tx.events["HashedReqUnveriCancelled"][0].values() == [id]
 
     # Shouldn't've changed
     assert mockTarget.x() == 0

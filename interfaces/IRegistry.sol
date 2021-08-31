@@ -19,6 +19,7 @@ interface IRegistry {
         bool verifyUser;
         bool insertFeeAmount;
         bool payWithAUTO;
+        bool isAlive;
     }
 
 
@@ -56,7 +57,8 @@ interface IRegistry {
         bytes calldata callData,
         uint112 ethForCall,
         bool verifyUser,
-        bool insertFeeAmount
+        bool insertFeeAmount,
+        bool isAlive
     ) external payable returns (uint id);
 
     /**
@@ -90,7 +92,8 @@ interface IRegistry {
         uint112 ethForCall,
         bool verifyUser,
         bool insertFeeAmount,
-        bool payWithAUTO
+        bool payWithAUTO,
+        bool isAlive
     ) external payable returns (uint id);
 
     /**

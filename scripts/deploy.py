@@ -19,22 +19,25 @@ def main():
     auto.FR_DEPLOYER = {"from": auto.DEPLOYER}
     print(auto.DEPLOYER)
 
-    auto.AUTO = auto.DEPLOYER.deploy(AUTO, "Autonomy Network", "AUTO")
     auto.po = auto.DEPLOYER.deploy(PriceOracle, INIT_AUTO_PER_ETH_WEI, INIT_GAS_PRICE_FAST)
     auto.o = auto.DEPLOYER.deploy(Oracle, auto.po, False)
-    auto.sm = auto.DEPLOYER.deploy(StakeManager, auto.o, auto.AUTO)
+    auto.sm = auto.DEPLOYER.deploy(StakeManager, auto.o)
     auto.uf = auto.DEPLOYER.deploy(Forwarder)
     auto.ff = auto.DEPLOYER.deploy(Forwarder)
     auto.uff = auto.DEPLOYER.deploy(Forwarder)
     auto.r = auto.DEPLOYER.deploy(
         Registry,
-        auto.AUTO,
         auto.sm,
         auto.o,
         auto.uf,
         auto.ff,
-        auto.uff
+        auto.uff,
+        "Autonomy Network",
+        "AUTO",
+        INIT_AUTO_SUPPLY
     )
+    auto.AUTO = AUTO.at(auto.r.getAUTOAddr())
+    auto.sm.setAUTO(auto.AUTO, auto.FR_DEPLOYER)
     auto.uf.setCaller(auto.r, True, auto.FR_DEPLOYER)
     auto.ff.setCaller(auto.r, True, auto.FR_DEPLOYER)
     auto.uff.setCaller(auto.r, True, auto.FR_DEPLOYER)

@@ -61,6 +61,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     //     bool verifyUser;
     //     bool insertFeeAmount;
     //     bool payWithAUTO;
+    //     bool isAlive;
     // }
 
     // Easier to parse when using native types rather than structs
@@ -74,11 +75,14 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         uint112 ethForCall,
         bool verifyUser,
         bool insertFeeAmount,
-        bool payWithAUTO
+        bool payWithAUTO,
+        bool isAlive
     );
-    event HashedReqRemoved(uint indexed id, bool wasExecuted);
     event HashedReqUnveriAdded(uint indexed id);
-    event HashedReqUnveriRemoved(uint indexed id, bool wasExecuted);
+    event HashedReqExecuted(uint indexed id, bool wasRemoved);
+    event HashedReqUnveriExecuted(uint indexed id, bool wasRemoved);
+    event HashedReqCancelled(uint indexed id);
+    event HashedReqUnveriCancelled(uint indexed id);
 
 
     constructor(
@@ -109,6 +113,8 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         _invalidTargets[address(userGasForwarder)] = true;
         _invalidTargets[address(aut)] = true;
         _invalidTargets[0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24] = true;
+        _invalidTargets[address(stakeMan)] = true;
+        _invalidTargets[_ADDR_0] = true;
     }
 
 
@@ -124,8 +130,9 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         bytes calldata callData,
         uint112 ethForCall,
         bool verifyUser,
-        bool insertFeeAmount
-    ) external payable override returns (uint id) {
+        bool insertFeeAmount,
+        bool isAlive
+    ) external payable override targetNotThis(target) returns (uint id) {
         return _newReq(
             target,
             referer,
@@ -133,7 +140,8 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
             ethForCall,
             verifyUser,
             insertFeeAmount,
-            _oracle.defaultPayIsAUTO()
+            _oracle.defaultPayIsAUTO(),
+            isAlive
         );
     }
 
@@ -144,8 +152,9 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         uint112 ethForCall,
         bool verifyUser,
         bool insertFeeAmount,
-        bool payWithAUTO
-    ) external payable override returns (uint id) {
+        bool payWithAUTO,
+        bool isAlive
+    ) external payable override targetNotThis(target) returns (uint id) {
         return _newReq(
             target,
             referer,
@@ -153,7 +162,8 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
             ethForCall,
             verifyUser,
             insertFeeAmount,
-            payWithAUTO
+            payWithAUTO,
+            isAlive
         );
     }
 
@@ -164,14 +174,17 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         uint112 ethForCall,
         bool verifyUser,
         bool insertFeeAmount,
-        bool payWithAUTO
+        bool payWithAUTO,
+        bool isAlive
     )
         private
-        nzAddr(target)
-        targetNotThis(target)
         validEth(payWithAUTO, ethForCall)
         returns (uint id)
     {
+        if (isAlive) {
+            require(msg.value == 0, "Reg: no ETH while alive");
+        }
+
         Request memory r = Request(
             payable(msg.sender),
             target,
@@ -181,7 +194,8 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
             ethForCall,
             verifyUser,
             insertFeeAmount,
-            payWithAUTO
+            payWithAUTO,
+            isAlive
         );
         bytes32 hashedIpfsReq = keccak256(getReqBytes(r));
 
@@ -196,7 +210,8 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
             r.ethForCall,
             r.verifyUser,
             r.insertFeeAmount,
-            r.payWithAUTO
+            r.payWithAUTO,
+            r.isAlive
         );
         _hashedReqs.push(hashedIpfsReq);
     }
@@ -327,12 +342,15 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     {
         uint startGas = gasleft();
 
-        delete _hashedReqs[id];
+        if (r.isAlive) {
+            emit HashedReqExecuted(id, false);
+        } else {
+            emit HashedReqExecuted(id, true);
+            delete _hashedReqs[id];
+        }
         _execute(r, expectedGas);
-        emit HashedReqRemoved(id, true);
 
-        gasUsed = startGas - gasleft();
-        gasUsed += r.payWithAUTO == true ? GAS_OVERHEAD_AUTO : GAS_OVERHEAD_ETH;
+        gasUsed = startGas - gasleft() + (r.payWithAUTO == true ? GAS_OVERHEAD_AUTO : GAS_OVERHEAD_ETH);
         // Make sure that the expected gas used is within 10% of the actual gas used
         require(expectedGas * 10 <= gasUsed * 11, "Reg: expectedGas too high");
     }
@@ -361,12 +379,15 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
             "Reg: cannot verify. Nice try ;)"
         );
 
-        delete _hashedReqsUnveri[id];
+        if (r.isAlive) {
+            emit HashedReqUnveriExecuted(id, false);
+        } else {
+            emit HashedReqUnveriExecuted(id, true);
+            delete _hashedReqsUnveri[id];
+        }
         _execute(r, expectedGas);
-        emit HashedReqUnveriRemoved(id, true);
 
-        gasUsed = startGas - gasleft();
-        gasUsed += r.payWithAUTO == true ? GAS_OVERHEAD_AUTO : GAS_OVERHEAD_ETH;
+        gasUsed = startGas - gasleft() + (r.payWithAUTO == true ? GAS_OVERHEAD_AUTO : GAS_OVERHEAD_ETH);
         // Make sure that the expected gas used is within 10% of the actual gas used
         require(expectedGas * 10 <= gasUsed * 11, "Reg: expectedGas too high");
     }
@@ -463,7 +484,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         require(msg.sender == r.user, "Reg: not the user");
         
         // Cancel the request
-        emit HashedReqRemoved(id, false);
+        emit HashedReqCancelled(id);
         delete _hashedReqs[id];
         
         // Send refund
@@ -486,7 +507,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         require(msg.sender == r.user, "Reg: not the user");
         
         // Cancel the request
-        emit HashedReqUnveriRemoved(id, false);
+        emit HashedReqUnveriCancelled(id);
         delete _hashedReqsUnveri[id];
     }
     

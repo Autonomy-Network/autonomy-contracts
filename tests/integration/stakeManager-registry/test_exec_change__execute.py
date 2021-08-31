@@ -40,7 +40,7 @@ def test_executeHashedReq_wait_executeHashedReqUnveri(a, auto, mockTarget, evmMa
 
     # Add 2 hashedReqUnveris
     callData = mockTarget.setX.encode_input(5)
-    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, False, True)
+    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, False, True, False)
     reqHashBytes = addReqGetHashBytes(auto, req)
     auto.r.newHashedReqUnveri(reqHashBytes, {'from': auto.BOB, 'value': 0})
     auto.r.newHashedReqUnveri(reqHashBytes, {'from': auto.BOB, 'value': 0})

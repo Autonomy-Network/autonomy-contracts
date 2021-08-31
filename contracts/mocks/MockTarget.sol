@@ -183,6 +183,10 @@ contract MockTarget {
         require(false);
     }
 
+    function getGasWaster() external view returns (uint[] memory) {
+        return gasWaster;
+    }
+
 
     modifier updateMsgSender() {
         _;

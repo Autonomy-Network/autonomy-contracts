@@ -53,9 +53,9 @@ def test_updateGasPriceFast_lower_executeHashedReq_with_ethForCall(auto, evmMath
     with reverts():
         auto.r.getHashedReqsSlice(0, len(reqHashes) + 1)
     assert auto.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
-    assert auto.r.getHashedReqsLen() == 8
+    assert auto.r.getHashedReqsLen() == 9
     assert auto.r.getHashedReq(id) == NULL_HASH
-    assert tx.events["HashedReqRemoved"][0].values() == [id, True]
+    assert tx.events["HashedReqExecuted"][0].values() == [id, True]
     assert auto.r.getReqCountOf(auto.BOB) == 1
     assert auto.r.getExecCountOf(auto.ALICE) == 1
     assert auto.r.getReferalCountOf(auto.DENICE) == 1
@@ -111,9 +111,9 @@ def test_updateGasPriceFast_higher_executeHashedReq_payAUTO(auto, evmMaths, stak
     with reverts():
         auto.r.getHashedReqsSlice(0, len(reqHashes) + 1)
     assert auto.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
-    assert auto.r.getHashedReqsLen() == 8
+    assert auto.r.getHashedReqsLen() == 9
     assert auto.r.getHashedReq(id) == NULL_HASH
-    assert tx.events["HashedReqRemoved"][0].values() == [id, True]
+    assert tx.events["HashedReqExecuted"][0].values() == [id, True]
     assert auto.r.getReqCountOf(auto.BOB) == 1
     assert auto.r.getExecCountOf(auto.ALICE) == 1
     assert auto.r.getReferalCountOf(auto.DENICE) == 1
@@ -169,9 +169,9 @@ def test_updateAUTOPerETH_higher_executeHashedReq_payAUTO(auto, evmMaths, staked
     with reverts():
         auto.r.getHashedReqsSlice(0, len(reqHashes) + 1)
     assert auto.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
-    assert auto.r.getHashedReqsLen() == 8
+    assert auto.r.getHashedReqsLen() == 9
     assert auto.r.getHashedReq(id) == NULL_HASH
-    assert tx.events["HashedReqRemoved"][0].values() == [id, True]
+    assert tx.events["HashedReqExecuted"][0].values() == [id, True]
     assert auto.r.getReqCountOf(auto.BOB) == 1
     assert auto.r.getExecCountOf(auto.ALICE) == 1
     assert auto.r.getReferalCountOf(auto.DENICE) == 1

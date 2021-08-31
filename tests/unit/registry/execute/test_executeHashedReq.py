@@ -12,17 +12,17 @@ from utils import *
 def test_executeHashedReq_rev_nonReentrant(auto, mockTarget, mockReentrancyAttack):
     # Create request to call in reentrance
     callData = mockTarget.setX.encode_input(5)
-    req1 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE, callData, 0, 0, False, False, True)
+    req1 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE, callData, 0, 0, False, False, True, False)
     addToIpfs(auto, req1)
 
-    auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, False, True, {'from': auto.BOB})
+    auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, False, True, False, {'from': auto.BOB})
 
     # Create request to be executed directly
     callData = mockReentrancyAttack.callExecuteHashedReq.encode_input(0, req1, MIN_GAS)
-    req2 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE, callData, 0, 0, False, False, True)
+    req2 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE, callData, 0, 0, False, False, True, False)
     addToIpfs(auto, req2)
 
-    auto.r.newReqPaySpecific(mockReentrancyAttack, auto.DENICE, callData, 0, False, False, True, {'from': auto.BOB})
+    auto.r.newReqPaySpecific(mockReentrancyAttack, auto.DENICE, callData, 0, False, False, True, False, {'from': auto.BOB})
 
     with reverts(REV_MSG_REENTRANCY):
         auto.r.executeHashedReq(1, req2, MIN_GAS)
@@ -33,8 +33,8 @@ def test_executeHashedReq_returns_revert_message(auto, stakedMin, mockTarget):
     _, staker, __ = stakedMin
     
     callData = mockTarget.revertWithMessage.encode_input()
-    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, E_18, 0, False, False, False)
-    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, False, False, {'from': auto.BOB, 'value': E_18})
+    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, E_18, 0, False, False, False, False)
+    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, False, False, False, {'from': auto.BOB, 'value': E_18})
 
     with reverts(REV_MSG_GOOFED):
         auto.r.executeHashedReq(0, req, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -45,8 +45,8 @@ def test_executeHashedReq_returns_no_revert_message(auto, stakedMin, mockTarget)
     _, staker, __ = stakedMin
     
     callData = mockTarget.revertWithoutMessage.encode_input()
-    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, E_18, 0, False, False, False)
-    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, False, False, {'from': auto.BOB, 'value': E_18})
+    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, E_18, 0, False, False, False, False)
+    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, False, False, False, {'from': auto.BOB, 'value': E_18})
 
     with reverts(''):
         auto.r.executeHashedReq(0, req, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -72,12 +72,12 @@ def test_executeHashedReq_validCalldata(auto, evmMaths, stakedMin, mockTarget, e
 
         id = 0
         callData = mockTarget.setAddrPayUserVerified.encode_input(userAddr)
-        req = (sender.address, mockTarget.address, auto.DENICE, callData, msgValue, ethForCall, True, False, payWithAUTO)
+        req = (sender.address, mockTarget.address, auto.DENICE, callData, msgValue, ethForCall, True, False, payWithAUTO, False)
         addToIpfs(auto, req)
 
         auto.AUTO.transfer(sender, MAX_TEST_STAKE, auto.FR_DEPLOYER)
         senderAUTOStartBal = auto.AUTO.balanceOf(sender)
-        auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, ethForCall, True, False, payWithAUTO, {'from': sender, 'value': msgValue})
+        auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, ethForCall, True, False, payWithAUTO, False, {'from': sender, 'value': msgValue})
 
         if userAddr != sender:
             with reverts(REV_MSG_CALLDATA_NOT_VER):
@@ -120,7 +120,7 @@ def test_executeHashedReq_validCalldata(auto, evmMaths, stakedMin, mockTarget, e
             assert auto.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
             assert auto.r.getHashedReqsLen() == 1
             assert auto.r.getHashedReq(id) == NULL_HASH
-            assert tx.events["HashedReqRemoved"][0].values() == [id, True]
+            assert tx.events["HashedReqExecuted"][0].values() == [id, True]
             assert auto.r.getReqCountOf(sender) == 1
             assert auto.r.getExecCountOf(auto.ALICE) == 1
             assert auto.r.getReferalCountOf(auto.DENICE) == 1
@@ -170,9 +170,9 @@ def test_executeHashedReq_no_ethForCall(auto, evmMaths, stakedMin, mockTarget, h
     with reverts():
         auto.r.getHashedReqsSlice(0, len(reqHashes) + 1)
     assert auto.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
-    assert auto.r.getHashedReqsLen() == 8
+    assert auto.r.getHashedReqsLen() == 9
     assert auto.r.getHashedReq(id) == NULL_HASH
-    assert tx.events["HashedReqRemoved"][0].values() == [id, True]
+    assert tx.events["HashedReqExecuted"][0].values() == [id, True]
     assert auto.r.getReqCountOf(auto.BOB) == 1
     assert auto.r.getExecCountOf(auto.ALICE) == 1
     assert auto.r.getReferalCountOf(auto.DENICE) == 1
@@ -225,9 +225,9 @@ def test_executeHashedReq_with_ethForCall(auto, evmMaths, stakedMin, mockTarget,
     with reverts():
         auto.r.getHashedReqsSlice(0, len(reqHashes) + 1)
     assert auto.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
-    assert auto.r.getHashedReqsLen() == 8
+    assert auto.r.getHashedReqsLen() == 9
     assert auto.r.getHashedReq(id) == NULL_HASH
-    assert tx.events["HashedReqRemoved"][0].values() == [id, True]
+    assert tx.events["HashedReqExecuted"][0].values() == [id, True]
     assert auto.r.getReqCountOf(auto.BOB) == 1
     assert auto.r.getExecCountOf(auto.ALICE) == 1
     assert auto.r.getReferalCountOf(auto.DENICE) == 1
@@ -276,9 +276,9 @@ def test_executeHashedReq_pay_AUTO(auto, evmMaths, stakedMin, mockTarget, hashed
     with reverts():
         auto.r.getHashedReqsSlice(0, len(reqHashes) + 1)
     assert auto.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
-    assert auto.r.getHashedReqsLen() == 8
+    assert auto.r.getHashedReqsLen() == 9
     assert auto.r.getHashedReq(id) == NULL_HASH
-    assert tx.events["HashedReqRemoved"][0].values() == [id, True]
+    assert tx.events["HashedReqExecuted"][0].values() == [id, True]
     assert auto.r.getReqCountOf(auto.BOB) == 1
     assert auto.r.getExecCountOf(auto.ALICE) == 1
     assert auto.r.getReferalCountOf(auto.DENICE) == 1
@@ -327,9 +327,9 @@ def test_executeHashedReq_pay_AUTO_with_ethForCall(auto, evmMaths, stakedMin, mo
     with reverts():
         auto.r.getHashedReqsSlice(0, len(reqHashes) + 1)
     assert auto.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
-    assert auto.r.getHashedReqsLen() == 8
+    assert auto.r.getHashedReqsLen() == 9
     assert auto.r.getHashedReq(id) == NULL_HASH
-    assert tx.events["HashedReqRemoved"][0].values() == [id, True]
+    assert tx.events["HashedReqExecuted"][0].values() == [id, True]
     assert auto.r.getReqCountOf(auto.BOB) == 1
     assert auto.r.getExecCountOf(auto.ALICE) == 1
     assert auto.r.getReferalCountOf(auto.DENICE) == 1
@@ -378,9 +378,9 @@ def test_executeHashedReq_pay_AUTO_with_ethForCall_and_verifySender(auto, evmMat
     with reverts():
         auto.r.getHashedReqsSlice(0, len(reqHashes) + 1)
     assert auto.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
-    assert auto.r.getHashedReqsLen() == 8
+    assert auto.r.getHashedReqsLen() == 9
     assert auto.r.getHashedReq(id) == NULL_HASH
-    assert tx.events["HashedReqRemoved"][0].values() == [id, True]
+    assert tx.events["HashedReqExecuted"][0].values() == [id, True]
     assert auto.r.getReqCountOf(auto.BOB) == 1
     assert auto.r.getExecCountOf(auto.ALICE) == 1
     assert auto.r.getReferalCountOf(auto.DENICE) == 1
@@ -429,9 +429,9 @@ def test_executeHashedReq_pay_AUTO_with_ethForCall_and_verifyFee(auto, evmMaths,
     with reverts():
         auto.r.getHashedReqsSlice(0, len(reqHashes) + 1)
     assert auto.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
-    assert auto.r.getHashedReqsLen() == 8
+    assert auto.r.getHashedReqsLen() == 9
     assert auto.r.getHashedReq(id) == NULL_HASH
-    assert tx.events["HashedReqRemoved"][0].values() == [id, True]
+    assert tx.events["HashedReqExecuted"][0].values() == [id, True]
     assert auto.r.getReqCountOf(auto.BOB) == 1
     assert auto.r.getExecCountOf(auto.ALICE) == 1
     assert auto.r.getReferalCountOf(auto.DENICE) == 1
@@ -487,9 +487,9 @@ def test_executeHashedReq_pay_AUTO_with_ethForCall_and_verifyFee(auto, evmMaths,
     with reverts():
         auto.r.getHashedReqsSlice(0, len(reqHashes) + 1)
     assert auto.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
-    assert auto.r.getHashedReqsLen() == 8
+    assert auto.r.getHashedReqsLen() == 9
     assert auto.r.getHashedReq(id) == NULL_HASH
-    assert tx.events["HashedReqRemoved"][0].values() == [id, True]
+    assert tx.events["HashedReqExecuted"][0].values() == [id, True]
     assert auto.r.getReqCountOf(auto.BOB) == 1
     assert auto.r.getExecCountOf(auto.ALICE) == 1
     assert auto.r.getReferalCountOf(auto.DENICE) == 1
@@ -538,15 +538,66 @@ def test_executeHashedReq_pay_AUTO_with_ethForCall_and_verifyFee(auto, evmMaths,
     with reverts():
         auto.r.getHashedReqsSlice(0, len(reqHashes) + 1)
     assert auto.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
-    assert auto.r.getHashedReqsLen() == 8
+    assert auto.r.getHashedReqsLen() == 9
     assert auto.r.getHashedReq(id) == NULL_HASH
-    assert tx.events["HashedReqRemoved"][0].values() == [id, True]
+    assert tx.events["HashedReqExecuted"][0].values() == [id, True]
     assert auto.r.getReqCountOf(auto.BOB) == 1
     assert auto.r.getExecCountOf(auto.ALICE) == 1
     assert auto.r.getReferalCountOf(auto.DENICE) == 1
 
     # Shouldn't've changed
     assert expectedGas == tx.return_value
+
+
+def test_executeHashedReq_pay_AUTO(auto, evmMaths, stakedMin, mockTarget, hashedReqs):
+    _, staker, __ = stakedMin
+    reqs, reqHashes, msgValue, ethForCall = hashedReqs
+    # reqHashes will modify the original even after this test has finished otherwise since it's a reference
+    reqHashes = reqHashes[:]
+    id = 8
+    assert mockTarget.x() == 0
+    assert auto.ALICE.balance() == INIT_ETH_BAL
+    assert auto.BOB.balance() == INIT_ETH_BAL - (2 * msgValue) - (4 * ethForCall)
+    assert auto.AUTO.balanceOf(auto.ALICE) == MAX_TEST_STAKE - STAN_STAKE
+    assert auto.AUTO.balanceOf(auto.BOB) == MAX_TEST_STAKE
+    assert auto.AUTO.balanceOf(auto.DENICE) == 0
+    assert auto.AUTO.balanceOf(auto.r) == 0
+
+    expectedGas = auto.r.executeHashedReq.call(id, reqs[id], MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    tx = auto.r.executeHashedReq(id, reqs[id], expectedGas, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    
+    # Should've changed
+    # Eth bals
+    assert auto.ALICE.balance() == INIT_ETH_BAL - (tx.gas_used * tx.gas_price)
+    assert auto.BOB.balance() == INIT_ETH_BAL - ((2 * msgValue) + (4 * ethForCall))
+    assert auto.r.balance() == (2 * msgValue) + (4 * ethForCall)
+    assert mockTarget.balance() == 0
+    # AUTO bals
+    AUTOForExec = getAUTOForExec(evmMaths, tx, INIT_AUTO_PER_ETH_WEI, INIT_GAS_PRICE_FAST)
+    assert auto.AUTO.balanceOf(auto.ALICE) == MAX_TEST_STAKE - STAN_STAKE + AUTOForExec
+    assert auto.AUTO.balanceOf(auto.BOB) == MAX_TEST_STAKE - AUTOForExec
+    assert auto.AUTO.balanceOf(auto.DENICE) == 0
+    assert auto.AUTO.balanceOf(auto.r) == 0
+    # Target state
+    assert mockTarget.x() == 5
+    assert mockTarget.msgSender() == auto.r
+    # Registry state
+    reqHashes[id] = NULL_HASH
+    assert auto.r.getHashedReqs() == reqHashes
+    # Should revert when using indexes above the length
+    with reverts():
+        auto.r.getHashedReqsSlice(0, len(reqHashes) + 1)
+    assert auto.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
+    assert auto.r.getHashedReqsLen() == 9
+    assert auto.r.getHashedReq(id) == NULL_HASH
+    assert tx.events["HashedReqExecuted"][0].values() == [id, False]
+    assert auto.r.getReqCountOf(auto.BOB) == 1
+    assert auto.r.getExecCountOf(auto.ALICE) == 1
+    assert auto.r.getReferalCountOf(auto.DENICE) == 1
+
+    # Shouldn't've changed
+    assert expectedGas == tx.return_value
+    assert mockTarget.userAddr() == ADDR_0
 
 
 def test_executeHashedReq_rev_not_executor(auto, stakedMin, hashedReqs):
@@ -598,8 +649,8 @@ def test_executeHashedReq_rev_userVeri_called_to_feeVeri(auto, mockTarget, stake
     # Set a var that is what the gas the execution charges for, pay with AUTO after execution
     callData = mockTarget.setAddrPayFeeVerified.encode_input(auto.BOB)
     # Mark it as verifying the user addr
-    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, True, False, True)
-    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, True, False, True, {'from': auto.BOB, 'value': 0})
+    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, True, False, True, False)
+    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, True, False, True, False, {'from': auto.BOB, 'value': 0})
 
     with reverts(REV_MSG_FEE_FORW):
         auto.r.executeHashedReq(8, req, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
@@ -612,8 +663,8 @@ def test_executeHashedReq_rev_userFeeVeri_set_to_feeVeri(auto, mockTarget, stake
     # Set a var that is what the gas the execution charges for and user address, pay with AUTO after execution
     callData = mockTarget.setXAddrUserFeeVeri.encode_input(auto.BOB, 5)
     # Mark it as only verifying the fee so that it changes the 1st input (user address) to an int
-    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, True, True)
-    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, True, True, {'from': auto.BOB, 'value': 0})
+    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, True, True, False)
+    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, True, True, False, {'from': auto.BOB, 'value': 0})
 
     with reverts(REV_MSG_USER_FEE_FORW):
         auto.r.executeHashedReq(8, req, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
