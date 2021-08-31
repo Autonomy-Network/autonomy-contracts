@@ -29,6 +29,8 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     IForwarder private immutable _gasForwarder;
     IForwarder private immutable _userGasForwarder;
 
+    // Used to make sure that `target` can't be something that affects
+    // the Autonomy system itself
     mapping(address => bool) private _invalidTargets;
     // This counts the number of times each user has had a request executed
     mapping(address => uint) private _reqCounts;
@@ -342,6 +344,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     {
         uint startGas = gasleft();
 
+        // We are the gods now
         if (r.isAlive) {
             emit HashedReqExecuted(id, false);
         } else {
@@ -379,6 +382,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
             "Reg: cannot verify. Nice try ;)"
         );
 
+        // We are the gods now
         if (r.isAlive) {
             emit HashedReqUnveriExecuted(id, false);
         } else {

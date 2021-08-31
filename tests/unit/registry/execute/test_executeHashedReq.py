@@ -549,7 +549,7 @@ def test_executeHashedReq_pay_AUTO_with_ethForCall_and_verifyFee(auto, evmMaths,
     assert expectedGas == tx.return_value
 
 
-def test_executeHashedReq_pay_AUTO(auto, evmMaths, stakedMin, mockTarget, hashedReqs):
+def test_executeHashedReq_pay_AUTO_isAlive(auto, evmMaths, stakedMin, mockTarget, hashedReqs):
     _, staker, __ = stakedMin
     reqs, reqHashes, msgValue, ethForCall = hashedReqs
     # reqHashes will modify the original even after this test has finished otherwise since it's a reference
@@ -582,14 +582,13 @@ def test_executeHashedReq_pay_AUTO(auto, evmMaths, stakedMin, mockTarget, hashed
     assert mockTarget.x() == 5
     assert mockTarget.msgSender() == auto.r
     # Registry state
-    reqHashes[id] = NULL_HASH
     assert auto.r.getHashedReqs() == reqHashes
     # Should revert when using indexes above the length
     with reverts():
         auto.r.getHashedReqsSlice(0, len(reqHashes) + 1)
     assert auto.r.getHashedReqsSlice(0, len(reqHashes)) == reqHashes
     assert auto.r.getHashedReqsLen() == 9
-    assert auto.r.getHashedReq(id) == NULL_HASH
+    assert auto.r.getHashedReq(id) == reqHashes[id]
     assert tx.events["HashedReqExecuted"][0].values() == [id, False]
     assert auto.r.getReqCountOf(auto.BOB) == 1
     assert auto.r.getExecCountOf(auto.ALICE) == 1
@@ -653,7 +652,7 @@ def test_executeHashedReq_rev_userVeri_called_to_feeVeri(auto, mockTarget, stake
     tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, True, False, True, False, {'from': auto.BOB, 'value': 0})
 
     with reverts(REV_MSG_FEE_FORW):
-        auto.r.executeHashedReq(8, req, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+        auto.r.executeHashedReq(9, req, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 
@@ -667,4 +666,4 @@ def test_executeHashedReq_rev_userFeeVeri_set_to_feeVeri(auto, mockTarget, stake
     tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, True, True, False, {'from': auto.BOB, 'value': 0})
 
     with reverts(REV_MSG_USER_FEE_FORW):
-        auto.r.executeHashedReq(8, req, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+        auto.r.executeHashedReq(9, req, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})

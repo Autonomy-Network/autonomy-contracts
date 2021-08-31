@@ -4,6 +4,21 @@ pragma solidity 0.8.6;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 
+/**
+* @title    Registry
+* @notice   A contract which is essentially a glorified forwarder.
+*           It essentially brings together people who want things executed,
+*           and people who want to do that execution in return for a fee.
+*           Users register the details of what they want executed, which
+*           should always revert unless their execution condition is true,
+*           and executors execute the request when the condition is true.
+*           Only a specific executor is allowed to execute requests at any
+*           given time, as determined by the StakeManager, which requires
+*           staking AUTO tokens. This is infrastructure, and an integral
+*           piece of the future of web3. It also provides the spark of life
+*           for a new form of organism - cyber life. We are the gods now.
+* @author   Quantaf1re (James Key)
+*/
 interface IRegistry {
     
     // The address vars are 20b, total 60, calldata is 4b + n*32b usually, which
@@ -31,7 +46,8 @@ interface IRegistry {
 
     /**
      * @notice  Creates a new request, logs the request info in an event, then saves
-     *          a hash of it on-chain in `_hashedReqs`
+     *          a hash of it on-chain in `_hashedReqs`. Uses the default for whether
+     *          to pay in ETH or AUTO
      * @param target    The contract address that needs to be called
      * @param referer       The referer to get rewarded for referring the sender
      *                      to using Autonomy. Usally the address of a dapp owner
@@ -49,6 +65,12 @@ interface IRegistry {
      *                      be the sender
      * @param insertFeeAmount     Whether the gas estimate of the executor should be inserted
      *                      into the callData
+     * @param isAlive       Whether or not the request should be deleted after it's executed
+     *                      for the first time. If `true`, the request will exist permanently
+     *                      (tho it can be cancelled any time), therefore executing the same
+     *                      request repeatedly aslong as the request is executable,
+     *                      and can be used to create fully autonomous contracts - the
+     *                      first single-celled cyber life. We are the gods now
      * @return id   The id of the request, equal to the index in `_hashedReqs`
      */
     function newReq(
@@ -83,6 +105,12 @@ interface IRegistry {
      *                      into the callData
      * @param payWithAUTO   Whether the sender wants to pay for the request in AUTO
      *                      or ETH. Paying in AUTO reduces the fee
+     * @param isAlive       Whether or not the request should be deleted after it's executed
+     *                      for the first time. If `true`, the request will exist permanently
+     *                      (tho it can be cancelled any time), therefore executing the same
+     *                      request repeatedly aslong as the request is executable,
+     *                      and can be used to create fully autonomous contracts - the
+     *                      first single-celled cyber life. We are the gods now
      * @return id   The id of the request, equal to the index in `_hashedReqs`
      */
     function newReqPaySpecific(
@@ -227,7 +255,7 @@ interface IRegistry {
     function getReqFromBytes(bytes memory rBytes) external pure returns (Request memory r);
 
     function insertToCallData(bytes calldata callData, uint expectedGas, uint startIdx) external pure returns (bytes memory);
-    
+
 
     //////////////////////////////////////////////////////////////
     //                                                          //
@@ -235,6 +263,20 @@ interface IRegistry {
     //                                                          //
     //////////////////////////////////////////////////////////////
 
+    /**
+     * @notice      Execute a hashedReq. Calls the `target` with `callData`, then
+     *              charges the user the fee, and gives it to the executor
+     * @param id    [uint] The index of the request in `_hashedReqs`
+     * @param r     [request] The full request struct that fully describes the request.
+     *              Typically known by seeing the `HashedReqAdded` event emitted with `newReq`
+     * @param expectedGas   [uint] The gas that the executor expects the execution to cost,
+     *                      known by simulating the the execution of this tx locally off-chain.
+     *                      This can be forwarded as part of the requested call such that the
+     *                      receiving contract knows how much gas the whole execution cost and
+     *                      can do something to compensate the exact amount (e.g. as part of a trade).
+     *                      Cannot be more than 10% above the measured gas cost by the end of execution
+     * @return gasUsed      [uint] The gas that was used as part of the execution. Used to know `expectedGas`
+     */
     function executeHashedReq(
         uint id,
         Request calldata r,
@@ -242,9 +284,27 @@ interface IRegistry {
     ) external returns (uint gasUsed);
 
     /**
-     * @dev validCalldata needs to be before anything that would convert it to memory
-     *      since that is persistent and would prevent validCalldata, that requries
-     *      calldata, from working. Can't do the check in _execute for the same reason
+     * @notice      Execute a hashedReqUnveri. Hashes `r`, `dataPrefix`, and `dataSuffix`
+     *              together in the same way that ipfs does such that the hash stored on-chain
+     *              is the same as the hash used to look up on ipfs to see the raw request.
+     *              Since `newHashedReqUnveri` does no verification at all since it can't,
+     *              `executeHashedReqUnveri` has to instead. There are some things it can't
+     *              know, like the amount of ETH sent in the original request call, so they're
+     *              forced to be zero
+     * @param id    [uint] The index of the request in `_hashedReqs`
+     * @param r     [request] The full request struct that fully describes the request. Typically
+     *              known by looking up the hash on ipfs
+     * @param dataPrefix    [bytes] The data prepended to the bytes form of `r` before being hashed
+     *                      in ipfs
+     * @param dataSuffix    [bytes] The data appended to the bytes form of `r` before being hashed
+     *                      in ipfs
+     * @param expectedGas   [uint] The gas that the executor expects the execution to cost,
+     *                      known by simulating the the execution of this tx locally off-chain.
+     *                      This can be forwarded as part of the requested call such that the
+     *                      receiving contract knows how much gas the whole execution cost and
+     *                      can do something to compensate the exact amount (e.g. as part of a trade).
+     *                      Cannot be more than 10% above the measured gas cost by the end of execution
+     * @return gasUsed      [uint] The gas that was used as part of the execution. Used to know `expectedGas`
      */
     function executeHashedReqUnveri(
         uint id,
@@ -261,11 +321,29 @@ interface IRegistry {
     //                                                          //
     //////////////////////////////////////////////////////////////
     
+    /**
+     * @notice      Execute a hashedReq. Calls the `target` with `callData`, then
+     *              charges the user the fee, and gives it to the executor
+     * @param id    [uint] The index of the request in `_hashedReqs`
+     * @param r     [request] The full request struct that fully describes the request.
+     *              Typically known by seeing the `HashedReqAdded` event emitted with `newReq`
+     */
     function cancelHashedReq(
         uint id,
         Request memory r
     ) external;
     
+    /**
+     * @notice      Execute a hashedReq. Calls the `target` with `callData`, then
+     *              charges the user the fee, and gives it to the executor
+     * @param id    [uint] The index of the request in `_hashedReqs`
+     * @param r     [request] The full request struct that fully describes the request. Typically
+     *              known by looking up the hash on ipfs
+     * @param dataPrefix    [bytes] The data prepended to the bytes form of `r` before being hashed
+     *                      in ipfs
+     * @param dataSuffix    [bytes] The data appended to the bytes form of `r` before being hashed
+     *                      in ipfs
+     */
     function cancelHashedReqUnveri(
         uint id,
         Request memory r,
