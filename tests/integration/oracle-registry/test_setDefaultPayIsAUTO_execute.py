@@ -15,7 +15,12 @@ def test_newReq_setDefaultPayIsAUTO_executeHashedReq(auto, mockTarget, evmMaths)
     assert auto.r.getHashedReq(0) == keccakReq(auto, req)
     assert mockTarget.x() == 0
 
-    auto.o.setDefaultPayIsAUTO(True, auto.FR_DEPLOYER)
+    callData = auto.o.setDefaultPayIsAUTO.encode_input(True)
+    delay = 2*DAY
+    args = (auto.o, 0, "", callData, chain.time() + delay + 60)
+    auto.tl.queueTransaction(*args)
+    chain.sleep(delay + 120)
+    auto.tl.executeTransaction(*args, auto.FR_DEPLOYER)
     
     assert auto.o.defaultPayIsAUTO() == True
 

@@ -40,7 +40,12 @@ def test_newReq(auto, mockTarget, user, target, referer, callData, msgValue, eth
 
         if payWithAUTO:
             msgValue = ethForCall
-            auto.o.setDefaultPayIsAUTO(payWithAUTO, auto.FR_DEPLOYER)
+            callData = auto.o.setDefaultPayIsAUTO.encode_input(payWithAUTO)
+            delay = 2*DAY
+            args = (auto.o, 0, "", callData, chain.time() + delay + 60)
+            auto.tl.queueTransaction(*args)
+            chain.sleep(delay + 120)
+            auto.tl.executeTransaction(*args, auto.FR_DEPLOYER)
         else:
             msgValue = ethForCall if msgValue < ethForCall else msgValue
         
@@ -146,7 +151,12 @@ def test_newReq_rev_isAlive_with_eth(auto, mockTarget):
     ethForCall=strategy('uint256', max_value=E_18),
 )
 def test_newReq_rev_validEth_payWithAUTO(auto, mockTarget, msgValue, ethForCall):
-    auto.o.setDefaultPayIsAUTO(True, auto.FR_DEPLOYER)
+    callData = auto.o.setDefaultPayIsAUTO.encode_input(payWithAUTO)
+    delay = 2*DAY
+    args = (auto.o, 0, "", callData, chain.time() + delay + 60)
+    auto.tl.queueTransaction(*args)
+    chain.sleep(delay + 120)
+    auto.tl.executeTransaction(*args, auto.FR_DEPLOYER)
     if msgValue != ethForCall:
         callData = mockTarget.setX.encode_input(5)
         with reverts(REV_MSG_ETHFORCALL_NOT_MSGVALUE):

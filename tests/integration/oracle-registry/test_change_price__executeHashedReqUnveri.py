@@ -18,7 +18,12 @@ def test_updateGasPriceFast_lower_executeHashedReqUnveri_with_ethForCall(auto, e
     assert auto.po.getGasPriceFast() == INIT_GAS_PRICE_FAST
 
     newGasPriceFast = int(INIT_GAS_PRICE_FAST / 3)
-    auto.po.updateGasPriceFast(newGasPriceFast)
+    callData = auto.po.updateGasPriceFast.encode_input(newGasPriceFast)
+    delay = 2*DAY
+    args = (auto.po, 0, "", callData, chain.time() + delay + 60)
+    auto.tl.queueTransaction(*args)
+    chain.sleep(delay + 120)
+    auto.tl.executeTransaction(*args, auto.FR_DEPLOYER)
     
     assert auto.po.getGasPriceFast() == newGasPriceFast
 
@@ -73,7 +78,12 @@ def test_updateGasPriceFast_higher_executeHashedReqUnveri_payAUTO(auto, evmMaths
     assert auto.po.getGasPriceFast() == INIT_GAS_PRICE_FAST
 
     newGasPriceFast = int(INIT_GAS_PRICE_FAST * 1.3)
-    auto.po.updateGasPriceFast(newGasPriceFast)
+    callData = auto.po.updateGasPriceFast.encode_input(newGasPriceFast)
+    delay = 2*DAY
+    args = (auto.po, 0, "", callData, chain.time() + delay + 60)
+    auto.tl.queueTransaction(*args)
+    chain.sleep(delay + 120)
+    auto.tl.executeTransaction(*args, auto.FR_DEPLOYER)
     
     assert auto.po.getGasPriceFast() == newGasPriceFast
 
@@ -128,7 +138,12 @@ def test_updateAUTOPerETH_higher_executeHashedReqUnveri_payAUTO(auto, evmMaths, 
     assert auto.po.getAUTOPerETH() == INIT_AUTO_PER_ETH_WEI
 
     newAUTOPerETH = int(INIT_AUTO_PER_ETH_WEI * 1.3)
-    auto.po.updateAUTOPerETH(newAUTOPerETH)
+    callData = auto.po.updateAUTOPerETH.encode_input(newRate)
+    delay = 2*DAY
+    args = (auto.po, 0, "", callData, chain.time() + delay + 60)
+    auto.tl.queueTransaction(*args)
+    chain.sleep(delay + 120)
+    auto.tl.executeTransaction(*args, auto.FR_DEPLOYER)
     
     assert auto.po.getAUTOPerETH() == newAUTOPerETH
 

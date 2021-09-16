@@ -7,6 +7,7 @@ NULL_BYTES = "0x"
 E_18 = int(1e18)
 INIT_ETH_BAL = 100 * E_18
 BIG_NUM = 2**256 - 1
+DAY = 60 * 60 * 24
 
 
 # Oracle
@@ -119,3 +120,7 @@ REV_MSG_GOOFED = "You dun goofed boy"
 REV_MSG_USER_FORW = "Not sent from userForwarder"
 REV_MSG_FEE_FORW = "Not sent from feeForwarder"
 REV_MSG_USER_FEE_FORW = "Not sent from userFeeForwarder"
+
+
+# Timelock
+REV_MSG_LOCK = "Timelock::executeTransaction: Transaction hasn't surpassed time lock."
