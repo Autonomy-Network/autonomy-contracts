@@ -152,7 +152,10 @@ interface IStakeManager {
      *              array is [a, b, c, b], and `idxs` = [1, 3], then i=1 will first get
      *              replaced by i=3 and look like [a, b, c], then it would try and replace i=3
      *              by the end of the array...but i=3 no longer exists, so it'll revert. In this
-     *              case, `idxs` would need to be [1, 1], which would result in [a, c]
+     *              case, `idxs` would need to be [1, 1], which would result in [a, c]. It's
+     *              recommended to choose idxs in descending order so that you don't have to
+     *              take account of this behaviour - that way you can just use indexes
+     *              as they are already without alterations
      */
     function unstake(uint[] calldata idxs) external;
 }

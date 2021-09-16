@@ -194,6 +194,7 @@ contract StakeManager is IStakeManager, Shared, ReentrancyGuard, IERC777Recipien
 
         for (uint i = 0; i < idxs.length; i++) {
             require(_stakes[idxs[i]] == msg.sender, "SM: idx is not you");
+            require(idxs[i] < _stakes.length, "SM: idx out of bounds");
             // Update stakes by moving the last element to the
             // element we're wanting to delete (so it doesn't leave gaps, which is
             // necessary for the _updateExecutor algo)
