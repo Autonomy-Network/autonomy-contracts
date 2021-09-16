@@ -39,7 +39,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     // This counts the number of times each referer has been identified in an
     // executed tx
     mapping(address => uint) private _referalCounts;
-    // We need to have 2 separete arrays for adding requests with and without
+    // We need to have 2 separate arrays for adding requests with and without
     // eth because, when comparing the hash of a request to be executed to the
     // stored hash, we have no idea what the request had for the eth values
     // that was originally stored as a hash and therefore would need to store
@@ -323,7 +323,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
 
     /**
      * @dev validCalldata needs to be before anything that would convert it to memory
-     *      since that is persistent and would prevent validCalldata, that requries
+     *      since that is persistent and would prevent validCalldata, that requires
      *      calldata, from working. Can't do the check in _execute for the same reason.
      *      Note: targetNotThis and validEth are used in newReq.
      *      validCalldata is only used here because it causes an unknown
