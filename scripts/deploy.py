@@ -1,4 +1,4 @@
-from brownie import accounts, AUTO, PriceOracle, Oracle, StakeManager, Registry, Forwarder, Miner
+from brownie import accounts, AUTO, PriceOracle, Oracle, StakeManager, Registry, Forwarder, Miner, Timelock
 import sys
 import os
 sys.path.append(os.path.abspath('tests'))
@@ -49,3 +49,11 @@ def main():
         INIT_EXECUTOR_REWARD,
         INIT_REFERAL_REWARD
     )
+
+    # Create timelock for OP owner
+    auto.tl = auto.DEPLOYER.deploy(Timelock, auto.DEPLOYER, 2*DAY)
+    auto.po.transferOwnership(auto.tl, auto.FR_DEPLOYER)
+    auto.o.transferOwnership(auto.tl, auto.FR_DEPLOYER)
+    auto.uf.transferOwnership(auto.tl, auto.FR_DEPLOYER)
+    auto.ff.transferOwnership(auto.tl, auto.FR_DEPLOYER)
+    auto.uff.transferOwnership(auto.tl, auto.FR_DEPLOYER)

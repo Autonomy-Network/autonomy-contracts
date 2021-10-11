@@ -150,7 +150,7 @@ def test_updateAUTOPerETH_higher_executeHashedReq_payAUTO(auto, evmMaths, staked
     assert auto.po.getAUTOPerETH() == INIT_AUTO_PER_ETH_WEI
 
     newAUTOPerETH = int(INIT_AUTO_PER_ETH_WEI * 1.3)
-    callData = auto.po.updateAUTOPerETH.encode_input(newRate)
+    callData = auto.po.updateAUTOPerETH.encode_input(newAUTOPerETH)
     delay = 2*DAY
     args = (auto.po, 0, "", callData, chain.time() + delay + 60)
     auto.tl.queueTransaction(*args)
