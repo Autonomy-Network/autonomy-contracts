@@ -151,7 +151,7 @@ def test_newReq_rev_isAlive_with_eth(auto, mockTarget):
     ethForCall=strategy('uint256', max_value=E_18),
 )
 def test_newReq_rev_validEth_payWithAUTO(auto, mockTarget, msgValue, ethForCall):
-    callData = auto.o.setDefaultPayIsAUTO.encode_input(payWithAUTO)
+    callData = auto.o.setDefaultPayIsAUTO.encode_input(True)
     delay = 2*DAY
     args = (auto.o, 0, "", callData, chain.time() + delay + 60)
     auto.tl.queueTransaction(*args)
