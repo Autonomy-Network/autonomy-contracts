@@ -2,6 +2,7 @@ pragma solidity 0.8.6;
 
 
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "../interfaces/IRegistry.sol";
 import "../interfaces/IStakeManager.sol";
 import "../interfaces/IOracle.sol";
@@ -10,7 +11,7 @@ import "./abstract/Shared.sol";
 import "./AUTO.sol";
 
 
-contract Registry is IRegistry, Shared, ReentrancyGuard {
+contract Registry is IRegistry, Shared, ReentrancyGuard, Initializable {
     
     // Constant public
     uint public constant GAS_OVERHEAD_AUTO = 16000;
@@ -22,12 +23,12 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     // Constant private
     bytes private constant _EMPTY_BYTES = "";
     
-    AUTO private immutable _AUTO;
-    IStakeManager private immutable _stakeMan;
-    IOracle private immutable _oracle;
-    IForwarder private immutable _userForwarder;
-    IForwarder private immutable _gasForwarder;
-    IForwarder private immutable _userGasForwarder;
+    AUTO private _AUTO;
+    IStakeManager private _stakeMan;
+    IOracle private _oracle;
+    IForwarder private _userForwarder;
+    IForwarder private _gasForwarder;
+    IForwarder private _userGasForwarder;
 
     // Used to make sure that `target` can't be something that affects
     // the Autonomy system itself
@@ -87,7 +88,12 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     event HashedReqUnveriCancelled(uint indexed id);
 
 
-    constructor(
+
+    constructor() ReentrancyGuard() {}
+
+    function initialize(
+        // auto is a reserver keyword
+        AUTO aut,
         IStakeManager stakeMan,
         IOracle oracle,
         IForwarder userForwarder,
@@ -96,12 +102,12 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         string memory tokenName,
         string memory tokenSymbol,
         uint totalAUTOSupply
-    ) ReentrancyGuard() {
-        // ERC777 token
-        address[] memory defaultOperators = new address[](2);
-        defaultOperators[0] = address(this);
-        defaultOperators[1] = address(stakeMan);
-        AUTO aut = new AUTO(tokenName, tokenSymbol, defaultOperators, msg.sender, totalAUTOSupply);
+    ) external initializer {
+        // // ERC777 token
+        // address[] memory defaultOperators = new address[](2);
+        // defaultOperators[0] = address(this);
+        // defaultOperators[1] = address(stakeMan);
+        // AUTO aut = new AUTO(tokenName, tokenSymbol, defaultOperators, msg.sender, totalAUTOSupply);
 
         _AUTO = aut;
         _stakeMan = stakeMan;

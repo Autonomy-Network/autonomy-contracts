@@ -57,6 +57,7 @@ def test_newReq(auto, mockTarget, user, target, referer, callData, msgValue, eth
         else:
             tx = auto.r.newReq(target, referer, callData, ethForCall, verifyUser, insertFeeAmount, isAlive, {'from': user, 'value': msgValue})
 
+            print(tx)
             assert tx.return_value == 0
             assert tx.events["HashedReqAdded"][0].values() == [0, *req]
 

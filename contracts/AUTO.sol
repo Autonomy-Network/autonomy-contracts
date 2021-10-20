@@ -1,7 +1,7 @@
 pragma solidity 0.8.6;
 
 
-import "@openzeppelin/contracts/token/ERC777/ERC777.sol";
+import "./ERC777UpdateDefaultOperator.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 
@@ -11,7 +11,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 *           execution fees with
 * @author   Quantaf1re (James Key)
 */
-contract AUTO is ERC777, Ownable {
+contract AUTO is ERC777UpdateDefaultOperator, Ownable {
 
     constructor(
         string memory name,
@@ -19,7 +19,7 @@ contract AUTO is ERC777, Ownable {
         address[] memory defaultOperators,
         address receiver,
         uint256 mintAmount
-    ) ERC777(name, symbol, defaultOperators) Ownable() {
+    ) ERC777UpdateDefaultOperator(name, symbol, defaultOperators) Ownable() {
         _mint(receiver, mintAmount, "", "");
     }
 
@@ -31,4 +31,9 @@ contract AUTO is ERC777, Ownable {
     ) external onlyOwner {
         _mint(receiver, amount, userData, operatorData);
     }
+
+    function addDefaultOperators(address[] memory newDefaultOperators) external onlyOwner {
+        _addDefaultOperators(newDefaultOperators);
+    }
+
 }

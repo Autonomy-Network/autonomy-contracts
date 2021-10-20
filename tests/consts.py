@@ -112,6 +112,7 @@ ERC1820_REGISTRY_ADDR = "0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24"
 
 REV_MSG_EXCEED_BAL = "ERC777: transfer amount exceeds balance"
 REV_MSG_EXCEED_ALLOWANCE = "ERC777: transfer amount exceeds allowance"
+REV_MSG_NOT_OPERATOR = "ERC777: caller is not an operator for holder"
 
 
 # MockTarget
