@@ -19,12 +19,12 @@ def main():
     auto.FR_DEPLOYER = {"from": auto.DEPLOYER}
     print(auto.DEPLOYER)
 
-    auto.po = auto.DEPLOYER.deploy(PriceOracle, INIT_AUTO_PER_ETH_WEI, INIT_GAS_PRICE_FAST)
-    auto.o = auto.DEPLOYER.deploy(Oracle, auto.po, False)
-    auto.sm = auto.DEPLOYER.deploy(StakeManager, auto.o)
-    auto.uf = auto.DEPLOYER.deploy(Forwarder)
-    auto.ff = auto.DEPLOYER.deploy(Forwarder)
-    auto.uff = auto.DEPLOYER.deploy(Forwarder)
+    auto.po = auto.DEPLOYER.deploy(PriceOracle, INIT_AUTO_PER_ETH_WEI, INIT_GAS_PRICE_FAST, publish_source=True)
+    auto.o = auto.DEPLOYER.deploy(Oracle, auto.po, False, publish_source=True)
+    auto.sm = auto.DEPLOYER.deploy(StakeManager, auto.o, publish_source=True)
+    auto.uf = auto.DEPLOYER.deploy(Forwarder, publish_source=True)
+    auto.ff = auto.DEPLOYER.deploy(Forwarder, publish_source=True)
+    auto.uff = auto.DEPLOYER.deploy(Forwarder, publish_source=True)
     auto.r = auto.DEPLOYER.deploy(
         Registry,
         auto.sm,
@@ -34,7 +34,8 @@ def main():
         auto.uff,
         "Autonomy Network",
         "AUTO",
-        INIT_AUTO_SUPPLY
+        INIT_AUTO_SUPPLY,
+        publish_source=True
     )
     auto.AUTO = AUTO.at(auto.r.getAUTOAddr())
     auto.sm.setAUTO(auto.AUTO, auto.FR_DEPLOYER)
@@ -47,11 +48,12 @@ def main():
         auto.r,
         INIT_REQUESTER_REWARD,
         INIT_EXECUTOR_REWARD,
-        INIT_REFERAL_REWARD
+        INIT_REFERAL_REWARD,
+        publish_source=True
     )
 
     # Create timelock for OP owner
-    auto.tl = auto.DEPLOYER.deploy(Timelock, auto.DEPLOYER, 2*DAY)
+    auto.tl = auto.DEPLOYER.deploy(Timelock, auto.DEPLOYER, 2*DAY, publish_source=True)
     auto.po.transferOwnership(auto.tl, auto.FR_DEPLOYER)
     auto.o.transferOwnership(auto.tl, auto.FR_DEPLOYER)
     auto.uf.transferOwnership(auto.tl, auto.FR_DEPLOYER)
