@@ -8,6 +8,7 @@ sys.path.pop()
 
 AUTONOMY_SEED = os.environ['AUTONOMY_SEED']
 auto_accs = accounts.from_mnemonic(AUTONOMY_SEED, count=10)
+PUBLISH_SOURCE = False
 
 def main():
     class Context:
@@ -19,12 +20,12 @@ def main():
     auto.FR_DEPLOYER = {"from": auto.DEPLOYER}
     print(auto.DEPLOYER)
 
-    auto.po = auto.DEPLOYER.deploy(PriceOracle, INIT_AUTO_PER_ETH_WEI, INIT_GAS_PRICE_FAST, publish_source=True)
-    auto.o = auto.DEPLOYER.deploy(Oracle, auto.po, False, publish_source=True)
-    auto.sm = auto.DEPLOYER.deploy(StakeManager, auto.o, publish_source=True)
-    auto.uf = auto.DEPLOYER.deploy(Forwarder, publish_source=True)
-    auto.ff = auto.DEPLOYER.deploy(Forwarder, publish_source=True)
-    auto.uff = auto.DEPLOYER.deploy(Forwarder, publish_source=True)
+    auto.po = auto.DEPLOYER.deploy(PriceOracle, INIT_AUTO_PER_ETH_WEI, INIT_GAS_PRICE_FAST, publish_source=PUBLISH_SOURCE)
+    auto.o = auto.DEPLOYER.deploy(Oracle, auto.po, False, publish_source=PUBLISH_SOURCE)
+    auto.sm = auto.DEPLOYER.deploy(StakeManager, auto.o, publish_source=PUBLISH_SOURCE)
+    auto.uf = auto.DEPLOYER.deploy(Forwarder, publish_source=PUBLISH_SOURCE)
+    auto.ff = auto.DEPLOYER.deploy(Forwarder, publish_source=PUBLISH_SOURCE)
+    auto.uff = auto.DEPLOYER.deploy(Forwarder, publish_source=PUBLISH_SOURCE)
     auto.r = auto.DEPLOYER.deploy(
         Registry,
         auto.sm,
@@ -35,7 +36,7 @@ def main():
         "Autonomy Network",
         "AUTO",
         INIT_AUTO_SUPPLY,
-        publish_source=True
+        publish_source=PUBLISH_SOURCE
     )
     auto.AUTO = AUTO.at(auto.r.getAUTOAddr())
     auto.sm.setAUTO(auto.AUTO, auto.FR_DEPLOYER)
@@ -49,11 +50,11 @@ def main():
         INIT_REQUESTER_REWARD,
         INIT_EXECUTOR_REWARD,
         INIT_REFERAL_REWARD,
-        publish_source=True
+        publish_source=PUBLISH_SOURCE
     )
 
     # Create timelock for OP owner
-    auto.tl = auto.DEPLOYER.deploy(Timelock, auto.DEPLOYER, 2*DAY, publish_source=True)
+    auto.tl = auto.DEPLOYER.deploy(Timelock, auto.DEPLOYER, 2*DAY, publish_source=PUBLISH_SOURCE)
     auto.po.transferOwnership(auto.tl, auto.FR_DEPLOYER)
     auto.o.transferOwnership(auto.tl, auto.FR_DEPLOYER)
     auto.uf.transferOwnership(auto.tl, auto.FR_DEPLOYER)
