@@ -13,10 +13,9 @@ DEPLOYER = auto_accs[4]
 print(DEPLOYER)
 FR_DEPLOYER = {"from": DEPLOYER}
 
-# Ropsten:
-REGISTRY_ADDR = '0x3C901dc595105934D61DB70C2170D3a6834Cb8B7'
+REGISTRY_ADDR = '0x2d2C856115911C0D14B9DBfe0FEaB1baBE358D77'
 
 def main():
     r = Registry.at(REGISTRY_ADDR)
     ethForCall = 5 * 10**16
-    r.newReqPaySpecific(DEPLOYER, ADDR_0, '', ethForCall, False, False, False, False, {'value': ethForCall + 10**16, 'from': DEPLOYER})
+    r.newReq(DEPLOYER, ADDR_0, '', ethForCall, False, False, False, {'value': ethForCall + 10**16, 'from': DEPLOYER})

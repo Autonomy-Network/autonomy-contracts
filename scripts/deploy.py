@@ -8,7 +8,7 @@ sys.path.pop()
 
 AUTONOMY_SEED = os.environ['AUTONOMY_SEED']
 auto_accs = accounts.from_mnemonic(AUTONOMY_SEED, count=10)
-PUBLISH_SOURCE = False
+PUBLISH_SOURCE = True
 
 def main():
     class Context:
@@ -54,7 +54,7 @@ def main():
     )
 
     # Create timelock for OP owner
-    auto.tl = auto.DEPLOYER.deploy(Timelock, auto.DEPLOYER, 2*DAY, publish_source=PUBLISH_SOURCE)
+    auto.tl = auto.DEPLOYER.deploy(Timelock, auto.DEPLOYER, int(DAY/2), publish_source=PUBLISH_SOURCE)
     auto.po.transferOwnership(auto.tl, auto.FR_DEPLOYER)
     auto.o.transferOwnership(auto.tl, auto.FR_DEPLOYER)
     auto.uf.transferOwnership(auto.tl, auto.FR_DEPLOYER)
