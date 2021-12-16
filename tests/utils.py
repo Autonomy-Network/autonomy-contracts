@@ -1,7 +1,6 @@
 from consts import *
 from brownie import web3, convert
 import base58 as b58
-import ipfshttpclient
 from hashlib import sha256
 
 
@@ -108,53 +107,12 @@ def getModStakes(stakes, staker, numStakes, isStaking):
         return idxs, newStakes
 
 
-# Assumes a sha256 hash of (prefix + data + suffix) is the input
-def getCID(hash):
-    if type(hash) is not bytes:
-        hash = convert.to_bytes(hash, 'bytes')
-    cidBytes = CID_PREFIX_BYTES + hash
-    return str(b58.b58encode(cidBytes), 'ascii')
-
-
 def keccakReq(auto, req):
     return web3.keccak(auto.r.getReqBytes(req)).hex()
 
 
 def bytesToHex(b):
     return '0x' + b.hex()
-
-
-def getHashBytesFromCID(CID):
-    return b58.b58decode(CID)[2:]
-
-
-def getHashFromCID(CID):
-    return bytesToHex(b58.b58decode(CID)[2:])
-
-
-def addToIpfs(auto, req):
-    reqBytes = auto.r.getReqBytes(req)
-
-    with ipfshttpclient.connect() as client:
-        return client.add_bytes(reqBytes)
-
-
-def getIpfsMetaData(auto, req):
-    reqBytes = auto.r.getReqBytes(req)
-
-    with ipfshttpclient.connect() as client:
-        ipfsCID = client.add_bytes(reqBytes)
-        ipfsBlock = client.block.get(ipfsCID)
-    
-    reqBytesIdx = ipfsBlock.index(reqBytes)
-    dataPrefix = ipfsBlock[:reqBytesIdx]
-    dataSuffix = ipfsBlock[reqBytesIdx + len(reqBytes) : ]
-
-    return dataPrefix, dataSuffix
-
-
-def addReqGetHashBytes(auto, req):
-    return getHashBytesFromCID(addToIpfs(auto, req))
 
 
 def getEthForExec(evmMaths, tx, gasPriceFast):

@@ -69,15 +69,6 @@ def test_newReq(auto, mockTarget, user, target, referer, callData, msgValue, eth
             assert auto.r.getHashedReqsLen() == 1
             assert auto.r.getHashedReq(0) == hashes[0]
 
-            assert auto.r.getHashedReqsUnveri() == []
-            # Should revert when using indexes above the length
-            with reverts():
-                auto.r.getHashedReqsUnveriSlice(0, 1)
-            assert auto.r.getHashedReqsUnveriSlice(0, 0) == []
-            assert auto.r.getHashedReqsUnveriLen() == 0
-            with reverts():
-                auto.r.getHashedReqUnveri(0)
-
             assert user.balance() - userETHStartBal == -msgValue
             assert referer.balance() - refererETHStartBal == 0
             assert target.balance() - targetETHStartBal == 0
@@ -88,9 +79,9 @@ def test_newReq(auto, mockTarget, user, target, referer, callData, msgValue, eth
             assert auto.AUTO.balanceOf(target) - targetAUTOStartBal == 0
             assert auto.AUTO.balanceOf(auto.r) == 0
 
-            assert auto.r.getReqCountOf(auto.BOB) == 0
-            assert auto.r.getExecCountOf(auto.ALICE) == 0
-            assert auto.r.getReferalCountOf(auto.DENICE) == 0
+            # assert auto.r.getReqCountOf(auto.BOB) == 0
+            # assert auto.r.getExecCountOf(auto.ALICE) == 0
+            # assert auto.r.getReferalCountOf(auto.DENICE) == 0
 
 
 def test_newReq_rev_target_is_registry(auto, mockTarget):

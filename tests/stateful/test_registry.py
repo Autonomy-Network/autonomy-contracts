@@ -230,14 +230,6 @@
 #             for i, req in enumerate(self.hashedReqs):
 #                 assert self.r.getHashedReq(i) == req
             
-#             # Hashed unverified reqs
-#             assert self.r.getHashedReqsUnveri() == self.hashedReqsUnveri
-#             assert self.r.getHashedReqsUnveriSlice(0, len(self.hashedReqsUnveri)) == self.hashedReqsUnveri
-#             assert self.r.getHashedReqsUnveriLen() == len(self.hashedReqsUnveri)
-#             # Can probably comment out cause this'll make tests take forever
-#             for i, req in enumerate(self.hashedReqsUnveri):
-#                 assert self.r.getHashedReqUnveri(i) == req
-            
 #             # Action counters
 #             for sender in self.senders:
 #                 assert self.r.getReqCountOf(sender) == self.rawReqCounts[sender]

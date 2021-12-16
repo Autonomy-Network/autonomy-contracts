@@ -302,20 +302,6 @@ def hashedReqs(auto, mockTarget):
     return reqs, reqHashes, msgValue, ethForCall
 
 
-# With hashReqNoEth, we can't send eth in the call and have to pay via AUTO, so
-# only one combination this time
-@pytest.fixture(scope="module")
-def hashedReqUnveri(auto, mockTarget):
-    auto.AUTO.approve(auto.r, MAX_TEST_STAKE, auto.FR_BOB)
-    callData = mockTarget.setX.encode_input(5)
-    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, False, True, False)
-    reqHashBytes = addReqGetHashBytes(auto, req)
-
-    tx = auto.r.newHashedReqUnveri(reqHashBytes, {'from': auto.BOB, 'value': 0})
-
-    return req, reqHashBytes
-
-
 # Need to have already staked and have new requests already made so that execute
 # can be tested with and without payWithAUTO for each type
 @pytest.fixture(scope="module")
@@ -333,25 +319,9 @@ def vulnerableHashedReqs(auto, mockTarget, vulnerableRegistry, stakedMin):
     tx = vulnerableRegistry.newReqPaySpecific(mockTarget, auto.DENICE, callData, ethForCall, False, False, True, False, {'from': auto.BOB, 'value': ethForCall})
 
     reqs = [reqEthForCall, reqPayAUTOEthForCall]
-    reqHashes = [bytesToHex(addReqGetHashBytes(auto, r)) for r in reqs]
+    reqHashes = [keccakReq(auto, r) for r in reqs]
 
     return reqs, reqHashes, msgValue, ethForCall
-
-
-# Need to have already staked and have new requests already made so that execute
-# can be tested with and without payWithAUTO for each type
-@pytest.fixture(scope="module")
-def vulnerableHashedReqUnveri(auto, mockTarget, vulnerableRegistry, stakedMin):
-    # Send it ETH so that there is ETH to steal
-    auto.DEPLOYER.transfer(vulnerableRegistry, 1)
-    auto.AUTO.approve(vulnerableRegistry, MAX_TEST_STAKE, auto.FR_BOB)
-    callData = mockTarget.callVulnerableTransfer.encode_input(auto.DENICE, 1)
-    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, False, True, False)
-    reqHashBytes = addReqGetHashBytes(auto, req)
-
-    tx = vulnerableRegistry.newHashedReqUnveri(reqHashBytes, {'from': auto.BOB, 'value': 0})
-
-    return req, reqHashBytes
 
 
 # For testing Miner

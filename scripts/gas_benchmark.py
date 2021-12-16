@@ -20,10 +20,3 @@ def main():
     
     tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, True, auto.FR_BOB)
     print(f'newReqPaySpecific = {tx.gas_used}')
-
-    # It'll cost extra the first time using the array
-    tx = auto.r.newHashedReqUnveri('0000000000000000000000000000000000000000000000000000000000000001')
-    print(f'newHashedReqUnveri = {tx.gas_used}')
-
-    tx = auto.r.newHashedReqUnveri('0000000000000000000000000000000000000000000000000000000000000001')
-    print(f'newHashedReqUnveri = {tx.gas_used}')
