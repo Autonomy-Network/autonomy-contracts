@@ -157,58 +157,6 @@ interface IRegistry {
 
     //////////////////////////////////////////////////////////////
     //                                                          //
-    //                Hashed Requests Unverified                //
-    //                                                          //
-    //////////////////////////////////////////////////////////////
-
-    /**
-     * @notice  Creates a new hashed request by blindly storing a raw hash on-chain. It's 
-     *          'unverified' because when executing it, it's impossible to tell whether any
-     *          ETH was initially sent with the request etc, so executing this request requires
-     *          that the request which hashes to `hashedIpfsReq` has `ethForCall` = 0,
-     *          `initEthSend` = 0, `verifyUser` = false, and `payWithAUTO` = true
-     * @param id    [bytes32] The hash to save. The hashing algo isn't keccak256 like with `newReq`,
-     *          it instead uses sha256 so that it's compatible with ipfs - the hash stored on-chain
-     *          should be able to be used in ipfs to point to the request which hashes to `hashedIpfsReq`.
-     *          Because ipfs doesn't hash only the data stored, it hashes a prepends a few bytes to the
-     *          encoded data and appends a few bytes to the data, the hash has to be over [prefix + data + postfix]
-     * @return id   The id of the request, equal to the index in `_hashedReqsUnveri`
-     */
-    function newHashedReqUnveri(bytes32 hashedIpfsReq) external returns (uint id);
-
-    /**
-     * @notice  Gets part of the sha256 hashes of ipfs-encoded requests. Completed requests will be 0x00.
-     *          Needed since the array will quickly grow to cost more gas than the block limit to retrieve.
-     *          so it can be viewed in chunks. E.g. for an array of x = [4, 5, 6, 7], x[1, 2] returns [5],
-     *          the same as lists in Python
-     * @param startIdx  [uint] The starting index from which to start getting the slice (inclusive)
-     * @param endIdx    [uint] The ending index from which to start getting the slice (exclusive)
-     * @return  [bytes32[]] An array of all hashes
-     */
-    function getHashedReqsUnveriSlice(uint startIdx, uint endIdx) external view returns (bytes32[] memory);
-    
-    /**
-     * @notice  Gets all sha256 hashes of ipfs-encoded requests. Completed requests will be 0x00
-     * @return  [bytes32[]] An array of all hashes
-     */
-    function getHashedReqsUnveri() external view returns (bytes32[] memory);
-
-    /**
-     * @notice  Gets the total number of unverified requests that have been stored
-     * @return  [uint] The total number of hashed unverified requests
-     */
-    function getHashedReqsUnveriLen() external view returns (uint);
-    
-    /**
-     * @notice      Gets a single hashed unverified request
-     * @param id    [uint] The id of the request, which is its index in the array
-     * @return      [bytes32] The sha256 hash of the ipfs-encoded request
-     */
-    function getHashedReqUnveri(uint id) external view returns (bytes32);
-
-
-    //////////////////////////////////////////////////////////////
-    //                                                          //
     //                        Bytes Helpers                     //
     //                                                          //
     //////////////////////////////////////////////////////////////
@@ -219,40 +167,6 @@ interface IRegistry {
      * @return      [bytes] The bytes array of the encoded request
      */
     function getReqBytes(Request memory r) external pure returns (bytes memory);
-
-    /**
-     * @notice      Encode a request into bytes the same way ipfs does - by doing hash(prefix | request | postfix)
-     * @param r     [request] The request to be encoded
-     * @param dataPrefix    [bytes] The prefix that ipfs prepends to this data before hashing
-     * @param dataPostfix   [bytes] The postfix that ipfs appends to this data before hashing
-     * @return  [bytes] The bytes array of the encoded request
-     */
-    function getIpfsReqBytes(
-        bytes memory r,
-        bytes memory dataPrefix,
-        bytes memory dataPostfix
-    ) external pure returns (bytes memory);
-
-    /**
-     * @notice      Get the hash of an encoded request, encoding into bytes the same way ipfs
-     *              does - by doing hash(prefix | request | postfix)
-     * @param r     [request] The request to be encoded
-     * @param dataPrefix    [bytes] The prefix that ipfs prepends to this data before hashing
-     * @param dataPostfix   [bytes] The postfix that ipfs appends to this data before hashing
-     * @return  [bytes32] The sha256 hash of the ipfs-encoded request
-     */
-    function getHashedIpfsReq(
-        bytes memory r,
-        bytes memory dataPrefix,
-        bytes memory dataPostfix
-    ) external pure returns (bytes32);
-
-    /**
-     * @notice      Get the decoded request back from encoded bytes
-     * @param rBytes    [bytes] The encoded bytes version of a request
-     * @return r    [Request] The request as a struct
-     */
-    function getReqFromBytes(bytes memory rBytes) external pure returns (Request memory r);
 
     function insertToCallData(bytes calldata callData, uint expectedGas, uint startIdx) external pure returns (bytes memory);
 
@@ -283,37 +197,6 @@ interface IRegistry {
         uint expectedGas
     ) external returns (uint gasUsed);
 
-    /**
-     * @notice      Execute a hashedReqUnveri. Hashes `r`, `dataPrefix`, and `dataSuffix`
-     *              together in the same way that ipfs does such that the hash stored on-chain
-     *              is the same as the hash used to look up on ipfs to see the raw request.
-     *              Since `newHashedReqUnveri` does no verification at all since it can't,
-     *              `executeHashedReqUnveri` has to instead. There are some things it can't
-     *              know, like the amount of ETH sent in the original request call, so they're
-     *              forced to be zero
-     * @param id    [uint] The index of the request in `_hashedReqs`
-     * @param r     [request] The full request struct that fully describes the request. Typically
-     *              known by looking up the hash on ipfs
-     * @param dataPrefix    [bytes] The data prepended to the bytes form of `r` before being hashed
-     *                      in ipfs
-     * @param dataSuffix    [bytes] The data appended to the bytes form of `r` before being hashed
-     *                      in ipfs
-     * @param expectedGas   [uint] The gas that the executor expects the execution to cost,
-     *                      known by simulating the the execution of this tx locally off-chain.
-     *                      This can be forwarded as part of the requested call such that the
-     *                      receiving contract knows how much gas the whole execution cost and
-     *                      can do something to compensate the exact amount (e.g. as part of a trade).
-     *                      Cannot be more than 10% above the measured gas cost by the end of execution
-     * @return gasUsed      [uint] The gas that was used as part of the execution. Used to know `expectedGas`
-     */
-    function executeHashedReqUnveri(
-        uint id,
-        Request calldata r,
-        bytes memory dataPrefix,
-        bytes memory dataSuffix,
-        uint expectedGas
-    ) external returns (uint gasUsed);
-
 
     //////////////////////////////////////////////////////////////
     //                                                          //
@@ -331,24 +214,6 @@ interface IRegistry {
     function cancelHashedReq(
         uint id,
         Request memory r
-    ) external;
-    
-    /**
-     * @notice      Execute a hashedReq. Calls the `target` with `callData`, then
-     *              charges the user the fee, and gives it to the executor
-     * @param id    [uint] The index of the request in `_hashedReqs`
-     * @param r     [request] The full request struct that fully describes the request. Typically
-     *              known by looking up the hash on ipfs
-     * @param dataPrefix    [bytes] The data prepended to the bytes form of `r` before being hashed
-     *                      in ipfs
-     * @param dataSuffix    [bytes] The data appended to the bytes form of `r` before being hashed
-     *                      in ipfs
-     */
-    function cancelHashedReqUnveri(
-        uint id,
-        Request memory r,
-        bytes memory dataPrefix,
-        bytes memory dataSuffix
     ) external;
     
     

@@ -52,9 +52,6 @@ def test_newReqPaySpecific(auto, mockTarget, user, target, referer, callData, ms
             tx = auto.r.newReqPaySpecific(target, referer, callData, ethForCall, verifyUser, insertFeeAmount, payWithAUTO, isAlive, {'from': user, 'value': msgValue})
 
             assert tx.return_value == 0
-            print()
-            print(tx.events["HashedReqAdded"][0].values())
-            print([0, *req])
             assert tx.events["HashedReqAdded"][0].values() == [0, *req]
 
             hashes = [keccakReq(auto, req)]
@@ -66,15 +63,6 @@ def test_newReqPaySpecific(auto, mockTarget, user, target, referer, callData, ms
             assert auto.r.getHashedReqsLen() == 1
             assert auto.r.getHashedReq(0) == hashes[0]
 
-            assert auto.r.getHashedReqsUnveri() == []
-            # Should revert when using indexes above the length
-            with reverts():
-                auto.r.getHashedReqsUnveriSlice(0, 1)
-            assert auto.r.getHashedReqsUnveriSlice(0, 0) == []
-            assert auto.r.getHashedReqsUnveriLen() == 0
-            with reverts():
-                auto.r.getHashedReqUnveri(0)
-
             assert user.balance() - userETHStartBal == -msgValue
             assert referer.balance() - refererETHStartBal == 0
             assert target.balance() - targetETHStartBal == 0
@@ -85,9 +73,9 @@ def test_newReqPaySpecific(auto, mockTarget, user, target, referer, callData, ms
             assert auto.AUTO.balanceOf(target) - targetAUTOStartBal == 0
             assert auto.AUTO.balanceOf(auto.r) == 0
 
-            assert auto.r.getReqCountOf(auto.BOB) == 0
-            assert auto.r.getExecCountOf(auto.ALICE) == 0
-            assert auto.r.getReferalCountOf(auto.DENICE) == 0
+            # assert auto.r.getReqCountOf(auto.BOB) == 0
+            # assert auto.r.getExecCountOf(auto.ALICE) == 0
+            # assert auto.r.getReferalCountOf(auto.DENICE) == 0
 
 
 def test_newReqPaySpecific_rev_target_is_registry(auto, mockTarget):

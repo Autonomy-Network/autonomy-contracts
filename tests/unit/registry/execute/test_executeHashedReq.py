@@ -13,14 +13,12 @@ def test_executeHashedReq_rev_nonReentrant(auto, mockTarget, mockReentrancyAttac
     # Create request to call in reentrance
     callData = mockTarget.setX.encode_input(5)
     req1 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE, callData, 0, 0, False, False, True, False)
-    addToIpfs(auto, req1)
 
     auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, False, True, False, {'from': auto.BOB})
 
     # Create request to be executed directly
     callData = mockReentrancyAttack.callExecuteHashedReq.encode_input(0, req1, MIN_GAS)
     req2 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE, callData, 0, 0, False, False, True, False)
-    addToIpfs(auto, req2)
 
     auto.r.newReqPaySpecific(mockReentrancyAttack, auto.DENICE, callData, 0, False, False, True, False, {'from': auto.BOB})
 
@@ -73,7 +71,6 @@ def test_executeHashedReq_validCalldata(auto, evmMaths, stakedMin, mockTarget, e
         id = 0
         callData = mockTarget.setAddrPayUserVerified.encode_input(userAddr)
         req = (sender.address, mockTarget.address, auto.DENICE, callData, msgValue, ethForCall, True, False, payWithAUTO, False)
-        addToIpfs(auto, req)
 
         auto.AUTO.transfer(sender, MAX_TEST_STAKE, auto.FR_DEPLOYER)
         senderAUTOStartBal = auto.AUTO.balanceOf(sender)
@@ -121,9 +118,9 @@ def test_executeHashedReq_validCalldata(auto, evmMaths, stakedMin, mockTarget, e
             assert auto.r.getHashedReqsLen() == 1
             assert auto.r.getHashedReq(id) == NULL_HASH
             assert tx.events["HashedReqExecuted"][0].values() == [id, True]
-            assert auto.r.getReqCountOf(sender) == 1
-            assert auto.r.getExecCountOf(auto.ALICE) == 1
-            assert auto.r.getReferalCountOf(auto.DENICE) == 1
+            # assert auto.r.getReqCountOf(sender) == 1
+            # assert auto.r.getExecCountOf(auto.ALICE) == 1
+            # assert auto.r.getReferalCountOf(auto.DENICE) == 1
 
             # Shouldn't've changed
             assert expectedGas == tx.return_value
@@ -173,9 +170,9 @@ def test_executeHashedReq_no_ethForCall(auto, evmMaths, stakedMin, mockTarget, h
     assert auto.r.getHashedReqsLen() == 9
     assert auto.r.getHashedReq(id) == NULL_HASH
     assert tx.events["HashedReqExecuted"][0].values() == [id, True]
-    assert auto.r.getReqCountOf(auto.BOB) == 1
-    assert auto.r.getExecCountOf(auto.ALICE) == 1
-    assert auto.r.getReferalCountOf(auto.DENICE) == 1
+    # assert auto.r.getReqCountOf(auto.BOB) == 1
+    # assert auto.r.getExecCountOf(auto.ALICE) == 1
+    # assert auto.r.getReferalCountOf(auto.DENICE) == 1
 
     # Shouldn't've changed
     assert expectedGas == tx.return_value
@@ -228,9 +225,9 @@ def test_executeHashedReq_with_ethForCall(auto, evmMaths, stakedMin, mockTarget,
     assert auto.r.getHashedReqsLen() == 9
     assert auto.r.getHashedReq(id) == NULL_HASH
     assert tx.events["HashedReqExecuted"][0].values() == [id, True]
-    assert auto.r.getReqCountOf(auto.BOB) == 1
-    assert auto.r.getExecCountOf(auto.ALICE) == 1
-    assert auto.r.getReferalCountOf(auto.DENICE) == 1
+    # assert auto.r.getReqCountOf(auto.BOB) == 1
+    # assert auto.r.getExecCountOf(auto.ALICE) == 1
+    # assert auto.r.getReferalCountOf(auto.DENICE) == 1
 
     # Shouldn't've changed
     assert expectedGas == tx.return_value
@@ -279,9 +276,9 @@ def test_executeHashedReq_pay_AUTO(auto, evmMaths, stakedMin, mockTarget, hashed
     assert auto.r.getHashedReqsLen() == 9
     assert auto.r.getHashedReq(id) == NULL_HASH
     assert tx.events["HashedReqExecuted"][0].values() == [id, True]
-    assert auto.r.getReqCountOf(auto.BOB) == 1
-    assert auto.r.getExecCountOf(auto.ALICE) == 1
-    assert auto.r.getReferalCountOf(auto.DENICE) == 1
+    # assert auto.r.getReqCountOf(auto.BOB) == 1
+    # assert auto.r.getExecCountOf(auto.ALICE) == 1
+    # assert auto.r.getReferalCountOf(auto.DENICE) == 1
 
     # Shouldn't've changed
     assert expectedGas == tx.return_value
@@ -330,9 +327,9 @@ def test_executeHashedReq_pay_AUTO_with_ethForCall(auto, evmMaths, stakedMin, mo
     assert auto.r.getHashedReqsLen() == 9
     assert auto.r.getHashedReq(id) == NULL_HASH
     assert tx.events["HashedReqExecuted"][0].values() == [id, True]
-    assert auto.r.getReqCountOf(auto.BOB) == 1
-    assert auto.r.getExecCountOf(auto.ALICE) == 1
-    assert auto.r.getReferalCountOf(auto.DENICE) == 1
+    # assert auto.r.getReqCountOf(auto.BOB) == 1
+    # assert auto.r.getExecCountOf(auto.ALICE) == 1
+    # assert auto.r.getReferalCountOf(auto.DENICE) == 1
 
     # Shouldn't've changed
     assert expectedGas == tx.return_value
@@ -381,9 +378,9 @@ def test_executeHashedReq_pay_AUTO_with_ethForCall_and_verifySender(auto, evmMat
     assert auto.r.getHashedReqsLen() == 9
     assert auto.r.getHashedReq(id) == NULL_HASH
     assert tx.events["HashedReqExecuted"][0].values() == [id, True]
-    assert auto.r.getReqCountOf(auto.BOB) == 1
-    assert auto.r.getExecCountOf(auto.ALICE) == 1
-    assert auto.r.getReferalCountOf(auto.DENICE) == 1
+    # assert auto.r.getReqCountOf(auto.BOB) == 1
+    # assert auto.r.getExecCountOf(auto.ALICE) == 1
+    # assert auto.r.getReferalCountOf(auto.DENICE) == 1
 
     # Shouldn't've changed
     assert expectedGas == tx.return_value
@@ -432,9 +429,9 @@ def test_executeHashedReq_pay_AUTO_with_ethForCall_and_verifyFee(auto, evmMaths,
     assert auto.r.getHashedReqsLen() == 9
     assert auto.r.getHashedReq(id) == NULL_HASH
     assert tx.events["HashedReqExecuted"][0].values() == [id, True]
-    assert auto.r.getReqCountOf(auto.BOB) == 1
-    assert auto.r.getExecCountOf(auto.ALICE) == 1
-    assert auto.r.getReferalCountOf(auto.DENICE) == 1
+    # assert auto.r.getReqCountOf(auto.BOB) == 1
+    # assert auto.r.getExecCountOf(auto.ALICE) == 1
+    # assert auto.r.getReferalCountOf(auto.DENICE) == 1
 
     # Shouldn't've changed
     assert expectedGas == tx.return_value
@@ -490,9 +487,9 @@ def test_executeHashedReq_pay_AUTO_with_ethForCall_and_verifyFee(auto, evmMaths,
     assert auto.r.getHashedReqsLen() == 9
     assert auto.r.getHashedReq(id) == NULL_HASH
     assert tx.events["HashedReqExecuted"][0].values() == [id, True]
-    assert auto.r.getReqCountOf(auto.BOB) == 1
-    assert auto.r.getExecCountOf(auto.ALICE) == 1
-    assert auto.r.getReferalCountOf(auto.DENICE) == 1
+    # assert auto.r.getReqCountOf(auto.BOB) == 1
+    # assert auto.r.getExecCountOf(auto.ALICE) == 1
+    # assert auto.r.getReferalCountOf(auto.DENICE) == 1
 
     # Shouldn't've changed
     assert expectedGas == tx.return_value
@@ -541,9 +538,9 @@ def test_executeHashedReq_pay_AUTO_with_ethForCall_and_verifyFee(auto, evmMaths,
     assert auto.r.getHashedReqsLen() == 9
     assert auto.r.getHashedReq(id) == NULL_HASH
     assert tx.events["HashedReqExecuted"][0].values() == [id, True]
-    assert auto.r.getReqCountOf(auto.BOB) == 1
-    assert auto.r.getExecCountOf(auto.ALICE) == 1
-    assert auto.r.getReferalCountOf(auto.DENICE) == 1
+    # assert auto.r.getReqCountOf(auto.BOB) == 1
+    # assert auto.r.getExecCountOf(auto.ALICE) == 1
+    # assert auto.r.getReferalCountOf(auto.DENICE) == 1
 
     # Shouldn't've changed
     assert expectedGas == tx.return_value
@@ -590,9 +587,9 @@ def test_executeHashedReq_pay_AUTO_isAlive(auto, evmMaths, stakedMin, mockTarget
     assert auto.r.getHashedReqsLen() == 9
     assert auto.r.getHashedReq(id) == reqHashes[id]
     assert tx.events["HashedReqExecuted"][0].values() == [id, False]
-    assert auto.r.getReqCountOf(auto.BOB) == 1
-    assert auto.r.getExecCountOf(auto.ALICE) == 1
-    assert auto.r.getReferalCountOf(auto.DENICE) == 1
+    # assert auto.r.getReqCountOf(auto.BOB) == 1
+    # assert auto.r.getExecCountOf(auto.ALICE) == 1
+    # assert auto.r.getReferalCountOf(auto.DENICE) == 1
 
     # Shouldn't've changed
     assert expectedGas == tx.return_value

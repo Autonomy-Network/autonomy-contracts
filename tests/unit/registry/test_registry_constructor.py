@@ -22,13 +22,3 @@ def test_constructor(auto):
     assert auto.r.getHashedReqsLen() == 0
     with reverts():
         auto.r.getHashedReq(0)
-    
-    assert auto.r.getHashedReqsUnveri() == []
-    # Should revert when using indexes above the length
-    with reverts():
-        auto.r.getHashedReqsUnveriSlice(0, 1)
-    assert auto.r.getHashedReqsUnveriSlice(0, 0) == []
-    assert auto.r.getHashedReqsUnveriLen() == 0
-    with reverts():
-        auto.r.getHashedReqUnveri(0)
-    

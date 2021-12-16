@@ -13,14 +13,12 @@ def test_cancelHashedReq_rev_nonReentrant(auto, mockTarget, mockReentrancyAttack
     # Create request to call in reentrance
     callData = mockTarget.setX.encode_input(5)
     req1 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE, callData, False, False, True, False, 0, 0)
-    addToIpfs(auto, req1)
 
     auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, False, True, False, {'from': auto.BOB})
 
     # Create request to be executed directly
     callData = mockReentrancyAttack.callCancelHashedReq.encode_input(0, req1)
     req2 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE, callData, 0, 0, False, False, True, False)
-    addToIpfs(auto, req2)
 
     auto.r.newReqPaySpecific(mockReentrancyAttack, auto.DENICE, callData, 0, False, False, True, False, {'from': auto.BOB})
 
@@ -62,10 +60,9 @@ def test_cancelHashedReq_no_ethForCall(auto, stakedMin, mockTarget, hashedReqs):
     assert auto.AUTO.balanceOf(auto.r) == 0
     assert auto.AUTO.balanceOf(mockTarget) == 0
 
-
-    assert auto.r.getReqCountOf(auto.BOB) == 0
-    assert auto.r.getExecCountOf(auto.ALICE) == 0
-    assert auto.r.getReferalCountOf(auto.DENICE) == 0
+    # assert auto.r.getReqCountOf(auto.BOB) == 0
+    # assert auto.r.getExecCountOf(auto.ALICE) == 0
+    # assert auto.r.getReferalCountOf(auto.DENICE) == 0
 
 
 def test_cancelHashedReq_with_ethForCall(auto, stakedMin, mockTarget, hashedReqs):
@@ -103,10 +100,9 @@ def test_cancelHashedReq_with_ethForCall(auto, stakedMin, mockTarget, hashedReqs
     assert auto.AUTO.balanceOf(auto.r) == 0
     assert auto.AUTO.balanceOf(mockTarget) == 0
 
-
-    assert auto.r.getReqCountOf(auto.BOB) == 0
-    assert auto.r.getExecCountOf(auto.ALICE) == 0
-    assert auto.r.getReferalCountOf(auto.DENICE) == 0
+    # assert auto.r.getReqCountOf(auto.BOB) == 0
+    # assert auto.r.getExecCountOf(auto.ALICE) == 0
+    # assert auto.r.getReferalCountOf(auto.DENICE) == 0
 
 
 def test_cancelHashedReq_payAUTO(auto, stakedMin, mockTarget, hashedReqs):
@@ -144,10 +140,9 @@ def test_cancelHashedReq_payAUTO(auto, stakedMin, mockTarget, hashedReqs):
     assert auto.AUTO.balanceOf(auto.r) == 0
     assert auto.AUTO.balanceOf(mockTarget) == 0
 
-
-    assert auto.r.getReqCountOf(auto.BOB) == 0
-    assert auto.r.getExecCountOf(auto.ALICE) == 0
-    assert auto.r.getReferalCountOf(auto.DENICE) == 0
+    # assert auto.r.getReqCountOf(auto.BOB) == 0
+    # assert auto.r.getExecCountOf(auto.ALICE) == 0
+    # assert auto.r.getReferalCountOf(auto.DENICE) == 0
 
 
 def test_cancelHashedReq_pay_AUTO_with_ethForCall(auto, stakedMin, mockTarget, hashedReqs):
@@ -185,10 +180,9 @@ def test_cancelHashedReq_pay_AUTO_with_ethForCall(auto, stakedMin, mockTarget, h
     assert auto.AUTO.balanceOf(auto.r) == 0
     assert auto.AUTO.balanceOf(mockTarget) == 0
 
-
-    assert auto.r.getReqCountOf(auto.BOB) == 0
-    assert auto.r.getExecCountOf(auto.ALICE) == 0
-    assert auto.r.getReferalCountOf(auto.DENICE) == 0
+    # assert auto.r.getReqCountOf(auto.BOB) == 0
+    # assert auto.r.getExecCountOf(auto.ALICE) == 0
+    # assert auto.r.getReferalCountOf(auto.DENICE) == 0
 
 
 def test_cancelHashedReq_pay_AUTO_with_ethForCall_and_verifySender(auto, stakedMin, mockTarget, hashedReqs):
@@ -226,10 +220,9 @@ def test_cancelHashedReq_pay_AUTO_with_ethForCall_and_verifySender(auto, stakedM
     assert auto.AUTO.balanceOf(auto.r) == 0
     assert auto.AUTO.balanceOf(mockTarget) == 0
 
-
-    assert auto.r.getReqCountOf(auto.BOB) == 0
-    assert auto.r.getExecCountOf(auto.ALICE) == 0
-    assert auto.r.getReferalCountOf(auto.DENICE) == 0
+    # assert auto.r.getReqCountOf(auto.BOB) == 0
+    # assert auto.r.getExecCountOf(auto.ALICE) == 0
+    # assert auto.r.getReferalCountOf(auto.DENICE) == 0
 
 
 def test_cancelHashedReq_rev_req_not_the_same(auto, stakedMin, mockTarget, hashedReqs):
