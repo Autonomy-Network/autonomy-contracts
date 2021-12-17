@@ -22,7 +22,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     // Constant private
     bytes private constant _EMPTY_BYTES = "";
     
-    AUTO private immutable _AUTO;
+    AUTO private _AUTO;
     IStakeManager private immutable _stakeMan;
     IOracle private immutable _oracle;
     IForwarder private immutable _userForwarder;
@@ -91,9 +91,9 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         address[] memory defaultOperators = new address[](2);
         defaultOperators[0] = address(this);
         defaultOperators[1] = address(stakeMan);
-        AUTO aut = new AUTO(tokenName, tokenSymbol, defaultOperators, msg.sender, totalAUTOSupply);
+        // AUTO aut = new AUTO(tokenName, tokenSymbol, defaultOperators, msg.sender, totalAUTOSupply);
 
-        _AUTO = aut;
+        // _AUTO = aut;
         _stakeMan = stakeMan;
         _oracle = oracle;
         _userForwarder = userForwarder;
@@ -103,7 +103,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         _invalidTargets[address(userForwarder)] = true;
         _invalidTargets[address(gasForwarder)] = true;
         _invalidTargets[address(userGasForwarder)] = true;
-        _invalidTargets[address(aut)] = true;
+        // _invalidTargets[address(aut)] = true;
         _invalidTargets[0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24] = true;
         _invalidTargets[address(stakeMan)] = true;
         _invalidTargets[_ADDR_0] = true;

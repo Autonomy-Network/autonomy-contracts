@@ -22,7 +22,7 @@ def main():
 
     auto.po = auto.DEPLOYER.deploy(PriceOracle, INIT_AUTO_PER_ETH_WEI, INIT_GAS_PRICE_FAST, publish_source=PUBLISH_SOURCE, gas_limit=1e7)
     auto.o = auto.DEPLOYER.deploy(Oracle, auto.po, False, publish_source=PUBLISH_SOURCE, gas_limit=1e7)
-    auto.sm = auto.DEPLOYER.deploy(StakeManager, auto.o, publish_source=PUBLISH_SOURCE, gas_limit=1e8)
+    auto.sm = auto.DEPLOYER.deploy(StakeManager, auto.o, publish_source=PUBLISH_SOURCE, gas_limit=1e7)
     auto.uf = auto.DEPLOYER.deploy(Forwarder, publish_source=PUBLISH_SOURCE, gas_limit=1e7)
     auto.ff = auto.DEPLOYER.deploy(Forwarder, publish_source=PUBLISH_SOURCE, gas_limit=1e7)
     auto.uff = auto.DEPLOYER.deploy(Forwarder, publish_source=PUBLISH_SOURCE, gas_limit=1e7)
@@ -38,25 +38,15 @@ def main():
         INIT_AUTO_SUPPLY,
         publish_source=PUBLISH_SOURCE, gas_limit=1e7
     )
-    auto.AUTO = AUTO.at(auto.r.getAUTOAddr())
-    auto.sm.setAUTO(auto.AUTO, auto.FR_DEPLOYER)
-    auto.uf.setCaller(auto.r, True, auto.FR_DEPLOYER)
-    auto.ff.setCaller(auto.r, True, auto.FR_DEPLOYER)
-    auto.uff.setCaller(auto.r, True, auto.FR_DEPLOYER)
-    auto.m = auto.DEPLOYER.deploy(
-        Miner,
-        auto.AUTO,
-        auto.r,
-        INIT_REQUESTER_REWARD,
-        INIT_EXECUTOR_REWARD,
-        INIT_REFERAL_REWARD,
-        publish_source=PUBLISH_SOURCE, gas_limit=1e7
-    )
+    auto.sm.setAUTO(ADDR_0, {'gas_limit': 1e7, 'from': auto.DEPLOYER})
+    auto.uf.setCaller(auto.r, True, {'gas_limit': 1e7, 'from': auto.DEPLOYER})
+    auto.ff.setCaller(auto.r, True, {'gas_limit': 1e7, 'from': auto.DEPLOYER})
+    auto.uff.setCaller(auto.r, True, {'gas_limit': 1e7, 'from': auto.DEPLOYER})
 
     # Create timelock for OP owner
     auto.tl = auto.DEPLOYER.deploy(Timelock, auto.DEPLOYER, int(DAY/2), publish_source=PUBLISH_SOURCE, gas_limit=1e7)
-    auto.po.transferOwnership(auto.tl, auto.FR_DEPLOYER)
-    auto.o.transferOwnership(auto.tl, auto.FR_DEPLOYER)
-    auto.uf.transferOwnership(auto.tl, auto.FR_DEPLOYER)
-    auto.ff.transferOwnership(auto.tl, auto.FR_DEPLOYER)
-    auto.uff.transferOwnership(auto.tl, auto.FR_DEPLOYER)
+    auto.po.transferOwnership(auto.tl, {'gas_limit': 1e7, 'from': auto.DEPLOYER})
+    auto.o.transferOwnership(auto.tl, {'gas_limit': 1e7, 'from': auto.DEPLOYER})
+    auto.uf.transferOwnership(auto.tl, {'gas_limit': 1e7, 'from': auto.DEPLOYER})
+    auto.ff.transferOwnership(auto.tl, {'gas_limit': 1e7, 'from': auto.DEPLOYER})
+    auto.uff.transferOwnership(auto.tl, {'gas_limit': 1e7, 'from': auto.DEPLOYER})
