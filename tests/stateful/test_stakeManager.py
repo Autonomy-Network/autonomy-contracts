@@ -4,7 +4,7 @@ from brownie import reverts, chain, web3
 from brownie.test import strategy
 
 
-settings = {"stateful_step_count": 200, "max_examples": 500}
+settings = {"stateful_step_count": 100, "max_examples": 200}
 
 def test_stakeManager(BaseStateMachine, state_machine, a, cleanAUTO, evmMaths):
 
