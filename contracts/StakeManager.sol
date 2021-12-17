@@ -123,16 +123,16 @@ contract StakeManager is IStakeManager, Shared, ReentrancyGuard, IERC777Recipien
     function getUpdatedExecRes() public view override returns (uint96 epoch, uint randNum, uint idxOfExecutor, address exec) {
         epoch = getCurEpoch();
         // So that the storage is only loaded once
-        address[] memory stakes = _stakes;
+        uint stakesLen = _stakes.length;
         // If the executor is out of date and the system already has stake,
         // choose a new executor. This will do nothing if the system is starting
         // and allow someone to stake without needing there to already be existing stakes
-        if (_executor.forEpoch != epoch && stakes.length > 0) {
+        if (_executor.forEpoch != epoch && stakesLen > 0) {
             // -1 because blockhash(seed) in Oracle will return 0x00 if the
             // seed == this block's height
             randNum = _oracle.getRandNum(epoch - 1);
-            idxOfExecutor = randNum % stakes.length;
-            exec = stakes[idxOfExecutor];
+            idxOfExecutor = randNum % stakesLen;
+            exec = _stakes[idxOfExecutor];
         }
     }
 
