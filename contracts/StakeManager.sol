@@ -43,7 +43,7 @@ contract StakeManager is IStakeManager, Shared, ReentrancyGuard, IERC777Recipien
 
     constructor(IOracle oracle) {
         _oracle = oracle;
-        _ERC1820_REGISTRY.setInterfaceImplementer(address(this), TOKENS_RECIPIENT_INTERFACE_HASH, address(this));
+        // _ERC1820_REGISTRY.setInterfaceImplementer(address(this), TOKENS_RECIPIENT_INTERFACE_HASH, address(this));
     }
 
 
