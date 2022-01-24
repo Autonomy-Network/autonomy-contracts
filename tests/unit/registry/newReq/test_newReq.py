@@ -2,9 +2,6 @@ from consts import *
 from utils import *
 from brownie import chain, reverts, web3, convert
 from brownie.test import given, strategy
-from hashlib import sha256
-import ipfshttpclient
-import base58 as b58
 
 
 @given(

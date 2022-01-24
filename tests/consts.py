@@ -7,7 +7,8 @@ NULL_BYTES = "0x"
 E_18 = int(1e18)
 INIT_ETH_BAL = 100 * E_18
 BIG_NUM = 2**256 - 1
-DAY = 60 * 60 * 24
+HOUR = 60 * 60
+DAY = HOUR * 24
 
 
 # Oracle
