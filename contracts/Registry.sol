@@ -322,7 +322,15 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         // message, maybe that's a problem? But if it failed without a message then it's
         // gonna be hard to know what went wrong regardless
         if (!success) {
-            revert(abi.decode(returnData, (string)));
+            // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/d57593c148dad16abe675083464787ca10f789ec/contracts/utils/Address.sol#L210
+            if (returnData.length > 0) {
+                assembly {
+                    let returndata_size := mload(returnData)
+                    revert(add(32, returnData), returndata_size)
+                }
+            } else {
+                revert("No error message!");
+            }
         }
         
         // // Store AUTO rewards
