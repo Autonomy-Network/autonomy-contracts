@@ -1,11 +1,11 @@
 from brownie import accounts, EthSender
 import os
+import yaml
 
 
-AUTONOMY_SEED = os.environ['AUTONOMY_SEED']
-auto_accs = accounts.from_mnemonic(AUTONOMY_SEED, count=10)
-DEPLOYER = auto_accs[4]
-
+with open("config.yml", "r") as ymlfile:
+    cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
+DEPLOYER = accounts.add(cfg['AUTONOMY_PRIV'])
 
 def main():
     DEPLOYER.deploy(EthSender, publish_source=True)

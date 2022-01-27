@@ -1,5 +1,6 @@
 from brownie import accounts, AUTO, PriceOracle, Oracle, StakeManager, Registry, Forwarder, Miner
 import sys
+import yaml
 import os
 sys.path.append(os.path.abspath('tests'))
 
@@ -7,9 +8,9 @@ from consts import *
 sys.path.pop()
 
 
-AUTONOMY_SEED = os.environ['AUTONOMY_SEED']
-auto_accs = accounts.from_mnemonic(AUTONOMY_SEED, count=10)
-DEPLOYER = auto_accs[4]
+with open("config.yml", "r") as ymlfile:
+    cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
+DEPLOYER = accounts.add(cfg['AUTONOMY_PRIV'])
 
 # Ropsten:
 # AUTO_ADDR = '0xE3e761127cBD037E18186698a2733d1e71623ebE'
