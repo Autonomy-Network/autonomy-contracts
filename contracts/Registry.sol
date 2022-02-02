@@ -213,7 +213,14 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     }
 
     function getHashedReqsSlice(uint startIdx, uint endIdx) external override view returns (bytes32[] memory) {
-        return _getBytes32Slice(_hashedReqs, startIdx, endIdx);
+        bytes32[] memory slice = new bytes32[](endIdx - startIdx);
+        uint sliceIdx = 0;
+        for (uint arrIdx = startIdx; arrIdx < endIdx; arrIdx++) {
+            slice[sliceIdx] = _hashedReqs[arrIdx];
+            sliceIdx++;
+        }
+
+        return slice;
     }
 
     function getHashedReqsLen() external view override returns (uint) {
@@ -439,17 +446,6 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     
     function getReferalCountOf(address addr) external view override returns (uint) {
         return _referalCounts[addr];
-    }
-
-    function _getBytes32Slice(bytes32[] memory arr, uint startIdx, uint endIdx) private pure returns (bytes32[] memory) {
-        bytes32[] memory slice = new bytes32[](endIdx - startIdx);
-        uint sliceIdx = 0;
-        for (uint arrIdx = startIdx; arrIdx < endIdx; arrIdx++) {
-            slice[sliceIdx] = arr[arrIdx];
-            sliceIdx++;
-        }
-
-        return slice;
     }
 
 
