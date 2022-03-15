@@ -50,7 +50,7 @@ interface IRegistry {
      *          to pay in ETH or AUTO
      * @param target    The contract address that needs to be called
      * @param referer       The referer to get rewarded for referring the sender
-     *                      to using Autonomy. Usally the address of a dapp owner
+     *                      to using Autonomy. Usually the address of a dapp owner
      * @param callData  The calldata of the call that the request is to make, i.e.
      *                  the fcn identifier + inputs, encoded
      * @param ethForCall    The ETH to send with the call
@@ -68,7 +68,7 @@ interface IRegistry {
      * @param isAlive       Whether or not the request should be deleted after it's executed
      *                      for the first time. If `true`, the request will exist permanently
      *                      (tho it can be cancelled any time), therefore executing the same
-     *                      request repeatedly aslong as the request is executable,
+     *                      request repeatedly as long as the request is executable,
      *                      and can be used to create fully autonomous contracts - the
      *                      first single-celled cyber life. We are the gods now
      * @return id   The id of the request, equal to the index in `_hashedReqs`
@@ -88,7 +88,7 @@ interface IRegistry {
      *          a hash of it on-chain in `_hashedReqs`
      * @param target    The contract address that needs to be called
      * @param referer       The referer to get rewarded for referring the sender
-     *                      to using Autonomy. Usally the address of a dapp owner
+     *                      to using Autonomy. Usually the address of a dapp owner
      * @param callData  The calldata of the call that the request is to make, i.e.
      *                  the fcn identifier + inputs, encoded
      * @param ethForCall    The ETH to send with the call
@@ -108,7 +108,7 @@ interface IRegistry {
      * @param isAlive       Whether or not the request should be deleted after it's executed
      *                      for the first time. If `true`, the request will exist permanently
      *                      (tho it can be cancelled any time), therefore executing the same
-     *                      request repeatedly aslong as the request is executable,
+     *                      request repeatedly as long as the request is executable,
      *                      and can be used to create fully autonomous contracts - the
      *                      first single-celled cyber life. We are the gods now
      * @return id   The id of the request, equal to the index in `_hashedReqs`
