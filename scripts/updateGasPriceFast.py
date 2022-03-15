@@ -1,14 +1,15 @@
 from brownie import accounts, chain, AUTO, PriceOracle, Oracle, StakeManager, Registry, Forwarder, Miner, Timelock
 import time
 import sys
+import yaml
 import os
 sys.path.append(os.path.abspath('tests'))
 from consts import *
 sys.path.pop()
 
 
-AUTONOMY_SEED = os.environ['AUTONOMY_SEED']
-auto_accs = accounts.from_mnemonic(AUTONOMY_SEED, count=10)
+with open("config.yml", "r") as ymlfile:
+    cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
 
 # # BSC mainnet
 # PO_ADDR = '0x957Fa92cAc1AD4447B6AEc163af57e7E36537c91'
@@ -25,7 +26,7 @@ TL_ADDR = '0xA9E74167a120B139eBdf0858401FFd85b64E4810'
 
 
 def main():
-    DEPLOYER = auto_accs[4]
+    DEPLOYER = accounts.add(cfg['AUTONOMY_PRIV'])
     FR_DEPLOYER = {"from": DEPLOYER}
 
     po = PriceOracle.at(PO_ADDR)

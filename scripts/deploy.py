@@ -1,13 +1,14 @@
 from brownie import accounts, AUTO, PriceOracle, Oracle, StakeManager, Registry, Forwarder, Miner, Timelock
 import sys
+import yaml
 import os
 sys.path.append(os.path.abspath('tests'))
 from consts import *
 sys.path.pop()
 
 
-AUTONOMY_SEED = os.environ['AUTONOMY_SEED']
-auto_accs = accounts.from_mnemonic(AUTONOMY_SEED, count=10)
+with open("config.yml", "r") as ymlfile:
+    cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
 PUBLISH_SOURCE = True
 
 def main():
@@ -16,7 +17,7 @@ def main():
 
     auto = Context()
 
-    auto.DEPLOYER = auto_accs[4]
+    auto.DEPLOYER = accounts.add(cfg['AUTONOMY_PRIV'])
     auto.FR_DEPLOYER = {"from": auto.DEPLOYER}
     print(auto.DEPLOYER)
 
@@ -45,7 +46,7 @@ def main():
     auto.uff.setCaller(auto.r, True, auto.FR_DEPLOYER)
 
     # Create timelock for OP owner
-    auto.tl = auto.DEPLOYER.deploy(Timelock, auto.DEPLOYER, int(DAY/2), publish_source=PUBLISH_SOURCE)
+    auto.tl = auto.DEPLOYER.deploy(Timelock, '0x08a998AbC0C91DBe949C2D93de3998Dae4235852', int(DAY/2), publish_source=PUBLISH_SOURCE)
     auto.po.transferOwnership(auto.tl, auto.FR_DEPLOYER)
     auto.o.transferOwnership(auto.tl, auto.FR_DEPLOYER)
     auto.uf.transferOwnership(auto.tl, auto.FR_DEPLOYER)
