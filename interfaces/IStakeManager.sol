@@ -85,7 +85,7 @@ interface IStakeManager {
      * @return epoch    Returns the relevant variables for determining the new executor if the executor
      *          can be updated currently. It can only be updated currently if the stored executor
      *          is for a previous epoch, and there is some stake in the system. If the executor
-     *          can't be updated currently, then everything execpt `epoch` will return 0
+     *          can't be updated currently, then everything except `epoch` will return 0
      */
     function getUpdatedExecRes() external view returns (uint96 epoch, uint randNum, uint idxOfExecutor, address exec);
 
@@ -128,7 +128,7 @@ interface IStakeManager {
      *          the running cumulative and know who happens to have the slot where the
      *          cumulative stake is 200,000. This has problems when the staking array is
      *          so large that it costs more than the block gas limit to iterate over, which
-     *          would brick the contract, but also just generally costs alot of gas. Having
+     *          would brick the contract, but also just generally costs a lot of gas. Having
      *          a set amount of AUTO tokens means you already know everything about every
      *          element in the array therefore don't need to iterate over it.
      *          Calling this will add the caller to the array. Calling this will first try
@@ -148,7 +148,7 @@ interface IStakeManager {
      *          from the end of the array, so that there are no gaps left, such that 0x00...00
      *          can never be chosen as an executor
      * @param idxs  [uint[]] The indices of the user's slots, in order of which they'll be
-     *              removed, which is not necessariy the current indices. E.g. if the `_staking`
+     *              removed, which is not necessary the current indices. E.g. if the `_staking`
      *              array is [a, b, c, b], and `idxs` = [1, 3], then i=1 will first get
      *              replaced by i=3 and look like [a, b, c], then it would try and replace i=3
      *              by the end of the array...but i=3 no longer exists, so it'll revert. In this

@@ -239,5 +239,5 @@ interface IRegistry {
     
     function getExecCountOf(address addr) external view returns (uint);
     
-    function getReferalCountOf(address addr) external view returns (uint);
+    function getReferalCountOf(address addr) external view returns (uint); // TODO typo
 }
