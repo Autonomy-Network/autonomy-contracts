@@ -6,8 +6,8 @@ from consts import *
 sys.path.pop()
 
 
-AUTONOMY_SEED = os.environ['AUTONOMY_SEED']
-auto_accs = accounts.from_mnemonic(AUTONOMY_SEED, count=10)
+deployer = accounts.add(os.environ['DEPLOYER_PRIV'])
+
 PUBLISH_SOURCE = True
 
 def main():
@@ -16,7 +16,7 @@ def main():
 
     auto = Context()
 
-    auto.DEPLOYER = auto_accs[4]
+    auto.DEPLOYER = deployer
     auto.FR_DEPLOYER = {"from": auto.DEPLOYER}
     print(auto.DEPLOYER)
 

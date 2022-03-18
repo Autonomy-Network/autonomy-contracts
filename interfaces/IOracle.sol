@@ -1,7 +1,7 @@
 pragma solidity 0.8.6;
 
 
-import "../interfaces/IPriceOracle.sol";
+import "./IPriceOracle.sol";
 
 
 interface IOracle {

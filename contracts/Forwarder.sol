@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "../interfaces/IForwarder.sol";
 
 
+// TODO: use revertFailedCall in Shared
 contract Forwarder is IForwarder, Ownable {
 
     mapping(address => bool) private _canCall;

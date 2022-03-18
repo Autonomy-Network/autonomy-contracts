@@ -10,6 +10,7 @@ import "./abstract/Shared.sol";
 import "./AUTO.sol";
 
 
+/// @author @quantaf1re (James Key)
 contract Registry is IRegistry, Shared, ReentrancyGuard {
     
     // Constant public
