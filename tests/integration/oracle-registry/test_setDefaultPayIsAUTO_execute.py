@@ -8,8 +8,8 @@ def test_newReq_setDefaultPayIsAUTO_executeHashedReq(auto, mockTarget, evmMaths)
     ethForCall = E_18
     msgValue = ethForCall*2
     callData = mockTarget.setXPayFeeVerified.encode_input(3)
-    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, msgValue, ethForCall, False, True, False, False)
-    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, False, True, False, {'from': auto.BOB, 'value': msgValue})
+    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, msgValue, ethForCall, False, True, False, False, False, NULL_BYTES)
+    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, False, True, False, False, NULL_BYTES, {'from': auto.BOB, 'value': msgValue})
 
     assert tx.events["HashedReqAdded"][0].values() == [0, *req]
     assert auto.r.getHashedReq(0) == keccakReq(auto, req)
@@ -24,7 +24,7 @@ def test_newReq_setDefaultPayIsAUTO_executeHashedReq(auto, mockTarget, evmMaths)
     
     assert auto.o.defaultPayIsAUTO() == True
 
-    expectedGas = auto.r.executeHashedReq.call(0, req, MIN_GAS, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+    expectedGas = auto.r.executeHashedReq.call(0, req, MIN_GAS, NULL_BYTES, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
     tx = auto.r.executeHashedReq(0, req, expectedGas, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
     ethUsed = getEthForExec(evmMaths, tx, INIT_GAS_PRICE_FAST)

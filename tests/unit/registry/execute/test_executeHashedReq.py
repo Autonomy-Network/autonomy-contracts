@@ -12,18 +12,18 @@ from utils import *
 def test_executeHashedReq_rev_nonReentrant(auto, mockTarget, mockReentrancyAttack):
     # Create request to call in reentrance
     callData = mockTarget.setX.encode_input(5)
-    req1 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE, callData, 0, 0, False, False, True, False)
+    req1 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE, callData, 0, 0, False, False, True, False, False, NULL_BYTES)
 
-    auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, False, True, False, {'from': auto.BOB})
+    auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, False, True, False, False, NULL_BYTES, {'from': auto.BOB})
 
     # Create request to be executed directly
     callData = mockReentrancyAttack.callExecuteHashedReq.encode_input(0, req1, MIN_GAS)
-    req2 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE, callData, 0, 0, False, False, True, False)
+    req2 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE, callData, 0, 0, False, False, True, False, False, NULL_BYTES)
 
-    auto.r.newReqPaySpecific(mockReentrancyAttack, auto.DENICE, callData, 0, False, False, True, False, {'from': auto.BOB})
+    auto.r.newReqPaySpecific(mockReentrancyAttack, auto.DENICE, callData, 0, False, False, True, False, False, NULL_BYTES, {'from': auto.BOB})
 
     with reverts(REV_MSG_REENTRANCY):
-        auto.r.executeHashedReq(1, req2, MIN_GAS)
+        auto.r.executeHashedReq(1, req2, NULL_BYTES, MIN_GAS)
 
 
 # Check that the revert message from the target contract is passed on correctly
@@ -31,11 +31,11 @@ def test_executeHashedReq_returns_revert_message(auto, stakedMin, mockTarget):
     _, staker, __ = stakedMin
     
     callData = mockTarget.revertWithMessage.encode_input()
-    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, E_18, 0, False, False, False, False)
-    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, False, False, False, {'from': auto.BOB, 'value': E_18})
+    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, E_18, 0, False, False, False, False, False, NULL_BYTES)
+    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, False, False, False, False, NULL_BYTES, {'from': auto.BOB, 'value': E_18})
 
     with reverts(REV_MSG_GOOFED):
-        auto.r.executeHashedReq(0, req, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+        auto.r.executeHashedReq(0, req, NULL_BYTES, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 # Check that no revert message from the target contract is passed on correctly
@@ -43,11 +43,11 @@ def test_executeHashedReq_returns_no_revert_message(auto, stakedMin, mockTarget)
     _, staker, __ = stakedMin
     
     callData = mockTarget.revertWithoutMessage.encode_input()
-    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, E_18, 0, False, False, False, False)
-    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, False, False, False, {'from': auto.BOB, 'value': E_18})
+    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, E_18, 0, False, False, False, False, False, NULL_BYTES)
+    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, False, False, False, False, NULL_BYTES, {'from': auto.BOB, 'value': E_18})
 
     with reverts(''):
-        auto.r.executeHashedReq(0, req, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+        auto.r.executeHashedReq(0, req, NULL_BYTES, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 # Randomly generate addresses for the sender and calldata input independently
@@ -70,18 +70,18 @@ def test_executeHashedReq_validCalldata(auto, evmMaths, stakedMin, mockTarget, e
 
         id = 0
         callData = mockTarget.setAddrPayUserVerified.encode_input(userAddr)
-        req = (sender.address, mockTarget.address, auto.DENICE, callData, msgValue, ethForCall, True, False, payWithAUTO, False)
+        req = (sender.address, mockTarget.address, auto.DENICE, callData, msgValue, ethForCall, True, False, payWithAUTO, False, False, NULL_BYTES)
 
         auto.AUTO.transfer(sender, MAX_TEST_STAKE, auto.FR_DEPLOYER)
         senderAUTOStartBal = auto.AUTO.balanceOf(sender)
-        auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, ethForCall, True, False, payWithAUTO, False, {'from': sender, 'value': msgValue})
+        auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, ethForCall, True, False, payWithAUTO, False, False, NULL_BYTES, {'from': sender, 'value': msgValue})
 
         if userAddr != sender:
             with reverts(REV_MSG_CALLDATA_NOT_VER):
-                auto.r.executeHashedReq(id, req, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+                auto.r.executeHashedReq(id, req, NULL_BYTES, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
         else:
-            expectedGas = auto.r.executeHashedReq.call(id, req, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
-            tx = auto.r.executeHashedReq(id, req, expectedGas, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+            expectedGas = auto.r.executeHashedReq.call(id, req, NULL_BYTES, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+            tx = auto.r.executeHashedReq(id, req, NULL_BYTES, expectedGas, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
             assert mockTarget.balance() == ethForCall
             if payWithAUTO:
@@ -142,8 +142,8 @@ def test_executeHashedReq_no_ethForCall(auto, evmMaths, stakedMin, mockTarget, h
     assert auto.AUTO.balanceOf(auto.DENICE) == 0
     assert auto.AUTO.balanceOf(auto.r) == 0
 
-    expectedGas = auto.r.executeHashedReq.call(id, reqs[id], MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
-    tx = auto.r.executeHashedReq(id, reqs[id], expectedGas, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    expectedGas = auto.r.executeHashedReq.call(id, reqs[id], NULL_BYTES, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    tx = auto.r.executeHashedReq(id, reqs[id], NULL_BYTES, expectedGas, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
@@ -193,8 +193,8 @@ def test_executeHashedReq_with_ethForCall(auto, evmMaths, stakedMin, mockTarget,
     assert auto.AUTO.balanceOf(auto.DENICE) == 0
     assert auto.AUTO.balanceOf(auto.r) == 0
 
-    expectedGas = auto.r.executeHashedReq.call(id, reqs[id], MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
-    tx = auto.r.executeHashedReq(id, reqs[id], expectedGas, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    expectedGas = auto.r.executeHashedReq.call(id, reqs[id], NULL_BYTES, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    tx = auto.r.executeHashedReq(id, reqs[id], NULL_BYTES, expectedGas, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
@@ -248,8 +248,8 @@ def test_executeHashedReq_pay_AUTO(auto, evmMaths, stakedMin, mockTarget, hashed
     assert auto.AUTO.balanceOf(auto.DENICE) == 0
     assert auto.AUTO.balanceOf(auto.r) == 0
 
-    expectedGas = auto.r.executeHashedReq.call(id, reqs[id], MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
-    tx = auto.r.executeHashedReq(id, reqs[id], expectedGas, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    expectedGas = auto.r.executeHashedReq.call(id, reqs[id], NULL_BYTES, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    tx = auto.r.executeHashedReq(id, reqs[id], NULL_BYTES, expectedGas, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
@@ -299,8 +299,8 @@ def test_executeHashedReq_pay_AUTO_with_ethForCall(auto, evmMaths, stakedMin, mo
     assert auto.AUTO.balanceOf(auto.DENICE) == 0
     assert auto.AUTO.balanceOf(auto.r) == 0
 
-    expectedGas = auto.r.executeHashedReq.call(id, reqs[id], MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
-    tx = auto.r.executeHashedReq(id, reqs[id], expectedGas, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    expectedGas = auto.r.executeHashedReq.call(id, reqs[id], NULL_BYTES, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    tx = auto.r.executeHashedReq(id, reqs[id], NULL_BYTES, expectedGas, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
@@ -350,8 +350,8 @@ def test_executeHashedReq_pay_AUTO_with_ethForCall_and_verifySender(auto, evmMat
     assert auto.AUTO.balanceOf(auto.DENICE) == 0
     assert auto.AUTO.balanceOf(auto.r) == 0
 
-    expectedGas = auto.r.executeHashedReq.call(id, reqs[id], MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
-    tx = auto.r.executeHashedReq(id, reqs[id], expectedGas, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    expectedGas = auto.r.executeHashedReq.call(id, reqs[id], NULL_BYTES, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    tx = auto.r.executeHashedReq(id, reqs[id], NULL_BYTES, expectedGas, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
@@ -401,8 +401,8 @@ def test_executeHashedReq_pay_AUTO_with_ethForCall_and_verifyFee(auto, evmMaths,
     assert auto.AUTO.balanceOf(auto.DENICE) == 0
     assert auto.AUTO.balanceOf(auto.r) == 0
 
-    expectedGas = auto.r.executeHashedReq.call(id, reqs[id], MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
-    tx = auto.r.executeHashedReq(id, reqs[id], expectedGas, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    expectedGas = auto.r.executeHashedReq.call(id, reqs[id], NULL_BYTES, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    tx = auto.r.executeHashedReq(id, reqs[id], NULL_BYTES, expectedGas, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
@@ -458,8 +458,8 @@ def test_executeHashedReq_pay_AUTO_with_ethForCall_and_verifyFee(auto, evmMaths,
 
     assert mockTarget.balance() == target_init_bal
 
-    expectedGas = auto.r.executeHashedReq.call(id, reqs[id], MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
-    tx = auto.r.executeHashedReq(id, reqs[id], expectedGas, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    expectedGas = auto.r.executeHashedReq.call(id, reqs[id], NULL_BYTES, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    tx = auto.r.executeHashedReq(id, reqs[id], NULL_BYTES, expectedGas, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
@@ -509,8 +509,8 @@ def test_executeHashedReq_pay_AUTO_with_ethForCall_and_verifyFee(auto, evmMaths,
     assert auto.AUTO.balanceOf(auto.DENICE) == 0
     assert auto.AUTO.balanceOf(auto.r) == 0
 
-    expectedGas = auto.r.executeHashedReq.call(id, reqs[id], MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
-    tx = auto.r.executeHashedReq(id, reqs[id], expectedGas, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    expectedGas = auto.r.executeHashedReq.call(id, reqs[id], NULL_BYTES, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    tx = auto.r.executeHashedReq(id, reqs[id], NULL_BYTES, expectedGas, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
@@ -560,8 +560,8 @@ def test_executeHashedReq_pay_AUTO_isAlive(auto, evmMaths, stakedMin, mockTarget
     assert auto.AUTO.balanceOf(auto.DENICE) == 0
     assert auto.AUTO.balanceOf(auto.r) == 0
 
-    expectedGas = auto.r.executeHashedReq.call(id, reqs[id], MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
-    tx = auto.r.executeHashedReq(id, reqs[id], expectedGas, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    expectedGas = auto.r.executeHashedReq.call(id, reqs[id], NULL_BYTES, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    tx = auto.r.executeHashedReq(id, reqs[id], NULL_BYTES, expectedGas, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
     # Eth bals
@@ -599,7 +599,7 @@ def test_executeHashedReq_pay_AUTO_isAlive(auto, evmMaths, stakedMin, mockTarget
 def test_executeHashedReq_rev_not_executor(auto, stakedMin, hashedReqs):
     reqs, reqHashes, msgValue, ethForCall = hashedReqs
     with reverts(REV_MSG_NOT_EXEC):
-        auto.r.executeHashedReq(0, reqs[0], MIN_GAS, {'from': auto.DENICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+        auto.r.executeHashedReq(0, reqs[0], NULL_BYTES, MIN_GAS, {'from': auto.DENICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReq_rev_req_not_the_same(auto, stakedMin, hashedReqs):
@@ -608,17 +608,17 @@ def test_executeHashedReq_rev_req_not_the_same(auto, stakedMin, hashedReqs):
     invalidReq = list(reqs[0])
     invalidReq[4] = 1
     with reverts(REV_MSG_NOT_SAME):
-        auto.r.executeHashedReq(0, invalidReq, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+        auto.r.executeHashedReq(0, invalidReq, NULL_BYTES, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReq_rev_already_executeHashedReqd(auto, stakedMin, hashedReqs):
     _, staker, __ = stakedMin
     reqs, reqHashes, msgValue, ethForCall = hashedReqs
 
-    auto.r.executeHashedReq(0, reqs[0], MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    auto.r.executeHashedReq(0, reqs[0], NULL_BYTES, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
     with reverts(REV_MSG_NOT_SAME):
-        auto.r.executeHashedReq(0, reqs[0], MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+        auto.r.executeHashedReq(0, reqs[0], NULL_BYTES, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReq_rev_hacked_pay_eth(auto, vulnerableRegistry, vulnerableHashedReqs, stakedMin):
@@ -627,7 +627,7 @@ def test_executeHashedReq_rev_hacked_pay_eth(auto, vulnerableRegistry, vulnerabl
     id = 0
 
     with reverts(REV_MSG_OVERFLOW):
-        vulnerableRegistry.executeHashedReq(id, reqs[id], MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+        vulnerableRegistry.executeHashedReq(id, reqs[id], NULL_BYTES, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReq_rev_hacked_payWithAUTO(auto, vulnerableRegistry, vulnerableHashedReqs, stakedMin):
@@ -636,7 +636,7 @@ def test_executeHashedReq_rev_hacked_payWithAUTO(auto, vulnerableRegistry, vulne
     id = 1
 
     with reverts(REV_MSG_OVERFLOW):
-        vulnerableRegistry.executeHashedReq(id, reqs[id], MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+        vulnerableRegistry.executeHashedReq(id, reqs[id], NULL_BYTES, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 def test_executeHashedReq_rev_userVeri_called_to_feeVeri(auto, mockTarget, stakedMin, hashedReqs):
@@ -645,11 +645,11 @@ def test_executeHashedReq_rev_userVeri_called_to_feeVeri(auto, mockTarget, stake
     # Set a var that is what the gas the execution charges for, pay with AUTO after execution
     callData = mockTarget.setAddrPayFeeVerified.encode_input(auto.BOB)
     # Mark it as verifying the user addr
-    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, True, False, True, False)
-    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, True, False, True, False, {'from': auto.BOB, 'value': 0})
+    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, True, False, True, False, False, NULL_BYTES)
+    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, True, False, True, False, False, NULL_BYTES, {'from': auto.BOB, 'value': 0})
 
     with reverts(REV_MSG_FEE_FORW):
-        auto.r.executeHashedReq(9, req, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+        auto.r.executeHashedReq(9, req, NULL_BYTES, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
 
@@ -659,8 +659,8 @@ def test_executeHashedReq_rev_userFeeVeri_set_to_feeVeri(auto, mockTarget, stake
     # Set a var that is what the gas the execution charges for and user address, pay with AUTO after execution
     callData = mockTarget.setXAddrUserFeeVeri.encode_input(auto.BOB, 5)
     # Mark it as only verifying the fee so that it changes the 1st input (user address) to an int
-    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, True, True, False)
-    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, True, True, False, {'from': auto.BOB, 'value': 0})
+    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, True, True, False, False, NULL_BYTES)
+    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, True, True, False, False, NULL_BYTES, {'from': auto.BOB, 'value': 0})
 
     with reverts(REV_MSG_USER_FEE_FORW):
-        auto.r.executeHashedReq(9, req, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+        auto.r.executeHashedReq(9, req, NULL_BYTES, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})

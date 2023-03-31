@@ -12,18 +12,18 @@ from utils import *
 def test_cancelHashedReq_rev_nonReentrant(auto, mockTarget, mockReentrancyAttack):
     # Create request to call in reentrance
     callData = mockTarget.setX.encode_input(5)
-    req1 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE, callData, False, False, True, False, 0, 0)
+    req1 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE, callData, 0, 0, False, False, True, False, False, NULL_BYTES)
 
-    auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, False, True, False, {'from': auto.BOB})
+    auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, False, True, False, False, NULL_BYTES, {'from': auto.BOB})
 
     # Create request to be executed directly
     callData = mockReentrancyAttack.callCancelHashedReq.encode_input(0, req1)
-    req2 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE, callData, 0, 0, False, False, True, False)
+    req2 = (auto.BOB.address, mockReentrancyAttack.address, auto.DENICE, callData, 0, 0, False, False, True, False, False, NULL_BYTES)
 
-    auto.r.newReqPaySpecific(mockReentrancyAttack, auto.DENICE, callData, 0, False, False, True, False, {'from': auto.BOB})
+    auto.r.newReqPaySpecific(mockReentrancyAttack, auto.DENICE, callData, 0, False, False, True, False, False, NULL_BYTES, {'from': auto.BOB})
 
     with reverts(REV_MSG_REENTRANCY):
-        auto.r.executeHashedReq(1, req2, MIN_GAS)
+        auto.r.executeHashedReq(1, req2, NULL_BYTES, MIN_GAS)
 
 
 def test_cancelHashedReq_no_ethForCall(auto, stakedMin, mockTarget, hashedReqs):
@@ -238,7 +238,7 @@ def test_cancelHashedReq_rev_already_executed(auto, stakedMin, mockTarget, hashe
     reqs, reqHashes, msgValue, ethForCall = hashedReqs
     id = 1
     # expectedGas = auto.r.executeHashedReq.call(id, reqs[id], 0, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
-    auto.r.executeHashedReq(id, reqs[id], 0, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    auto.r.executeHashedReq(id, reqs[id], NULL_BYTES, 0, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
     with reverts(REV_MSG_NOT_SAME):
         auto.r.cancelHashedReq(id, reqs[id], auto.FR_BOB)

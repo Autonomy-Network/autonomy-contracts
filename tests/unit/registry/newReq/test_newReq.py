@@ -39,20 +39,20 @@ def test_newReq(auto, mockTarget, user, target, referer, callData, msgValue, eth
             msgValue = ethForCall
             callData = auto.o.setDefaultPayIsAUTO.encode_input(payWithAUTO)
             delay = 2*DAY
-            args = (auto.o, 0, "", callData, chain.time() + delay + 60)
+            args = (auto.o, 0, NULL_BYTES, callData, chain.time() + delay + 60)
             auto.tl.queueTransaction(*args)
             chain.sleep(delay + 120)
             auto.tl.executeTransaction(*args, auto.FR_DEPLOYER)
         else:
             msgValue = ethForCall if msgValue < ethForCall else msgValue
         
-        req = (user, target, referer, callData, msgValue, ethForCall, verifyUser, insertFeeAmount, payWithAUTO, isAlive)
+        req = (user, target, referer, callData, msgValue, ethForCall, verifyUser, insertFeeAmount, payWithAUTO, isAlive, False, NULL_BYTES)
 
         if isAlive and ((ethForCall > 0) or (msgValue > 0)):
             with reverts(REV_MSG_NO_ETH_ALIVE):
-                auto.r.newReq(target, referer, callData, ethForCall, verifyUser, insertFeeAmount, isAlive, {'from': user, 'value': msgValue})
+                auto.r.newReq(target, referer, callData, ethForCall, verifyUser, insertFeeAmount, isAlive, False, NULL_BYTES, {'from': user, 'value': msgValue})
         else:
-            tx = auto.r.newReq(target, referer, callData, ethForCall, verifyUser, insertFeeAmount, isAlive, {'from': user, 'value': msgValue})
+            tx = auto.r.newReq(target, referer, callData, ethForCall, verifyUser, insertFeeAmount, isAlive, False, NULL_BYTES, {'from': user, 'value': msgValue})
 
             assert tx.return_value == 0
             assert tx.events["HashedReqAdded"][0].values() == [0, *req]
@@ -84,54 +84,54 @@ def test_newReq(auto, mockTarget, user, target, referer, callData, msgValue, eth
 def test_newReq_rev_target_is_registry(auto, mockTarget):
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_TARGET):
-        tx = auto.r.newReq(auto.r, auto.DENICE, callData, 0, False, False, False, auto.FR_BOB)
+        tx = auto.r.newReq(auto.r, auto.DENICE, callData, 0, False, False, False, False, NULL_BYTES, auto.FR_BOB)
 
 
 def test_newReq_rev_target_is_uf(auto, mockTarget):
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_TARGET):
-        tx = auto.r.newReq(auto.uf, auto.DENICE, callData, 0, False, False, False, auto.FR_BOB)
+        tx = auto.r.newReq(auto.uf, auto.DENICE, callData, 0, False, False, False, False, NULL_BYTES, auto.FR_BOB)
 
 
 def test_newReq_rev_target_is_ff(auto, mockTarget):
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_TARGET):
-        tx = auto.r.newReq(auto.ff, auto.DENICE, callData, 0, False, False, False, auto.FR_BOB)
+        tx = auto.r.newReq(auto.ff, auto.DENICE, callData, 0, False, False, False, False, NULL_BYTES, auto.FR_BOB)
 
 
 def test_newReq_rev_target_is_uff(auto, mockTarget):
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_TARGET):
-        tx = auto.r.newReq(auto.uff, auto.DENICE, callData, 0, False, False, False, auto.FR_BOB)
+        tx = auto.r.newReq(auto.uff, auto.DENICE, callData, 0, False, False, False, False, NULL_BYTES, auto.FR_BOB)
 
 
 def test_newReq_rev_target_is_AUTO(auto, mockTarget):
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_TARGET):
-        tx = auto.r.newReq(auto.AUTO, auto.DENICE, callData, 0, False, False, False, auto.FR_BOB)
+        tx = auto.r.newReq(auto.AUTO, auto.DENICE, callData, 0, False, False, False, False, NULL_BYTES, auto.FR_BOB)
 
 
 def test_newReq_rev_target_is_1820_registry(auto, mockTarget):
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_TARGET):
-        tx = auto.r.newReq(ERC1820_REGISTRY_ADDR, auto.DENICE, callData, 0, False, False, False, auto.FR_BOB)
+        tx = auto.r.newReq(ERC1820_REGISTRY_ADDR, auto.DENICE, callData, 0, False, False, False, False, NULL_BYTES, auto.FR_BOB)
 
 
 def test_newReq_rev_target_is_sm(auto, mockTarget):
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_TARGET):
-        tx = auto.r.newReq(auto.sm, auto.DENICE, callData, 0, False, False, False, auto.FR_BOB)
+        tx = auto.r.newReq(auto.sm, auto.DENICE, callData, 0, False, False, False, False, NULL_BYTES, auto.FR_BOB)
 
 
 def test_newReq_rev_target_is_zero_addr(auto, mockTarget):
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_TARGET):
-        tx = auto.r.newReq(ADDR_0, auto.DENICE, callData, 0, False, False, False, auto.FR_BOB)
+        tx = auto.r.newReq(ADDR_0, auto.DENICE, callData, 0, False, False, False, False, NULL_BYTES, auto.FR_BOB)
 
 def test_newReq_rev_isAlive_with_eth(auto, mockTarget):
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_NO_ETH_ALIVE):
-        tx = auto.r.newReq(auto.DENICE, auto.DENICE, callData, 0, False, False, True, {'value': E_18, 'from': auto.BOB})
+        tx = auto.r.newReq(auto.DENICE, auto.DENICE, callData, 0, False, False, True, False, NULL_BYTES, {'value': E_18, 'from': auto.BOB})
 
 
 @given(
@@ -141,14 +141,14 @@ def test_newReq_rev_isAlive_with_eth(auto, mockTarget):
 def test_newReq_rev_validEth_payWithAUTO(auto, mockTarget, msgValue, ethForCall):
     callData = auto.o.setDefaultPayIsAUTO.encode_input(True)
     delay = 2*DAY
-    args = (auto.o, 0, "", callData, chain.time() + delay + 60)
+    args = (auto.o, 0, NULL_BYTES, callData, chain.time() + delay + 60)
     auto.tl.queueTransaction(*args)
     chain.sleep(delay + 120)
     auto.tl.executeTransaction(*args, auto.FR_DEPLOYER)
     if msgValue != ethForCall:
         callData = mockTarget.setX.encode_input(5)
         with reverts(REV_MSG_ETHFORCALL_NOT_MSGVALUE):
-            tx = auto.r.newReq(mockTarget, auto.DENICE, "", ethForCall, False, False, False, {'from': auto.BOB, 'value': msgValue})
+            tx = auto.r.newReq(mockTarget, auto.DENICE, NULL_BYTES, ethForCall, False, False, False, False, NULL_BYTES, {'from': auto.BOB, 'value': msgValue})
 
 
 @given(
@@ -159,4 +159,4 @@ def test_newReq_rev_validEth_not_payWithAUTO(auto, mockTarget, msgValue, ethForC
     ethForCall = msgValue + 1 if ethForCall <= msgValue else ethForCall
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_ETHFORCALL_HIGH):
-        tx = auto.r.newReq(mockTarget, auto.DENICE, "", ethForCall, False, False, False, {'from': auto.BOB, 'value': msgValue})
+        tx = auto.r.newReq(mockTarget, auto.DENICE, NULL_BYTES, ethForCall, False, False, False, False, NULL_BYTES, {'from': auto.BOB, 'value': msgValue})

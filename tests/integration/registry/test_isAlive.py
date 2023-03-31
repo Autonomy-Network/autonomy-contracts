@@ -6,8 +6,8 @@ from utils import *
 
 def test_recurring_payment_pay_ETH(auto, mockTarget, evmMaths):
     callData = mockTarget.useGasWithArray.encode_input(2)
-    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, False, True, True)
-    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, False, True, True, {'from': auto.BOB, 'value': 0})
+    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, False, True, True, False, NULL_BYTES)
+    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, False, True, True, False, NULL_BYTES, {'from': auto.BOB, 'value': 0})
 
     id = 0
     assert tx.return_value == id
@@ -21,7 +21,7 @@ def test_recurring_payment_pay_ETH(auto, mockTarget, evmMaths):
     cumulFee = 0
 
     for i in range(1, 6):
-        expectedGas = auto.r.executeHashedReq.call(id, req, MIN_GAS, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+        expectedGas = auto.r.executeHashedReq.call(id, req, NULL_BYTES, MIN_GAS, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
         tx = auto.r.executeHashedReq(id, req, expectedGas, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
 
         assert mockTarget.getGasWaster() == [0, 1]*i

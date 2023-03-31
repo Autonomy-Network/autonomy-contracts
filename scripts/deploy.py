@@ -1,14 +1,22 @@
 from brownie import accounts, AUTO, PriceOracle, Oracle, StakeManager, Registry, Forwarder, Miner, Timelock
+from brownie.network import priority_fee
 import sys
 import os
 sys.path.append(os.path.abspath('tests'))
 from consts import *
+sys.path.append(os.path.abspath('scripts'))
+from addresses import *
 sys.path.pop()
 
 
-deployer = accounts.add(os.environ['DEPLOYER_PRIV'])
 
-PUBLISH_SOURCE = True
+if network.show_active() == 'development':
+    PUBLISH_SOURCE = False
+else:
+    priority_fee("1 gwei")
+    PUBLISH_SOURCE = True
+
+deployer = accounts.add(os.environ['DEPLOYER_PRIV'])
 
 def main():
     class Context:
@@ -20,7 +28,7 @@ def main():
     auto.FR_DEPLOYER = {"from": auto.DEPLOYER}
     print(auto.DEPLOYER)
 
-    auto.po = auto.DEPLOYER.deploy(PriceOracle, INIT_AUTO_PER_ETH_WEI, , publish_source=PUBLISH_SOURCE)
+    auto.po = auto.DEPLOYER.deploy(PriceOracle, INIT_AUTO_PER_ETH_WEI, 200*10**9, publish_source=PUBLISH_SOURCE)
     auto.o = auto.DEPLOYER.deploy(Oracle, auto.po, False, publish_source=PUBLISH_SOURCE)
     auto.sm = auto.DEPLOYER.deploy(StakeManager, auto.o, publish_source=PUBLISH_SOURCE)
     auto.uf = auto.DEPLOYER.deploy(Forwarder, publish_source=PUBLISH_SOURCE)

@@ -35,6 +35,17 @@ interface IRegistry {
         bool insertFeeAmount;
         bool payWithAUTO;
         bool isAlive;
+        bool useCurReq;
+        string injectedDataSource;
+    }
+
+    struct CurReq {
+        // user and feeAmount fit into 1 storage slot like this
+        address payable user;
+        uint96 feeAmount;
+        uint64 id;
+        bool payWithAUTO;
+        bytes injectedData;
     }
 
 
@@ -80,8 +91,10 @@ interface IRegistry {
         uint112 ethForCall,
         bool verifyUser,
         bool insertFeeAmount,
-        bool isAlive
-    ) external payable returns (uint id);
+        bool isAlive,
+        bool useCurReq,
+        string calldata injectedDataSource
+    ) external payable returns (uint64 id);
 
     /**
      * @notice  Creates a new request, logs the request info in an event, then saves
@@ -121,8 +134,10 @@ interface IRegistry {
         bool verifyUser,
         bool insertFeeAmount,
         bool payWithAUTO,
-        bool isAlive
-    ) external payable returns (uint id);
+        bool isAlive,
+        bool useCurReq,
+        string calldata injectedDataSource
+    ) external payable returns (uint64 id);
 
     /**
      * @notice  Gets all keccak256 hashes of encoded requests. Completed requests will be 0x00
@@ -139,7 +154,7 @@ interface IRegistry {
      * @param endIdx    [uint] The ending index from which to start getting the slice (exclusive)
      * @return  [bytes32[]] An array of all hashes
      */
-    function getHashedReqsSlice(uint startIdx, uint endIdx) external view returns (bytes32[] memory);
+    function getHashedReqsSlice(uint64 startIdx, uint64 endIdx) external view returns (bytes32[] memory);
 
     /**
      * @notice  Gets the total number of requests that have been made, hashed, and stored
@@ -152,7 +167,7 @@ interface IRegistry {
      * @param id    [uint] The id of the request, which is its index in the array
      * @return      [bytes32] The sha3 hash of the request
      */
-    function getHashedReq(uint id) external view returns (bytes32);
+    function getHashedReq(uint64 id) external view returns (bytes32);
 
 
     //////////////////////////////////////////////////////////////
@@ -168,7 +183,7 @@ interface IRegistry {
      */
     function getReqBytes(Request memory r) external pure returns (bytes memory);
 
-    function insertToCallData(bytes calldata callData, uint expectedGas, uint startIdx) external pure returns (bytes memory);
+    function insertToCallData(bytes calldata callData, uint expectedGas, uint64 startIdx) external pure returns (bytes memory);
 
 
     //////////////////////////////////////////////////////////////
@@ -192,8 +207,9 @@ interface IRegistry {
      * @return gasUsed      [uint] The gas that was used as part of the execution. Used to know `expectedGas`
      */
     function executeHashedReq(
-        uint id,
+        uint64 id,
         Request calldata r,
+        bytes calldata injectedData,
         uint expectedGas
     ) external returns (uint gasUsed);
 
@@ -212,7 +228,7 @@ interface IRegistry {
      *              Typically known by seeing the `HashedReqAdded` event emitted with `newReq`
      */
     function cancelHashedReq(
-        uint id,
+        uint64 id,
         Request memory r
     ) external;
     
@@ -240,4 +256,6 @@ interface IRegistry {
     function getExecCountOf(address addr) external view returns (uint);
     
     function getReferalCountOf(address addr) external view returns (uint);
+
+    function getCurReq() external view returns (CurReq memory);
 }

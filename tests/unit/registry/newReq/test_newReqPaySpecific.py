@@ -3,7 +3,6 @@ from utils import *
 from brownie import chain, reverts, web3, convert
 from brownie.test import given, strategy
 from hashlib import sha256
-import ipfshttpclient
 import base58 as b58
 
 
@@ -43,13 +42,13 @@ def test_newReqPaySpecific(auto, mockTarget, user, target, referer, callData, ms
         else:
             msgValue = ethForCall if msgValue < ethForCall else msgValue
 
-        req = (user, target, referer, callData, msgValue, ethForCall, verifyUser, insertFeeAmount, payWithAUTO, isAlive)
+        req = (user, target, referer, callData, msgValue, ethForCall, verifyUser, insertFeeAmount, payWithAUTO, isAlive, False, NULL_BYTES)
 
         if isAlive and ((ethForCall > 0) or (msgValue > 0)):
             with reverts(REV_MSG_NO_ETH_ALIVE):
-                auto.r.newReqPaySpecific(target, referer, callData, ethForCall, verifyUser, insertFeeAmount, payWithAUTO, isAlive, {'from': user, 'value': msgValue})
+                auto.r.newReqPaySpecific(target, referer, callData, ethForCall, verifyUser, insertFeeAmount, payWithAUTO, isAlive, False, NULL_BYTES, {'from': user, 'value': msgValue})
         else:
-            tx = auto.r.newReqPaySpecific(target, referer, callData, ethForCall, verifyUser, insertFeeAmount, payWithAUTO, isAlive, {'from': user, 'value': msgValue})
+            tx = auto.r.newReqPaySpecific(target, referer, callData, ethForCall, verifyUser, insertFeeAmount, payWithAUTO, isAlive, False, NULL_BYTES, {'from': user, 'value': msgValue})
 
             assert tx.return_value == 0
             assert tx.events["HashedReqAdded"][0].values() == [0, *req]
@@ -81,55 +80,55 @@ def test_newReqPaySpecific(auto, mockTarget, user, target, referer, callData, ms
 def test_newReqPaySpecific_rev_target_is_registry(auto, mockTarget):
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_TARGET):
-        tx = auto.r.newReqPaySpecific(auto.r, auto.DENICE, callData, 0, False, False, True, False, auto.FR_BOB)
+        tx = auto.r.newReqPaySpecific(auto.r, auto.DENICE, callData, 0, False, False, True, False, False, NULL_BYTES, auto.FR_BOB)
 
 
 def test_newReqPaySpecific_rev_target_is_uf(auto, mockTarget):
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_TARGET):
-        tx = auto.r.newReqPaySpecific(auto.uf, auto.DENICE, callData, 0, False, False, True, False, auto.FR_BOB)
+        tx = auto.r.newReqPaySpecific(auto.uf, auto.DENICE, callData, 0, False, False, True, False, False, NULL_BYTES, auto.FR_BOB)
 
 
 def test_newReqPaySpecific_rev_target_is_ff(auto, mockTarget):
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_TARGET):
-        tx = auto.r.newReqPaySpecific(auto.ff, auto.DENICE, callData, 0, False, False, True, False, auto.FR_BOB)
+        tx = auto.r.newReqPaySpecific(auto.ff, auto.DENICE, callData, 0, False, False, True, False, False, NULL_BYTES, auto.FR_BOB)
 
 
 def test_newReqPaySpecific_rev_target_is_uff(auto, mockTarget):
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_TARGET):
-        tx = auto.r.newReqPaySpecific(auto.uff, auto.DENICE, callData, 0, False, False, True, False, auto.FR_BOB)
+        tx = auto.r.newReqPaySpecific(auto.uff, auto.DENICE, callData, 0, False, False, True, False, False, NULL_BYTES, auto.FR_BOB)
 
 
 def test_newReqPaySpecific_rev_target_is_AUTO(auto, mockTarget):
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_TARGET):
-        tx = auto.r.newReqPaySpecific(auto.AUTO, auto.DENICE, callData, 0, False, False, True, False, auto.FR_BOB)
+        tx = auto.r.newReqPaySpecific(auto.AUTO, auto.DENICE, callData, 0, False, False, True, False, False, NULL_BYTES, auto.FR_BOB)
 
 
 def test_newReqPaySpecific_rev_target_is_1820_registry(auto, mockTarget):
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_TARGET):
-        tx = auto.r.newReqPaySpecific(ERC1820_REGISTRY_ADDR, auto.DENICE, callData, 0, False, False, True, False, auto.FR_BOB)
+        tx = auto.r.newReqPaySpecific(ERC1820_REGISTRY_ADDR, auto.DENICE, callData, 0, False, False, True, False, False, NULL_BYTES, auto.FR_BOB)
 
 
 def test_newReqPaySpecific_rev_target_is_sm(auto, mockTarget):
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_TARGET):
-        tx = auto.r.newReqPaySpecific(auto.sm, auto.DENICE, callData, 0, False, False, True, False, auto.FR_BOB)
+        tx = auto.r.newReqPaySpecific(auto.sm, auto.DENICE, callData, 0, False, False, True, False, False, NULL_BYTES, auto.FR_BOB)
 
 
 def test_newReqPaySpecific_rev_target_is_zero_addr(auto, mockTarget):
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_TARGET):
-        tx = auto.r.newReqPaySpecific(ADDR_0, auto.DENICE, callData, 0, False, False, True, False, auto.FR_BOB)
+        tx = auto.r.newReqPaySpecific(ADDR_0, auto.DENICE, callData, 0, False, False, True, False, False, NULL_BYTES, auto.FR_BOB)
 
 
 def test_newReqPaySpecific_rev_isAlive_with_eth(auto, mockTarget):
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_NO_ETH_ALIVE):
-        tx = auto.r.newReqPaySpecific(auto.DENICE, auto.DENICE, callData, 0, False, False, False, True, {'value': E_18, 'from': auto.BOB})
+        tx = auto.r.newReqPaySpecific(auto.DENICE, auto.DENICE, callData, 0, False, False, False, True, False, NULL_BYTES, {'value': E_18, 'from': auto.BOB})
 
 
 @given(
@@ -140,7 +139,7 @@ def test_newReqPaySpecific_rev_validEth_payWithAUTO(auto, mockTarget, msgValue, 
     if msgValue != ethForCall:
         callData = mockTarget.setX.encode_input(5)
         with reverts(REV_MSG_ETHFORCALL_NOT_MSGVALUE):
-            tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, "", ethForCall, False, False, True, False, {'from': auto.BOB, 'value': msgValue})
+            tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, NULL_BYTES, ethForCall, False, False, True, False, False, NULL_BYTES, {'from': auto.BOB, 'value': msgValue})
 
 
 @given(
@@ -151,4 +150,4 @@ def test_newReqPaySpecific_rev_validEth_not_payWithAUTO(auto, mockTarget, msgVal
     ethForCall = msgValue + 1 if ethForCall <= msgValue else ethForCall
     callData = mockTarget.setX.encode_input(5)
     with reverts(REV_MSG_ETHFORCALL_HIGH):
-        tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, "", ethForCall, False, False, False, False, {'from': auto.BOB, 'value': msgValue})
+        tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, NULL_BYTES, ethForCall, False, False, False, False, False, NULL_BYTES, {'from': auto.BOB, 'value': msgValue})

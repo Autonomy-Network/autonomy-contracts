@@ -29,6 +29,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     IForwarder private immutable _userForwarder;
     IForwarder private immutable _gasForwarder;
     IForwarder private immutable _userGasForwarder;
+    CurReq private curReq;
 
     // Used to make sure that `target` can't be something that affects
     // the Autonomy system itself
@@ -62,7 +63,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
 
     // Easier to parse when using native types rather than structs
     event HashedReqAdded(
-        uint indexed id,
+        uint64 indexed id,
         address indexed user,
         address target,
         address payable referer,
@@ -72,10 +73,12 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         bool verifyUser,
         bool insertFeeAmount,
         bool payWithAUTO,
-        bool isAlive
+        bool isAlive,
+        bool useCurReq,
+        string injectedDataSource
     );
-    event HashedReqExecuted(uint indexed id, bool wasRemoved);
-    event HashedReqCancelled(uint indexed id);
+    event HashedReqExecuted(uint64 indexed id, bool wasRemoved);
+    event HashedReqCancelled(uint64 indexed id);
 
 
     constructor(
@@ -124,8 +127,10 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         uint112 ethForCall,
         bool verifyUser,
         bool insertFeeAmount,
-        bool isAlive
-    ) external payable override targetNotThis(target) returns (uint id) {
+        bool isAlive,
+        bool useCurReq,
+        string calldata injectedDataSource
+    ) external payable override targetNotThis(target) returns (uint64 id) {
         return _newReq(
             target,
             referer,
@@ -134,7 +139,9 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
             verifyUser,
             insertFeeAmount,
             _oracle.defaultPayIsAUTO(),
-            isAlive
+            isAlive,
+            useCurReq,
+            injectedDataSource
         );
     }
 
@@ -146,8 +153,10 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         bool verifyUser,
         bool insertFeeAmount,
         bool payWithAUTO,
-        bool isAlive
-    ) external payable override targetNotThis(target) returns (uint id) {
+        bool isAlive,
+        bool useCurReq,
+        string calldata injectedDataSource
+    ) external payable override targetNotThis(target) returns (uint64 id) {
         return _newReq(
             target,
             referer,
@@ -156,7 +165,9 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
             verifyUser,
             insertFeeAmount,
             payWithAUTO,
-            isAlive
+            isAlive,
+            useCurReq,
+            injectedDataSource
         );
     }
 
@@ -168,11 +179,12 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         bool verifyUser,
         bool insertFeeAmount,
         bool payWithAUTO,
-        bool isAlive
+        bool isAlive,
+        bool useCurReq,
+        string calldata injectedDataSource
     )
         private
-        validEth(payWithAUTO, ethForCall)
-        returns (uint id)
+        returns (uint64 id)
     {
         if (isAlive) {
             require(msg.value == 0, "Reg: no ETH while alive");
@@ -188,11 +200,23 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
             verifyUser,
             insertFeeAmount,
             payWithAUTO,
-            isAlive
+            isAlive,
+            useCurReq,
+            injectedDataSource
         );
-        bytes32 hashedIpfsReq = keccak256(getReqBytes(r));
+        bytes32 hashedReq = keccak256(getReqBytes(r));
 
-        id = _hashedReqs.length;
+        if (payWithAUTO) {
+            // When paying with AUTO, there's no reason to send more ETH than will
+            // be used in the future call
+            require(ethForCall == msg.value, "Reg: ethForCall not msg.value");
+        } else {
+            // When paying with ETH, ethForCall needs to be lower than msg.value
+            // since some ETH is needed to be left over for paying the fee + bounty
+            require(ethForCall <= msg.value, "Reg: ethForCall too high");
+        }
+
+        id = uint64(_hashedReqs.length);
         emit HashedReqAdded(
             id,
             r.user,
@@ -204,16 +228,18 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
             r.verifyUser,
             r.insertFeeAmount,
             r.payWithAUTO,
-            r.isAlive
+            r.isAlive,
+            r.useCurReq,
+            r.injectedDataSource
         );
-        _hashedReqs.push(hashedIpfsReq);
+        _hashedReqs.push(hashedReq);
     }
 
     function getHashedReqs() external view override returns (bytes32[] memory) {
         return _hashedReqs;
     }
 
-    function getHashedReqsSlice(uint startIdx, uint endIdx) external override view returns (bytes32[] memory) {
+    function getHashedReqsSlice(uint64 startIdx, uint64 endIdx) external override view returns (bytes32[] memory) {
         bytes32[] memory slice = new bytes32[](endIdx - startIdx);
         uint sliceIdx = 0;
         for (uint arrIdx = startIdx; arrIdx < endIdx; arrIdx++) {
@@ -228,7 +254,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         return _hashedReqs.length;
     }
     
-    function getHashedReq(uint id) external view override returns (bytes32) {
+    function getHashedReq(uint64 id) external view override returns (bytes32) {
         return _hashedReqs[id];
     }
 
@@ -243,7 +269,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         return abi.encode(r);
     }
 
-    function insertToCallData(bytes calldata callData, uint expectedGas, uint startIdx) public pure override returns (bytes memory) {
+    function insertToCallData(bytes calldata callData, uint expectedGas, uint64 startIdx) public pure override returns (bytes memory) {
         bytes memory cd = callData;
         bytes memory expectedGasBytes = abi.encode(expectedGas);
         for (uint i = 0; i < 32; i++) {
@@ -269,8 +295,9 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
      *      'InternalCompilerError' when using it with newReq
      */
     function executeHashedReq(
-        uint id,
+        uint64 id,
         Request calldata r,
+        bytes calldata injectedData,
         uint expectedGas
     )
         external
@@ -283,6 +310,10 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     {
         uint startGas = gasleft();
 
+        if (bytes(r.injectedDataSource).length == 0) {
+            require(injectedData.length == 0);
+        }
+        
         // We are the gods now
         if (r.isAlive) {
             emit HashedReqExecuted(id, false);
@@ -290,14 +321,14 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
             emit HashedReqExecuted(id, true);
             delete _hashedReqs[id];
         }
-        _execute(r, expectedGas);
+        _execute(uint64(id), r, injectedData, expectedGas);
 
         gasUsed = startGas - gasleft() + (r.payWithAUTO == true ? GAS_OVERHEAD_AUTO : GAS_OVERHEAD_ETH);
         // Make sure that the expected gas used is within 10% of the actual gas used
         require(expectedGas * 10 <= gasUsed * 11, "Reg: expectedGas too high");
     }
 
-    function _execute(Request calldata r, uint expectedGas) private {
+    function _execute(uint64 id, Request calldata r, bytes calldata injectedData, uint expectedGas) private {
         IOracle orac = _oracle;
         uint ethStartBal = address(this).balance;
         uint feeTotal;
@@ -305,6 +336,10 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
             feeTotal = expectedGas * orac.getGasPriceFast() * orac.getAUTOPerETH() * PAY_AUTO_BPS / (BASE_BPS * _E_18);
         } else {
             feeTotal = expectedGas * orac.getGasPriceFast() * PAY_ETH_BPS / BASE_BPS;
+        }
+
+        if (r.useCurReq) {
+            curReq = CurReq(r.user, uint96(feeTotal), id, r.payWithAUTO, injectedData);
         }
 
         // Make the call that the user requested
@@ -386,7 +421,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     //////////////////////////////////////////////////////////////    
     
     function cancelHashedReq(
-        uint id,
+        uint64 id,
         Request memory r
     )
         external
@@ -449,6 +484,10 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         return _referalCounts[addr];
     }
 
+    function getCurReq() external view override returns (CurReq memory) {
+        return curReq;
+    }
+
 
     //////////////////////////////////////////////////////////////
     //                                                          //
@@ -458,19 +497,6 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
 
     modifier targetNotThis(address target) {
         require(!_invalidTargets[target], "Reg: nice try ;)");
-        _;
-    }
-
-    modifier validEth(bool payWithAUTO, uint ethForCall) {
-        if (payWithAUTO) {
-            // When paying with AUTO, there's no reason to send more ETH than will
-            // be used in the future call
-            require(ethForCall == msg.value, "Reg: ethForCall not msg.value");
-        } else {
-            // When paying with ETH, ethForCall needs to be lower than msg.value
-            // since some ETH is needed to be left over for paying the fee + bounty
-            require(ethForCall <= msg.value, "Reg: ethForCall too high");
-        }
         _;
     }
 
@@ -490,7 +516,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     // implicitly checks that the request hasn't been deleted as the hash of the
     // request isn't going to be address(0)
     modifier verReq(
-        uint id,
+        uint64 id,
         Request memory r
     ) {
         require(
@@ -501,4 +527,11 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     }
     
     receive() external payable {}
+
+    /**
+	 * @dev This empty reserved space is put in place to allow future versions to add new
+	 * variables without shifting down storage in the inheritance chain.
+	 * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
+	 */
+	uint256[50] private __gap;
 }

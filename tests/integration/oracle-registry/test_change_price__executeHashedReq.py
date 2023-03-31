@@ -29,7 +29,7 @@ def test_updateGasPriceFast_lower_executeHashedReq_with_ethForCall(auto, evmMath
     
     assert auto.po.getGasPriceFast() == newGasPriceFast
 
-    expectedGas = auto.r.executeHashedReq.call(id, reqs[id], MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    expectedGas = auto.r.executeHashedReq.call(id, reqs[id], NULL_BYTES, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     tx = auto.r.executeHashedReq(id, reqs[id], expectedGas, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed
@@ -96,7 +96,7 @@ def test_updateGasPriceFast_higher_executeHashedReq_payAUTO(auto, evmMaths, stak
     
     assert auto.po.getGasPriceFast() == newGasPriceFast
 
-    expectedGas = auto.r.executeHashedReq.call(id, reqs[id], MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+    expectedGas = auto.r.executeHashedReq.call(id, reqs[id], NULL_BYTES, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     tx = auto.r.executeHashedReq(id, reqs[id], expectedGas, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Should've changed

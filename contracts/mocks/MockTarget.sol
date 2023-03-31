@@ -16,7 +16,8 @@ contract MockTarget {
     IRegistry public reg;
     VulnerableRegistry public vulnReg;
     uint[] public gasWaster;
-    address[] public gasWasterAddr;
+    address[] public addrArr;
+    bytes public xBytes;
 
 
     constructor(
@@ -107,7 +108,7 @@ contract MockTarget {
     ///         gas of the actual call increase at a consistent rate, using addresses instead
     function useGasCallDataAndAddrArray(address[] calldata arr) external {
         for (uint i; i < arr.length; i++) {
-            gasWasterAddr.push(arr[i]);
+            addrArr.push(arr[i]);
         }
     }
 
@@ -115,7 +116,7 @@ contract MockTarget {
     ///         actual call increases, but the overall gas of the former is greater than the latter
     function useGasCallDataAndSpecificAddrArray(address[] calldata arr, uint numToPush) external {
         for (uint i; i < numToPush; i++) {
-            gasWasterAddr.push(arr[i]);
+            addrArr.push(arr[i]);
         }
     }
 
@@ -124,7 +125,7 @@ contract MockTarget {
     function useGasCallDataAndAddrArrayMultiple(address[] calldata arr, uint numCycles) external {
         for (uint j; j < numCycles; j++) {
             for (uint i; i < arr.length; i++) {
-                gasWasterAddr.push(arr[i]);
+                addrArr.push(arr[i]);
             }
         }
     }
@@ -153,7 +154,7 @@ contract MockTarget {
     ///         gas of the actual call increase at a consistent rate, using addresses instead
     function useGasCallDataAndAddrArrayVeri(address user, address[] calldata arr) external userVeri {
         for (uint i; i < arr.length; i++) {
-            gasWasterAddr.push(arr[i]);
+            addrArr.push(arr[i]);
         }
     }
 
@@ -161,7 +162,7 @@ contract MockTarget {
     ///         actual call increases, but the overall gas of the former is greater than the latter
     function useGasCallDataAndSpecificAddrArrayVeri(address user, address[] calldata arr, uint numToPush) external userVeri {
         for (uint i; i < numToPush; i++) {
-            gasWasterAddr.push(arr[i]);
+            addrArr.push(arr[i]);
         }
     }
 
@@ -170,7 +171,7 @@ contract MockTarget {
     function useGasCallDataAndAddrArrayMultipleVeri(address user, address[] calldata arr, uint numCycles) external userVeri {
         for (uint j; j < numCycles; j++) {
             for (uint i; i < arr.length; i++) {
-                gasWasterAddr.push(arr[i]);
+                addrArr.push(arr[i]);
             }
         }
     }
@@ -185,6 +186,21 @@ contract MockTarget {
 
     function getGasWaster() external view returns (uint[] memory) {
         return gasWaster;
+    }
+
+    function setXInjectedData() external {
+        IRegistry.CurReq memory curReq = reg.getCurReq();
+        xBytes = curReq.injectedData;
+    }
+
+    function setArrInjectedData() external {
+        IRegistry.CurReq memory curReq = reg.getCurReq();
+        // xBytes = curReq.injectedData;
+        addrArr = abi.decode(curReq.injectedData, (address[]));
+    }
+
+    function getAddrArr() external view returns (address[] memory) {
+        return addrArr;
     }
 
 

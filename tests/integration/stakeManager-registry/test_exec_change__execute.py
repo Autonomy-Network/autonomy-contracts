@@ -16,10 +16,10 @@ def test_executeHashedReq_wait_executeHashedReq(a, auto, evmMaths, stakedMultiSm
     for addr in a:
         if addr != newExec:
             with reverts(REV_MSG_NOT_EXEC):
-                auto.r.executeHashedReq(id, reqs[id], MIN_GAS, {'from': addr, 'gasPrice': INIT_GAS_PRICE_FAST})
+                auto.r.executeHashedReq(id, reqs[id], NULL_BYTES, MIN_GAS, {'from': addr, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Execution should succeed with the actual executor
-    auto.r.executeHashedReq(id, reqs[id], MIN_GAS, {'from': newExec, 'gasPrice': INIT_GAS_PRICE_FAST})
+    auto.r.executeHashedReq(id, reqs[id], NULL_BYTES, MIN_GAS, {'from': newExec, 'gasPrice': INIT_GAS_PRICE_FAST})
 
     chain.mine(BLOCKS_IN_EPOCH - (bn() % BLOCKS_IN_EPOCH) - 1)
 
@@ -29,7 +29,7 @@ def test_executeHashedReq_wait_executeHashedReq(a, auto, evmMaths, stakedMultiSm
     for addr in a:
         if addr != newExec:
             with reverts(REV_MSG_NOT_EXEC):
-                auto.r.executeHashedReq(id, reqs[id], MIN_GAS, {'from': addr, 'gasPrice': INIT_GAS_PRICE_FAST})
+                auto.r.executeHashedReq(id, reqs[id], NULL_BYTES, MIN_GAS, {'from': addr, 'gasPrice': INIT_GAS_PRICE_FAST})
     
     # Execution should succeed with the actual executor
-    auto.r.executeHashedReq(id, reqs[id], MIN_GAS, {'from': newExec, 'gasPrice': INIT_GAS_PRICE_FAST})
+    auto.r.executeHashedReq(id, reqs[id], NULL_BYTES, MIN_GAS, {'from': newExec, 'gasPrice': INIT_GAS_PRICE_FAST})

@@ -19,8 +19,8 @@ def test_getHashedReqsSlice(auto, mockTarget, requesters, startIdxs, endIdxs):
     callData = mockTarget.setX.encode_input(5)
     hashedReqs = []
     for requester in requesters:
-        req = (requester.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, False, False, False)
-        auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, False, False, False, {'from': requester})
+        req = (requester.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, False, False, False, False, "")
+        auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, False, False, False, False, "", {'from': requester})
         hashedReqs.append(keccakReq(auto, req))
 
     
