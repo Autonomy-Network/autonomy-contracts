@@ -20,9 +20,6 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     uint public constant PAY_AUTO_BPS = 11000;
     uint public constant PAY_ETH_BPS = 13000;
 
-    // Constant private
-    bytes private constant _EMPTY_BYTES = "";
-    
     AUTO private immutable _AUTO;
     IStakeManager private immutable _stakeMan;
     IOracle private immutable _oracle;
@@ -311,7 +308,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         uint startGas = gasleft();
 
         if (bytes(r.injectedDataSource).length == 0) {
-            require(injectedData.length == 0);
+            require(injectedData.length == 1, "Reg: should be no injected data");
         }
         
         // We are the gods now

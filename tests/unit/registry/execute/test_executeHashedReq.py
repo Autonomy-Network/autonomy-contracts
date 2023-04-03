@@ -652,7 +652,6 @@ def test_executeHashedReq_rev_userVeri_called_to_feeVeri(auto, mockTarget, stake
         auto.r.executeHashedReq(9, req, NULL_BYTES, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
 
 
-
 def test_executeHashedReq_rev_userFeeVeri_set_to_feeVeri(auto, mockTarget, stakedMin, hashedReqs):
     _, staker, __ = stakedMin
 
@@ -664,3 +663,16 @@ def test_executeHashedReq_rev_userFeeVeri_set_to_feeVeri(auto, mockTarget, stake
 
     with reverts(REV_MSG_USER_FEE_FORW):
         auto.r.executeHashedReq(9, req, NULL_BYTES, MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})
+
+
+
+def test_executeHashedReq_rev_no_injected_data(auto, mockTarget, stakedMin, hashedReqs):
+    _, staker, __ = stakedMin
+
+    # Should revert when no injected data source was specified but the bot tries to add some
+    callData = mockTarget.setX.encode_input(5)
+    reqs.append((auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, False, False, False, False, ""))
+    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, False, False, False, False, "", {'from': auto.BOB, 'value': 0})
+
+    with reverts(REV_MSG_NO_INJECTED_DATA):
+        auto.r.executeHashedReq(9, req, hexStrPad(5), MIN_GAS, {'from': staker, 'gasPrice': INIT_GAS_PRICE_FAST})

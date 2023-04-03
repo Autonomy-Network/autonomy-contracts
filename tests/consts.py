@@ -103,6 +103,7 @@ REV_MSG_REENTRANCY = "ReentrancyGuard: reentrant call"
 REV_MSG_EXPECTED_GAS = "Reg: expectedGas too high"
 REV_MSG_OVERFLOW = "Integer overflow"
 REV_MSG_NO_ETH_ALIVE = "Reg: no ETH while alive"
+REV_MSG_NO_INJECTED_DATA = "Reg: should be no injected data"
 
 
 # AUTO

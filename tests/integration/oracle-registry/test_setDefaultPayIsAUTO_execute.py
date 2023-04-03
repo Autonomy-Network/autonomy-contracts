@@ -8,8 +8,8 @@ def test_newReq_setDefaultPayIsAUTO_executeHashedReq(auto, mockTarget, evmMaths)
     ethForCall = E_18
     msgValue = ethForCall*2
     callData = mockTarget.setXPayFeeVerified.encode_input(3)
-    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, msgValue, ethForCall, False, True, False, False, False, NULL_BYTES)
-    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, False, True, False, False, NULL_BYTES, {'from': auto.BOB, 'value': msgValue})
+    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, msgValue, ethForCall, False, True, False, False, False, "")
+    tx = auto.r.newReq(mockTarget, auto.DENICE, callData, ethForCall, False, True, False, False, False, "", {'from': auto.BOB, 'value': msgValue})
 
     assert tx.events["HashedReqAdded"][0].values() == [0, *req]
     assert auto.r.getHashedReq(0) == keccakReq(auto, req)

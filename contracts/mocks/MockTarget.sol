@@ -203,6 +203,16 @@ contract MockTarget {
         return addrArr;
     }
 
+    function dummyAddrArrInput(address[] memory arr) external pure {}
+
+    function dummyBytesInput(bytes calldata b) external pure returns (bytes memory) {
+        return b;
+    }
+
+    function getCurReq() external view returns (IRegistry.CurReq memory) {
+        return reg.getCurReq();
+    }
+
 
     modifier updateMsgSender() {
         _;

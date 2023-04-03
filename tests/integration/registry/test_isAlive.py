@@ -6,8 +6,8 @@ from utils import *
 
 def test_recurring_payment_pay_ETH(auto, mockTarget, evmMaths):
     callData = mockTarget.useGasWithArray.encode_input(2)
-    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, False, True, True, False, NULL_BYTES)
-    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, False, True, True, False, NULL_BYTES, {'from': auto.BOB, 'value': 0})
+    req = (auto.BOB.address, mockTarget.address, auto.DENICE, callData, 0, 0, False, False, True, True, False, "")
+    tx = auto.r.newReqPaySpecific(mockTarget, auto.DENICE, callData, 0, False, False, True, True, False, "", {'from': auto.BOB, 'value': 0})
 
     id = 0
     assert tx.return_value == id
