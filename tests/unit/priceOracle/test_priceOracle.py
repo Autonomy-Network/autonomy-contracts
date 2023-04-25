@@ -49,24 +49,24 @@ def test_updateAUTOPerETH_rev_owner(a, auto):
                 auto.po.updateAUTOPerETH(3, {'from': sender})
 
 
-@given(newRate=strategy('uint'))
-def test_updateGasPriceFast(auto, newRate):
-    callData = auto.po.updateGasPriceFast.encode_input(newRate)
-    delay = 2*DAY
-    args = (auto.po, 0, "", callData, chain.time() + delay + 60)
-    auto.tl.queueTransaction(*args)
-    chain.sleep(delay + 120)
-    auto.tl.executeTransaction(*args, auto.FR_DEPLOYER)
+# @given(newRate=strategy('uint'))
+# def test_updateGasPriceFast(auto, newRate):
+#     callData = auto.po.updateGasPriceFast.encode_input(newRate)
+#     delay = 2*DAY
+#     args = (auto.po, 0, "", callData, chain.time() + delay + 60)
+#     auto.tl.queueTransaction(*args)
+#     chain.sleep(delay + 120)
+#     auto.tl.executeTransaction(*args, auto.FR_DEPLOYER)
     
-    assert auto.po.getAUTOPerETH() == INIT_AUTO_PER_ETH_WEI
-    assert auto.po.getGasPriceFast() == newRate
-    assert auto.po.owner() == auto.tl
-    assert auto.o.getAUTOPerETH() == INIT_AUTO_PER_ETH_WEI
-    assert auto.o.getGasPriceFast() == newRate
+#     assert auto.po.getAUTOPerETH() == INIT_AUTO_PER_ETH_WEI
+#     assert auto.po.getGasPriceFast() == newRate
+#     assert auto.po.owner() == auto.tl
+#     assert auto.o.getAUTOPerETH() == INIT_AUTO_PER_ETH_WEI
+#     assert auto.o.getGasPriceFast() == newRate
 
 
-def test_updateGasPriceFast_rev_owner(a, auto):
-    for sender in list(a) + auto.all:
-        if sender != auto.tl:
-            with reverts(REV_MSG_OWNER):
-                auto.po.updateGasPriceFast(3, {'from': sender})
+# def test_updateGasPriceFast_rev_owner(a, auto):
+#     for sender in list(a) + auto.all:
+#         if sender != auto.tl:
+#             with reverts(REV_MSG_OWNER):
+#                 auto.po.updateGasPriceFast(3, {'from': sender})

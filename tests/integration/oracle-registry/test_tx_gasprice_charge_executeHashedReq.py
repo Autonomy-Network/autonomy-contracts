@@ -10,10 +10,10 @@ def test_tx_gasprice_charge_executeHashedReq(auto, evmMaths, stakedMin, mockTarg
     initialBalance = auto.BOB.balance()
     request = [auto.BOB.address, mockTarget, auto.DENICE, callData, msgValue, 0, False, False, False, False]
     req = auto.r.newReq(mockTarget, auto.DENICE, callData, 0, False, False, False, {'from': auto.BOB, 'value': msgValue, 'gas_price': INIT_GAS_PRICE_FAST})
-    gas_used = req.gas_used
-    print(f'gas_used: {gas_used}')
-    gas_price = req.gas_price
-    print(f'gas_price: {gas_price}')
+    req_gas_used = req.gas_used
+    print(f'req_gas_used: {req_gas_used}')
+    req_gas_price = req.gas_price
+    print(f'req_gas_price: {req_gas_price}')
     balanceAfterCreate = auto.BOB.balance()
 
     print(f'initialBalance: {initialBalance}')
@@ -22,11 +22,15 @@ def test_tx_gasprice_charge_executeHashedReq(auto, evmMaths, stakedMin, mockTarg
     request_id = req.events['HashedReqAdded']['id']
     print(f'request_id: {request_id}')
 
-    auto.r.executeHashedReq(request_id, request, MIN_GAS, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+    exec = auto.r.executeHashedReq(request_id, request, MIN_GAS, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+    gas_used = exec.gas_used
+    print(f'gas_used: {gas_used}')
+    gas_price = exec.gas_price
+    print(f'gas_price: {gas_price}')
 
     newBalance = auto.BOB.balance()
     print(f'newBalance: {newBalance}')
-    assert newBalance == initialBalance - gas_used * gas_price
+    assert newBalance == initialBalance - (gas_used * gas_price) - (req_gas_used * req_gas_price)
 
 
 # def test_updateGasPriceFast_lower_executeHashedReq_with_ethForCall(auto, evmMaths, stakedMin, mockTarget, hashedReqs):
