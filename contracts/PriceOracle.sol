@@ -9,12 +9,9 @@ contract PriceOracle is IPriceOracle, Ownable {
 
 
     uint private _AUTOPerETH;
-    uint private _gasPrice;
 
-
-    constructor(uint AUTOPerETH, uint gasPrice) Ownable() {
+    constructor(uint AUTOPerETH) Ownable() {
         _AUTOPerETH = AUTOPerETH;
-        _gasPrice = gasPrice;
     }
 
     function getAUTOPerETH() external override view returns (uint) {
@@ -26,10 +23,6 @@ contract PriceOracle is IPriceOracle, Ownable {
     }
 
     function getGasPriceFast() external override view returns (uint) {
-        return _gasPrice;
-    }
-
-    function updateGasPriceFast(uint gasPrice) external onlyOwner {
-        _gasPrice = gasPrice;
+        return tx.gasprice;
     }
 }

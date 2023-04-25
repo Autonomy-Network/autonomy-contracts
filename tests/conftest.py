@@ -35,7 +35,7 @@ def deploy_initial_AUTO_contracts(AUTO, PriceOracle, Oracle, StakeManager, Regis
     # Calling `updateExecutor` requires the epoch to be > 0
     chain.mine(BLOCKS_IN_EPOCH)
 
-    auto.po = auto.DEPLOYER.deploy(PriceOracle, INIT_AUTO_PER_ETH_WEI, INIT_GAS_PRICE_FAST)
+    auto.po = auto.DEPLOYER.deploy(PriceOracle, INIT_AUTO_PER_ETH_WEI)
     auto.o = auto.DEPLOYER.deploy(Oracle, auto.po, False)
     auto.sm = auto.DEPLOYER.deploy(StakeManager, auto.o)
     auto.uf = auto.DEPLOYER.deploy(Forwarder)
