@@ -1,24 +1,24 @@
-# development:
-# - name: Ganache-CLI (Polygon-Mainnet Fork)
-#   id: polygon-main-fork
-#   cmd: ganache-cli
-#   host: http://127.0.0.1
-#   timeout: 120
-#   cmd_settings:
-#     port: 8545
-#     gas_limit: 20000000
-#     accounts: 10
-#     evm_version: istanbul
-#     mnemonic: brownie
-#     fork: polygon-main
+development:
+- name: Ganache-CLI (Polygon-Mainnet Fork)
+  id: polygon-main-fork
+  cmd: ganache-cli
+  host: http://127.0.0.1
+  timeout: 120
+  cmd_settings:
+    port: 8545
+    gas_limit: 20000000
+    accounts: 10
+    evm_version: istanbul
+    mnemonic: brownie
+    fork: polygon-main
 
 live:
 - name: Polygon
   networks:
     - name: Mainnet
       chainid: 137
-      id: polygon-mainnet
-      host: https://shy-lingering-water.matic.quiknode.pro/e9f0468946bc8fe4cc0a6096b42ecccc5e05c216/
+      id: polygon-main
+      host: https://polygon-mainnet.infura.io/v3/21317ddb5ded42ce8d40c7d78f90474f
       explorer: https://api.polygonscan.com/api
     - name: Mumbai Testnet
       chainid: 80001
