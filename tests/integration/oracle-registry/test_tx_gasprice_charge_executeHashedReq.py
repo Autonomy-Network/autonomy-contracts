@@ -22,7 +22,7 @@ def test_tx_gasprice_charge_executeHashedReq(auto, evmMaths, stakedMin, mockTarg
     request_id = req.events['HashedReqAdded']['id']
     print(f'request_id: {request_id}')
 
-    exec = auto.r.executeHashedReq(request_id, request, MIN_GAS, {'from': auto.ALICE, 'gasPrice': INIT_GAS_PRICE_FAST})
+    exec = auto.r.executeHashedReq(request_id, request, MIN_GAS, {'from': auto.ALICE, 'gas_price': INIT_GAS_PRICE_FAST})
     gas_used = exec.gas_used
     print(f'gas_used: {gas_used}')
     gas_price = exec.gas_price
