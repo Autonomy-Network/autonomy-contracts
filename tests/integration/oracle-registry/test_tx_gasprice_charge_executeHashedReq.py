@@ -32,7 +32,7 @@ def test_tx_gasprice_charge_executeHashedReq(auto, evmMaths, stakedMin, mockTarg
     newBalance = auto.BOB.balance()
     print(f'newBalance: {newBalance}')
     print(f'{newBalance} == {initialBalance} - ({gas_used} * {gas_price}) - ({req_gas_used} * {req_gas_price})')
-    balanceShouldBe = initialBalance - (gas_used * gas_price) - (req_gas_used * req_gas_price)
+    balanceShouldBe = initialBalance - (returned_value_gas_used * gas_price * 1.3) - (req_gas_used * req_gas_price)
     print(f'diff balance: {balanceShouldBe - newBalance}')
     assert newBalance == initialBalance - (returned_value_gas_used * gas_price * 1.3) - (req_gas_used * req_gas_price)
 
