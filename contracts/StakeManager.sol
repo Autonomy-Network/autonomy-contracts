@@ -20,7 +20,7 @@ contract StakeManager is IStakeManager, Shared, ReentrancyGuard, IERC777Recipien
     // AUTO ERC777
     IERC777 private _AUTO;
     bool private _AUTOSet = false;
-    IERC1820Registry constant private _ERC1820_REGISTRY = IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
+    // IERC1820Registry constant private _ERC1820_REGISTRY = IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
     bytes32 constant private TOKENS_RECIPIENT_INTERFACE_HASH = keccak256('ERC777TokensRecipient');
     uint private _totalStaked = 0;
     // Needed so that receiving AUTO is rejected unless it's indicated
@@ -43,7 +43,7 @@ contract StakeManager is IStakeManager, Shared, ReentrancyGuard, IERC777Recipien
 
     constructor(IOracle oracle) {
         _oracle = oracle;
-        _ERC1820_REGISTRY.setInterfaceImplementer(address(this), TOKENS_RECIPIENT_INTERFACE_HASH, address(this));
+        // _ERC1820_REGISTRY.setInterfaceImplementer(address(this), TOKENS_RECIPIENT_INTERFACE_HASH, address(this));
     }
 
 

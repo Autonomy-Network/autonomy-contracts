@@ -8,7 +8,7 @@ sys.path.pop()
 
 deployer = accounts.add(os.environ['DEPLOYER_PRIV'])
 
-PUBLISH_SOURCE = True
+PUBLISH_SOURCE = False
 
 def main():
     class Context:
@@ -20,26 +20,25 @@ def main():
     auto.FR_DEPLOYER = {"from": auto.DEPLOYER}
     print(auto.DEPLOYER)
 
-    auto.po = auto.DEPLOYER.deploy(PriceOracle, INIT_AUTO_PER_ETH_WEI, , publish_source=PUBLISH_SOURCE)
+    auto.po = auto.DEPLOYER.deploy(PriceOracle, INIT_AUTO_PER_ETH_WEI, INIT_GAS_PRICE_FAST, publish_source=PUBLISH_SOURCE)
     auto.o = auto.DEPLOYER.deploy(Oracle, auto.po, False, publish_source=PUBLISH_SOURCE)
-    auto.sm = auto.DEPLOYER.deploy(StakeManager, auto.o, publish_source=PUBLISH_SOURCE)
+    # auto.sm = auto.DEPLOYER.deploy(StakeManager, auto.o, publish_source=PUBLISH_SOURCE)
     auto.uf = auto.DEPLOYER.deploy(Forwarder, publish_source=PUBLISH_SOURCE)
     auto.ff = auto.DEPLOYER.deploy(Forwarder, publish_source=PUBLISH_SOURCE)
     auto.uff = auto.DEPLOYER.deploy(Forwarder, publish_source=PUBLISH_SOURCE)
     auto.r = auto.DEPLOYER.deploy(
         Registry,
-        auto.sm,
+        # auto.sm,
         auto.o,
         auto.uf,
         auto.ff,
         auto.uff,
-        "Autonomy Network",
-        "AUTO",
-        INIT_AUTO_SUPPLY,
-        publish_source=PUBLISH_SOURCE
+        publish_source=PUBLISH_SOURCE,
+        gas_limit=20000000,
+        allow_revert=True
     )
-    auto.AUTO = AUTO.at(auto.r.getAUTOAddr())
-    auto.sm.setAUTO(auto.AUTO, auto.FR_DEPLOYER)
+    # auto.AUTO = AUTO.at(auto.r.getAUTOAddr())
+    # auto.sm.setAUTO(auto.AUTO, auto.FR_DEPLOYER)
     auto.uf.setCaller(auto.r, True, auto.FR_DEPLOYER)
     auto.ff.setCaller(auto.r, True, auto.FR_DEPLOYER)
     auto.uff.setCaller(auto.r, True, auto.FR_DEPLOYER)
@@ -54,7 +53,7 @@ def main():
 
     print(f'PriceOracle deployed at: {auto.po.address}')
     print(f'Oracle deployed at: {auto.o.address}')
-    print(f'StakeManager deployed at: {auto.sm.address}')
+    # print(f'StakeManager deployed at: {auto.sm.address}')
     print(f'User Forwarder deployed at: {auto.uf.address}')
     print(f'Fee Forwarder deployed at: {auto.ff.address}')
     print(f'User Fee Forwarder deployed at: {auto.uff.address}')

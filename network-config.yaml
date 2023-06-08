@@ -25,3 +25,19 @@ live:
       id: polygon-testnet
       host: https://polygon-mumbai.infura.io/v3/21317ddb5ded42ce8d40c7d78f90474f
       explorer: https://explorer-mumbai.maticvigil.com/
+- name: Hedera
+  networks:
+    - name: Mainnet
+      chainid: 295
+      id: hedera-mainnet
+      explorer: https://mainnet.hashio.io/api
+      host: https://mainnet-public.mirrornode.hedera.com/v1/api
+
+- name: Omni
+  networks:
+    - name: testnet
+      chainid: 295
+      id: omni-testnet
+      explorer: https://testnet-1-explorer.omni.network/api
+      host: http://testnet-1-rpc.omni.network:8545
+

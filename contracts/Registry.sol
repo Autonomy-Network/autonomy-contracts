@@ -3,7 +3,7 @@ pragma solidity 0.8.6;
 
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "../interfaces/IRegistry.sol";
-import "../interfaces/IStakeManager.sol";
+// import "../interfaces/IStakeManager.sol";
 import "../interfaces/IOracle.sol";
 import "../interfaces/IForwarder.sol";
 import "./abstract/Shared.sol";
@@ -14,16 +14,16 @@ import "./AUTO.sol";
 contract Registry is IRegistry, Shared, ReentrancyGuard {
     
     // Constant public
-    uint public constant GAS_OVERHEAD_AUTO = 16000;
+    // uint public constant GAS_OVERHEAD_AUTO = 16000;
     uint public constant GAS_OVERHEAD_ETH = 6000;
     uint public constant BASE_BPS = 10000;
-    uint public constant PAY_AUTO_BPS = 11000;
+    // uint public constant PAY_AUTO_BPS = 11000;
     uint public constant PAY_ETH_BPS = 13000;
 
     // Constant private
     bytes private constant _EMPTY_BYTES = "";
     
-    AUTO private immutable _AUTO;
+    // AUTO private immutable _AUTO;
     // IStakeManager private immutable _stakeMan;
     IOracle private immutable _oracle;
     IForwarder private immutable _userForwarder;
@@ -79,22 +79,19 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
 
 
     constructor(
-        IStakeManager stakeMan,
+        // IStakeManager stakeMan,
         IOracle oracle,
         IForwarder userForwarder,
         IForwarder gasForwarder,
-        IForwarder userGasForwarder,
-        string memory tokenName,
-        string memory tokenSymbol,
-        uint totalAUTOSupply
+        IForwarder userGasForwarder
     ) ReentrancyGuard() {
         // ERC777 token
-        address[] memory defaultOperators = new address[](2);
+        address[] memory defaultOperators = new address[](1);
         defaultOperators[0] = address(this);
-        defaultOperators[1] = address(stakeMan);
-        AUTO aut = new AUTO(tokenName, tokenSymbol, defaultOperators, msg.sender, totalAUTOSupply);
+        // defaultOperators[1] = address(stakeMan);
+        // AUTO aut = new AUTO("Autonomy Network", "AUTO", defaultOperators, msg.sender, totalAUTOSupply);
 
-        _AUTO = aut;
+        // _AUTO = aut;
         // _stakeMan = stakeMan;
         _oracle = oracle;
         _userForwarder = userForwarder;
@@ -104,9 +101,9 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         _invalidTargets[address(userForwarder)] = true;
         _invalidTargets[address(gasForwarder)] = true;
         _invalidTargets[address(userGasForwarder)] = true;
-        _invalidTargets[address(aut)] = true;
-        _invalidTargets[0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24] = true;
-        _invalidTargets[address(stakeMan)] = true;
+        // _invalidTargets[address(aut)] = true;
+        // _invalidTargets[0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24] = true;
+        // _invalidTargets[address(stakeMan)] = true;
         _invalidTargets[_ADDR_0] = true;
     }
 
@@ -275,7 +272,6 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     )
         external
         override
-        validExec
         nonReentrant
         validCalldata(r)
         verReq(id, r)
@@ -292,7 +288,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         }
         _execute(r, expectedGas);
 
-        gasUsed = startGas - gasleft() + (r.payWithAUTO == true ? GAS_OVERHEAD_AUTO : GAS_OVERHEAD_ETH);
+        gasUsed = startGas - gasleft() + GAS_OVERHEAD_ETH;
         // Make sure that the expected gas used is within 10% of the actual gas used
         require(expectedGas * 10 <= gasUsed * 11, "Reg: expectedGas too high");
     }
@@ -301,8 +297,8 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         IOracle orac = _oracle;
         uint ethStartBal = address(this).balance;
         uint feeTotal;
-        if (r.payWithAUTO) {
-            feeTotal = expectedGas * orac.getGasPriceFast() * orac.getAUTOPerETH() * PAY_AUTO_BPS / (BASE_BPS * _E_18);
+        if (false) {
+            // feeTotal = expectedGas * orac.getGasPriceFast() * orac.getAUTOPerETH() * PAY_AUTO_BPS / (BASE_BPS * _E_18);
         } else {
             feeTotal = expectedGas * orac.getGasPriceFast() * PAY_ETH_BPS / BASE_BPS;
         }
@@ -361,9 +357,9 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         // If ETH was somehow siphoned from this contract during the request,
         // this will revert because of an `Integer overflow` underflow - a security feature
         uint ethReceivedDuringRequest = address(this).balance + r.ethForCall - ethStartBal;
-        if (r.payWithAUTO) {
+        if (false) {
             // Send the executor their bounty
-            _AUTO.operatorSend(r.user, msg.sender, feeTotal, "", "");
+            // _AUTO.operatorSend(r.user, msg.sender, feeTotal, "", "");
         } else {
             uint ethReceived = r.initEthSent - r.ethForCall + ethReceivedDuringRequest;
             // Send the executor their bounty
@@ -413,13 +409,13 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     //                                                          //
     //////////////////////////////////////////////////////////////
     
-    function getAUTOAddr() external view override returns (address) {
-        return address(_AUTO);
-    }
+    // function getAUTOAddr() external view override returns (address) {
+    //     return address(_AUTO);
+    // }
     
-    function getStakeManager() external view override returns (address) {
-        return address(0);
-    }
+    // function getStakeManager() external view override returns (address) {
+    //     return address(0);
+    // }
     
     function getOracle() external view override returns (address) {
         return address(_oracle);
@@ -481,10 +477,10 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         _;
     }
 
-    modifier validExec() {
-        // require(_stakeMan.isUpdatedExec(msg.sender), "Reg: not executor or expired");
-        _;
-    }
+    // modifier validExec() {
+    //     // require(_stakeMan.isUpdatedExec(msg.sender), "Reg: not executor or expired");
+    //     _;
+    // }
 
     // Verify that a request is the same as the one initially stored. This also
     // implicitly checks that the request hasn't been deleted as the hash of the

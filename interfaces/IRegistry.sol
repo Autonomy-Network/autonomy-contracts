@@ -223,9 +223,9 @@ interface IRegistry {
     //                                                          //
     //////////////////////////////////////////////////////////////
     
-    function getAUTOAddr() external view returns (address);
+    // function getAUTOAddr() external view returns (address);
     
-    function getStakeManager() external view returns (address);
+    // function getStakeManager() external view returns (address);
 
     function getOracle() external view returns (address);
     
