@@ -24,7 +24,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     bytes private constant _EMPTY_BYTES = "";
     
     AUTO private immutable _AUTO;
-    IStakeManager private immutable _stakeMan;
+    // IStakeManager private immutable _stakeMan;
     IOracle private immutable _oracle;
     IForwarder private immutable _userForwarder;
     IForwarder private immutable _gasForwarder;
@@ -95,7 +95,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
         AUTO aut = new AUTO(tokenName, tokenSymbol, defaultOperators, msg.sender, totalAUTOSupply);
 
         _AUTO = aut;
-        _stakeMan = stakeMan;
+        // _stakeMan = stakeMan;
         _oracle = oracle;
         _userForwarder = userForwarder;
         _gasForwarder = gasForwarder;
@@ -418,7 +418,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     }
     
     function getStakeManager() external view override returns (address) {
-        return address(_stakeMan);
+        return address(0);
     }
     
     function getOracle() external view override returns (address) {
@@ -482,7 +482,7 @@ contract Registry is IRegistry, Shared, ReentrancyGuard {
     }
 
     modifier validExec() {
-        require(_stakeMan.isUpdatedExec(msg.sender), "Reg: not executor or expired");
+        // require(_stakeMan.isUpdatedExec(msg.sender), "Reg: not executor or expired");
         _;
     }
 
